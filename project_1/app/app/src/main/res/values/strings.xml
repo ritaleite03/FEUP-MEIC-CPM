@@ -1,33 +1,33 @@
 <resources>
-  <string name="app_name">Call HTTP Co</string>
-  <string name="tv_start_value">--></string>
-  <string name="action_getusers">Get Users (GET)</string>
-  <string name="action_getuser">Get User (GET)</string>
-  <string name="action_adduser">Add User (POST)</string>
-  <string name="action_deluser">Delete User (DELETE)</string>
-  <string name="action_changeuser">Change User (PUT)</string>
-  <string name="action_clear">Clear</string>
-  // login server
-  <string name="edt_IP_address_hint">IP Address</string>
-  <string name="edt_IP_address_autofill_hint">Write the IP address of the server</string>
-  <string name="edt_Port_hint">Port number</string>
-  <string name="edt_Port_autofill_hint">Write the Port number of the server</string>
-  // login user
-  <string name="edt_name_hint">Name</string>
-  <string name="edt_name_autofill_hint">Write your name on the app</string>
-  <string name="edt_nick_hint">Nickname</string>
-  <string name="edt_nick_autofill_hint">Write your nickname on the app</string>
-  <string name="edt_pass_hint">Password</string>
-  <string name="edt_pass_autofill_hint">Write your password on the app</string>
-  // login payment card
-  <string name="edt_type_hint">Type</string>
-  <string name="edt_type_autofill_hint">Write the type of your card</string>
-  <string name="edt_number_hint">Number</string>
-  <string name="edt_number_autofill_hint">Write the number of your card</string>
-  <string name="edt_date_hint">Expiration Date</string>
-  <string name="edt_date_autofill_hint">Write the expiration date of your card</string>
-  // login titles
-  <string name="title_server">Server</string>
-  <string name="title_user">User</string>
-  <string name="title_card">Card</string>
+    <string name="app_name">Call HTTP Co</string>
+    <string name="tv_start_value">--></string>
+    <string name="action_getusers">Get Users (GET)</string>
+    <string name="action_getuser">Get User (GET)</string>
+    <string name="action_adduser">Add User (POST)</string>
+    <string name="action_deluser">Delete User (DELETE)</string>
+    <string name="action_changeuser">Change User (PUT)</string>
+    <string name="action_clear">Clear</string>
+    // login server
+    <string name="edt_IP_address_hint">IP Address</string>
+    <string name="edt_IP_address_autofill_hint">Write the IP address of the server</string>
+    <string name="edt_Port_hint">Port number</string>
+    <string name="edt_Port_autofill_hint">Write the Port number of the server</string>
+    // login user
+    <string name="edt_name_hint">Name</string>
+    <string name="edt_name_autofill_hint">Write your name on the app</string>
+    <string name="edt_nick_hint">Nickname</string>
+    <string name="edt_nick_autofill_hint">Write your nickname on the app</string>
+    <string name="edt_pass_hint">Password</string>
+    <string name="edt_pass_autofill_hint">Write your password on the app</string>
+    // login payment card
+    <string name="edt_type_hint">Type</string>
+    <string name="edt_type_autofill_hint">Write the type of your card</string>
+    <string name="edt_number_hint">Number</string>
+    <string name="edt_number_autofill_hint">Write the number of your card</string>
+    <string name="edt_date_hint">Expiration Date</string>
+    <string name="edt_date_autofill_hint">Write the expiration date of your card</string>
+    // login titles
+    <string name="title_server">Server</string>
+    <string name="title_user">User</string>
+    <string name="title_card">Card</string>
 </resources>

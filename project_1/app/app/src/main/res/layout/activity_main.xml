@@ -146,6 +146,12 @@
           android:textSize="12sp" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/reg_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+
     <TextView
         android:id="@+id/tv_response"
         android:layout_width="match_parent"

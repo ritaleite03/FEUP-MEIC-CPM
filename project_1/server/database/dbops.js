@@ -1,6 +1,7 @@
 "use strict";
 const path = require("path");
 const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
 
 const DB_PATH = path.resolve("database/users.db");
 
@@ -24,10 +25,9 @@ class DBOps {
     async createTables() {
         const sql = `
         CREATE TABLE IF NOT EXISTS Users (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            Name TEXT NOT NULL,
-            Nick TEXT NOT NULL,
-            Pass TEXT NOT NULL
+            Uuid UUID PRIMARY KEY, 
+            KeyEC TEXT NOT NULL, 
+            KeyRSA TEXT NOT NULL
         );
     `;
         await this.db.run(sql);
@@ -56,18 +56,20 @@ class DBOps {
         return result;
     }
 
-    async addNewUser(name, nick, pass) {
-        var result;
+    async addNewUser(keyEC, keyRSA) {
+        let result;
+        let uuid;
         try {
+            uuid = uuidv4();
             result = await this.db.run(
-                "insert into Users(Name, Nick, Pass) values(?,?,?)",
-                [name, nick, pass]
+                "insert into Users(Uuid, KeyEC, KeyRSA) values(?,?,?)",
+                [uuid, keyEC, keyRSA]
             );
             if (result.changes === 0) result.lastID = 0;
         } catch (err) {
             result = err;
         }
-        return result;
+        return [uuid, result];
     }
 }
 

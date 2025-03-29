@@ -65,13 +65,13 @@ suspend fun getUser(act: MainActivity, baseAddress: String, port: Int, userName:
 
 //**************************************************************************
 // Function to call REST operation AddUser
-suspend fun addUser(act: MainActivity, baseAddress: String, port: Int, userName: String, userNick: String, userPass: String): String {
+suspend fun addUser(act: MainActivity, baseAddress: String, port: Int, publicKeyEC: String, publicKeyRSA: String): String {
   val urlRoute = "/users/add"
   val url = URL("http://$baseAddress:$port$urlRoute")
-  val payload = "{\"username\": \"$userName\", \"usernick\": \"$userNick\", \"password\": \"$userPass\"}"
+  val payload = "{\"keyEC\": \"$publicKeyEC\", \"keyRSA\": \"$publicKeyRSA\"}"
 
-  act.setResponse("POST ${url.toExternalForm()}")
-  act.appendResponse("Payload: $payload")
+  //act.setResponse("POST ${url.toExternalForm()}")
+  //act.appendResponse("Payload: $payload")
 
   return withContext(Dispatchers.IO) {
     var urlConnection: HttpURLConnection? = null

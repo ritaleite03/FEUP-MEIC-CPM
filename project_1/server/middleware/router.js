@@ -34,14 +34,13 @@ async function getUser(ctx) {
 }
 
 async function addUser(ctx) {
-    console.log("in addUser()");
-    const { username, usernick, password } = ctx.request.body;
-    var result = await usersDB.addNewUser(username, usernick, password);
+    const { keyEC, keyRSA } = ctx.request.body;
+    const [uuid, result] = await usersDB.addNewUser(keyEC, keyRSA);
     if ("errno" in result || result.lastID === 0) {
         ctx.status = 400; // Bad request
         ctx.body = {};
     } else {
-        ctx.body = { Id: result.lastID, Name: username };
+        ctx.body = { Uuid: uuid };
     }
 }
 
