@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Client</string>
+    <string name="title_main2">Shopping Cart</string>
+
+    // register fragment
+    <string name="register_hint_name">Name</string>
+    <string name="register_hint_nick">Nickname</string>
+    <string name="register_hint_pass">Password</string>
+    <string name="register_button">Register</string>
+    <string name="register_error">Error</string>
+
+    // login fragment
+    <string name="login_hint_name">Name</string>
+    <string name="login_hint_nick">Nickname</string>
+    <string name="login_hint_pass">Password</string>
+    <string name="login_button">Login</string>
+    <string name="login_error">Error</string>
+
+    // menu
+    <string name="menu_profile">Profile</string>
+    <string name="menu_transactions">Past Transactions</string>
+    <string name="menu_vouchers">Vouchers</string>
+
+    // bottom bar shopping
+    <string name="bottom_button_qr">Scan QR</string>
+    <string name="bottom_button_bar">Scan Bar</string>
+    <string name="bottom_button_end">End</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
