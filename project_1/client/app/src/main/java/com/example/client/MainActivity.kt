@@ -13,6 +13,7 @@ import com.example.client.fragments.authentication.RegisterFragment
 import com.example.client.utils.Crypto
 import com.example.client.utils.setInsetsPadding
 import java.security.KeyStore
+import java.security.KeyStore.PrivateKeyEntry
 
 /**
  * Activity used for login and register (without bottom bar)
@@ -22,22 +23,22 @@ class MainActivity : AppCompatActivity() {
     private val toolbar by lazy {findViewById<Toolbar>(R.id.toolbar_main)}
 
     // keys
-    private var entryEC: KeyStore.Entry? = null // getting a keystore entry (with KeyName) lazily
+    private var entryEC: PrivateKeyEntry? = null // getting a keystore entry (with KeyName) lazily
         get() {
             if (field == null) {
                 field = KeyStore.getInstance(Crypto.ANDROID_KEYSTORE).run {
                     load(null)
-                    getEntry(Crypto.EC_NAME, null)
+                    getEntry(Crypto.EC_NAME, null) as PrivateKeyEntry
                 }
             }
             return field
         }
-    private var entryRSA: KeyStore.Entry? = null    // getting a keystore entry (with KeyName) lazily
+    private var entryRSA: PrivateKeyEntry? = null    // getting a keystore entry (with KeyName) lazily
         get() {
             if (field == null) {
                 field = KeyStore.getInstance(Crypto.ANDROID_KEYSTORE).run {
                     load(null)
-                    getEntry(Crypto.RSA_NAME, null)
+                    getEntry(Crypto.RSA_NAME, null) as PrivateKeyEntry
                 }
             }
             return field
@@ -73,11 +74,11 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    fun fetchEntryEC() : KeyStore.Entry?{
+    fun fetchEntryEC() : PrivateKeyEntry?{
         return entryEC
     }
 
-    fun fetchEntryRSA() : KeyStore.Entry?{
+    fun fetchEntryRSA() : PrivateKeyEntry?{
         return entryRSA
     }
 }

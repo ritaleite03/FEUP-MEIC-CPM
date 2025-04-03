@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Generator</string>
+    <string name="title">Generator</string>
+
+    <string name="product_name">Name</string>
+    <string name="product_price">Price</string>
+    <string name="product_euros">Euros</string>
+    <string name="product_comma">.</string>
+    <string name="product_cents">Cents</string>
+    <string name="product_coins">€</string>
+
+    <string name="tv_qrtitle">Product Code</string>
+
+</resources>

@@ -16,10 +16,9 @@ import com.example.client.MainActivity2
 import com.example.client.R
 import com.example.client.fragments.feedback.ErrorFragment
 import com.example.client.fragments.feedback.ProgressFragment
-import com.example.client.generateAndStoreKeysEC
-import com.example.client.generateAndStoreKeysRSA
-import com.example.client.getPublicKeyEC
-import com.example.client.getPublicKeyRSA
+import com.example.client.generateEC
+import com.example.client.generateRSA
+import com.example.client.getPublicKey
 import com.example.client.register
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
@@ -46,23 +45,25 @@ class RegisterFragment : Fragment() {
 
                 try {
                     // generate keys
-                    generateAndStoreKeysEC()
-                    generateAndStoreKeysRSA()
+                    generateEC()
+                    generateRSA()
 
                     val activity = requireActivity() as MainActivity
                     val entryEC = activity.fetchEntryEC()
                     val entryRSA = activity.fetchEntryRSA()
 
                     // public keys
-                    var publicEC = getPublicKeyEC(entryEC).toString()
-                    var publicRSA = getPublicKeyRSA(entryRSA).toString()
+                    var publicEC = getPublicKey(entryEC)
+                    var publicRSA = getPublicKey(entryRSA)
 
                     val result = register(publicEC, publicRSA)
 
                     // check uuid
                     try {
                         var uuid: String? = JSONObject(result).optString("Uuid", null)
-                        if (uuid != null) {
+                        var key: String? = JSONObject(result).optString("key", null)
+
+                        if (uuid != null && key != null) {
 
                             var name  = view.findViewById<TextInputEditText>(R.id.input_name).text.toString()
                             var nick  = view.findViewById<TextInputEditText>(R.id.input_nick).text.toString()
@@ -77,6 +78,7 @@ class RegisterFragment : Fragment() {
                                     putString("nick", nick)
                                     putString("pass", pass)
                                     putString("uuid", uuid)
+                                    putString("key", key)
                                 }
 
                                 withContext(Dispatchers.Main) {
