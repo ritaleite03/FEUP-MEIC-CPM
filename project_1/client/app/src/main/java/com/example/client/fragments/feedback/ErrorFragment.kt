@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.example.client.R
 
 /**
- * Fragment to give negative feedback (error message)
+ * Fragment to display negative feedback, such as an error message.
  */
 class ErrorFragment : Fragment() {
 

@@ -25,6 +25,10 @@ import java.util.UUID
 import javax.crypto.Cipher
 import kotlin.text.isEmpty
 
+/**
+ * Main activity responsible for generating cryptographic keys and encrypting data.
+ * It manages key generation, user input, and encryption of tags to be sent to a second activity.
+ */
 class MainActivity : AppCompatActivity() {
 
     private val toolbar by lazy {findViewById<Toolbar>(R.id.toolbar)}
@@ -32,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private var privateKey: PrivateKey? = null
     private var publicKey: PublicKey? = null
 
+    // lazily retrieves the PrivateKeyEntry from the Android Keystore if it exists.
     private var entry: KeyStore.PrivateKeyEntry? = null
         get() {
             if (field == null)
@@ -49,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = 0)
 
-        // generate keys if they do not exist
+        // generate keys if they don't exist
         if (entry == null) {
             Log.d("DEBUG", "if")
             defineKeys(true)
@@ -59,6 +64,7 @@ class MainActivity : AppCompatActivity() {
             defineKeys(false)
         }
 
+        // set up button click listener to capture user input and encrypt data
         button.setOnClickListener {
             var uuid = UUID.randomUUID()
             var name = findViewById<TextInputEditText>(R.id.input_name).text.toString()
@@ -74,6 +80,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Defines the keys by either generating them or loading them from the keystore.
+     *
+     * @param generate Boolean flag indicating whether to generate new keys or load existing ones.
+     */
     private fun defineKeys(generate : Boolean){
         if (generate) {
             generateKeys()
@@ -85,6 +96,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Generates a cryptographic tag from the provided data (UUID, name, euros, cents).
+     * The tag is then encrypted using the private key stored in the Android Keystore.
+     *
+     * @param uuid UUID of the tag.
+     * @param name Name associated with the tag.
+     * @param euro Amount of euros.
+     * @param cent Amount of cents.
+     * @return The encrypted tag as a byte array, or null if encryption fails.
+     */
     private fun generateTag(uuid : UUID, name : String, euro : String, cent : String) : ByteArray? {
         var subName = if (name.length > 29) name.substring(0, 29) else name
         val len = 4 + 16 + 2 + 1 + 1 + subName.length  // length of (tagID, UUID, euros(short), cents(byte), nr_bytes(name)(byte), name)

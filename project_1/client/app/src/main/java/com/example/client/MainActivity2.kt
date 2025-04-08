@@ -14,7 +14,11 @@ import androidx.fragment.app.FragmentManager
 import com.example.client.utils.setInsetsPadding
 
 /**
- * Activity used for login and register (with bottom bar)
+ * Activity used for the user's main navigation, with the bottom navigation bar.
+ *
+ * This activity contains the logic to display an options menu on the Toolbar and navigate between main content fragments.
+ * It is designed to be used after user login or registration.
+ * The layout includes a custom toolbar and a container to load content fragments.
  */
 class MainActivity2 : AppCompatActivity() {
 
@@ -52,6 +56,11 @@ class MainActivity2 : AppCompatActivity() {
         }
     }
 
+    /**
+     * Method used to load a fragment into the Activity.
+     *
+     * @param fragment fragment to display
+     */
     fun loadFragment(fragment: Fragment) {
         supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         supportFragmentManager

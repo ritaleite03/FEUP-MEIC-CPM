@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.example.client.R
 
 /**
- * Fragment with nothing inside
+ * Blank fragment. This fragment does not contain any interface components or additional logic.
  */
 class BlankFragment : Fragment() {
 

@@ -14,7 +14,12 @@ import java.util.GregorianCalendar
 import javax.security.auth.x500.X500Principal
 
 /**
- * Generates a pair of EC cryptographic keys and stores them securely in the Android Keystore
+ * Generates a pair of EC (Elliptic Curve) cryptographic keys and stores them securely in the Android Keystore.
+ *
+ * This method creates a private key and a public key of type EC using the curve defined in `Crypto.EC_CURVE`.
+ * The generated key is stored in the Android Keystore to ensure storage security.
+ *
+ * @return Returns `true` if key generation and storage were successful, or `false` on error.
  */
 fun generateEC() : Boolean {
     try {
@@ -38,7 +43,12 @@ fun generateEC() : Boolean {
 }
 
 /**
- * Generates a pair of RSA cryptographic keys and stores them securely in the Android Keystore
+ * Generates a pair of RSA cryptographic keys and stores them securely in the Android Keystore.
+ *
+ * This method creates a private key and a public key of type RSA with the key size defined in `Crypto.RSA_KEY_SIZE`.
+ * The generated key is stored in the Android Keystore.
+ *
+ * @return Returns `true` if key generation and storage were successful, or `false` on error.
  */
 fun generateRSA(): Boolean {
     try {
@@ -64,10 +74,22 @@ fun generateRSA(): Boolean {
     return true
 }
 
+/**
+ * Retrieves the public key from a key entry of type `PrivateKeyEntry` in the Android Keystore.
+ *
+ * @param entry Key entry (of type `PrivateKeyEntry`) that contains the public and private key.
+ * @return Public key associated with the given key entry.
+ */
 fun getPublicKey(entry: KeyStore.PrivateKeyEntry?): PublicKey? {
     return entry?.certificate?.publicKey
 }
 
+/**
+ * Retrieves the private key from a key entry of type `PrivateKeyEntry` in the Android Keystore.
+ *
+ * @param entry Key entry (of type `PrivateKeyEntry`) that contains the public and private key.
+ * @return Private key associated with the given key entry.
+ */
 fun getPrivateKey(entry: KeyStore.PrivateKeyEntry?): PrivateKey? {
     return entry?.privateKey
 }

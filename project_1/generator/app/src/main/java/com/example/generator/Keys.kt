@@ -22,12 +22,26 @@ import java.util.Calendar
 import java.util.GregorianCalendar
 import javax.security.auth.x500.X500Principal
 
+/**
+ * Converts a public key of type `PublicKey` into a Base64 encoded string.
+ *
+ * @param publicKey Public key to convert.
+ * @return Public key in Base64 format as a string. Returns an empty string if key is null.
+ */
 fun publicKeyToBase64(publicKey: PublicKey?): String {
     if (publicKey == null)
         return ""
     return Base64.getEncoder().encodeToString(publicKey.encoded)
 }
 
+/**
+ * Generates a pair of RSA cryptographic keys and stores them securely in the Android Keystore.
+ *
+ * This method creates a private key and a public key of type RSA with the key size defined in `Crypto.RSA_KEY_SIZE`.
+ * The generated key is stored in the Android Keystore.
+ *
+ * @return Returns `true` if key generation and storage were successful, or `false` on error.
+ */
 fun generateKeys() {
     try {
         val spec = KeyGenParameterSpec.Builder(
@@ -53,6 +67,15 @@ fun generateKeys() {
     }
 }
 
+/**
+ * Sends the RSA public key to the server to perform an informational action.
+ *
+ * This function converts the RSA public key into a Base64 format and sends it via POST to the specified server.
+ * The server will then process this key according to the logic defined in the "/key" route.
+ *
+ * @param publicKeyRSA RSA public key to send to the server.
+ * @return Response from the server, or an error message if the connection failed. The response is received in text format.
+ */
 suspend fun informServer(publicKeyRSA: PublicKey?): String {
     val publicKeyRSAString = publicKeyToBase64(publicKeyRSA)
     val url = URL("http://${Server.IP}:${Server.PORT}${Server.INFORM}")
@@ -88,10 +111,22 @@ suspend fun informServer(publicKeyRSA: PublicKey?): String {
     }
 }
 
+/**
+ * Retrieves the public key from a key entry of type `PrivateKeyEntry` in the Android Keystore.
+ *
+ * @param entry Key entry (of type `PrivateKeyEntry`) that contains the public and private key.
+ * @return Public key associated with the given key entry.
+ */
 fun getPublicKey(entry: KeyStore.PrivateKeyEntry?): PublicKey? {
     return entry?.certificate?.publicKey
 }
 
+/**
+ * Retrieves the private key from a key entry of type `PrivateKeyEntry` in the Android Keystore.
+ *
+ * @param entry Key entry (of type `PrivateKeyEntry`) that contains the public and private key.
+ * @return Private key associated with the given key entry.
+ */
 fun getPrivateKey(entry: KeyStore.PrivateKeyEntry?): PrivateKey? {
     return entry?.privateKey
 }

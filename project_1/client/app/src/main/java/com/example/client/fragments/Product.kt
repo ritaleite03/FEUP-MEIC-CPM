@@ -11,11 +11,11 @@ import com.example.client.R
 import java.util.UUID
 
 /**
- * Data class representing a product
+ * Data class representing a product.
  *
- * @property id unique identifier of the product
- * @property name name of the product
- * @property value value (price) of the product
+ * @property id Unique identifier of the product.
+ * @property name Name of the product.
+ * @property value Value (price) of the product.
  */
 data class Product(
     val id: UUID,
@@ -24,15 +24,15 @@ data class Product(
 )
 
 /**
- * List of the all the products in the cart (initially empty)
+ * List of the all the products in the cart (initially empty).
  */
 val listProducts = arrayListOf<Product>()
 
 /**
- * Adapter to bind [Product] objects to an [android.widget.ListView]
+ * Adapter to bind [Product] objects to an [android.widget.ListView].
  *
- * @param ctx context of the Fragment where the Adapter will be used
- * @param listProducts list of the products that is going to be displayed and manipulated
+ * @param ctx context of the Fragment where the Adapter will be used.
+ * @param listProducts list of the products that is going to be displayed and manipulated.
  */
 class ProductAdapter(
     private val ctx: Context,

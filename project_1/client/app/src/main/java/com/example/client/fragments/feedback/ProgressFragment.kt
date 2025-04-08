@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.example.client.R
 
 /**
- * Fragment with a progress bar widget
+ * Fragment to display a progress bar.
  */
 class ProgressFragment : Fragment() {
 

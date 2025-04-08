@@ -19,7 +19,12 @@ import java.nio.charset.StandardCharsets
 import java.util.UUID
 import javax.crypto.Cipher
 
-
+/**
+ * Fragment to display the shopping cart, allowing viewing and adding products from a QR Code.
+ *
+ * The cart displays a list of products and has the ability to scan a QR Code to add a new product to the cart.
+ * The QR Code contains encrypted information about the product that will be decoded and added to the list.
+ */
 class CartFragment : Fragment() {
 
     private lateinit var productListView: ListView
@@ -32,12 +37,15 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // configuration of the button to scan QR Code
         val btQR = view.findViewById<Button>(R.id.bottom_button_qr)
         btQR.setOnClickListener { scanQRCode() }
 
+        // configuration of the ListView to display the products
         productListView = view.findViewById<ListView>(R.id.lv_items)
         empty = view.findViewById(R.id.empty)
 
+        // if the product list is empty, display the "empty" message
         productListView.run {
             emptyView = empty
             adapter = ProductAdapter(requireContext(), listProducts)
@@ -45,6 +53,9 @@ class CartFragment : Fragment() {
         registerForContextMenu(productListView)
     }
 
+    /**
+     * Starts the process of scanning a QR Code.
+     */
     private fun scanQRCode() {
         val options = ScanOptions().apply {
             setDesiredBarcodeFormats(ScanOptions.QR_CODE)
@@ -54,6 +65,9 @@ class CartFragment : Fragment() {
         scanCodeLauncher.launch(options)
     }
 
+    /**
+     * Initializes the scanner launch and processes the QR Code result.
+     */
     private val scanCodeLauncher = registerForActivityResult(ScanContract()) {
         if (it != null && it.contents != null) {
             val result = it.contents
@@ -61,6 +75,14 @@ class CartFragment : Fragment() {
         }
     }
 
+    /**
+     * Decodes the encrypted QR Code tag and displays the new product in the list.
+     *
+     * The product is identified using a UUID ID, name and value.
+     * This data is extracted from the encrypted tag and converted back to the original format.
+     *
+     * @param encTag Encrypted tag obtained from the QR Code.
+     */
     private fun decodeAndShow(encTag: ByteArray) {
         var clearTextTag = ByteArray(0)
 
