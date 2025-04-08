@@ -10,10 +10,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
-import com.example.generator.Crypto.ANDROID_KEYSTORE
-import com.example.generator.Crypto.ENC_ALGO
-import com.example.generator.Crypto.NAME
-import com.example.generator.Crypto.tagId
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
@@ -21,6 +17,7 @@ import java.nio.charset.StandardCharsets
 import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.PublicKey
+import java.security.Signature
 import java.util.UUID
 import javax.crypto.Cipher
 import kotlin.text.isEmpty
@@ -40,9 +37,9 @@ class MainActivity : AppCompatActivity() {
     private var entry: KeyStore.PrivateKeyEntry? = null
         get() {
             if (field == null)
-                field = KeyStore.getInstance(ANDROID_KEYSTORE).run {
+                field = KeyStore.getInstance(Crypto.ANDROID_KEYSTORE).run {
                     load(null)
-                    getEntry(NAME, null) as KeyStore.PrivateKeyEntry?
+                    getEntry(Crypto.NAME, null) as KeyStore.PrivateKeyEntry?
                 }
             return field
         }
@@ -108,10 +105,11 @@ class MainActivity : AppCompatActivity() {
      */
     private fun generateTag(uuid : UUID, name : String, euro : String, cent : String) : ByteArray? {
         var subName = if (name.length > 29) name.substring(0, 29) else name
-        val len = 4 + 16 + 2 + 1 + 1 + subName.length  // length of (tagID, UUID, euros(short), cents(byte), nr_bytes(name)(byte), name)
+        // length of (tagID, UUID, euros(short), cents(byte), nr_bytes(name)(byte), name)
+        val len = 4 + 16 + 2 + 1 + 1 + subName.length
 
-        val tag = ByteBuffer.allocate(len).apply {  // building an array of bytes (binary)
-            putInt(tagId)
+        val tag = ByteBuffer.allocate(len).apply {
+            putInt(Crypto.tagId)
             putLong(uuid.mostSignificantBits)
             putLong(uuid.leastSignificantBits)
             putShort(euro.toShort())
@@ -121,11 +119,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         try {
-            var encryptedTag = Cipher.getInstance(ENC_ALGO).run {
+            var encryptedTag = Cipher.getInstance(Crypto.ENC_ALGO).run {
                 init(Cipher.ENCRYPT_MODE, getPrivateKey(entry))
                 doFinal(tag.array())
             }
-            return encryptedTag
+
+            var signature = Signature.getInstance(Crypto.SIGN_ALGO).run {
+                initSign(getPrivateKey(entry))
+                update(encryptedTag)
+                sign()
+            }
+
+            var combined = ByteBuffer.allocate(encryptedTag.size + signature.size).apply {
+                put(encryptedTag)
+                put(signature)
+            }.array()
+
+            return combined
         }
         catch (_: Exception) {
             return null

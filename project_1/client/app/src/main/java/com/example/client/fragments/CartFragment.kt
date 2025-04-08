@@ -2,6 +2,7 @@ package com.example.client.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +12,12 @@ import android.widget.ListView
 import android.widget.TextView
 import com.example.client.R
 import com.example.client.base64ToPublicKey
-import com.example.client.utils.Crypto.RSA_ENC_ALGO
+import com.example.client.utils.Crypto
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
+import java.security.Signature
 import java.util.UUID
 import javax.crypto.Cipher
 
@@ -81,20 +83,42 @@ class CartFragment : Fragment() {
      * The product is identified using a UUID ID, name and value.
      * This data is extracted from the encrypted tag and converted back to the original format.
      *
-     * @param encTag Encrypted tag obtained from the QR Code.
+     * @param combined Encrypted tag obtained from the QR Code.
      */
-    private fun decodeAndShow(encTag: ByteArray) {
+    private fun decodeAndShow(combined: ByteArray) {
         var clearTextTag = ByteArray(0)
 
+        val numberBytes = Crypto.RSA_KEY_SIZE / 8
+        val totalSize = numberBytes * 2
+
+        if (combined.size < totalSize) {
+            Log.e("decodeAndShow", "Error")
+            return
+        }
+
+        val encryptedTag = combined.copyOfRange(0, numberBytes)
+        val signature = combined.copyOfRange(numberBytes, numberBytes + numberBytes)
         try {
             val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
             val keyString: String? = sharedPreferences.getString("key", null)
 
             if (keyString != null) {
                 val key = base64ToPublicKey(keyString)
-                clearTextTag = Cipher.getInstance(RSA_ENC_ALGO).run {
+
+                clearTextTag = Cipher.getInstance(Crypto.RSA_ENC_ALGO).run {
                     init(Cipher.DECRYPT_MODE, key)
-                    doFinal(encTag)
+                    doFinal(encryptedTag)
+                }
+
+                val signatureVerifier = Signature.getInstance("SHA256withRSA").run {
+                    initVerify(key)
+                    update(encryptedTag)
+                    verify(signature)
+                }
+
+                if(!signatureVerifier) {
+                    Log.e("decodeAndShow", "Error")
+                    return
                 }
             }
         }
@@ -103,9 +127,19 @@ class CartFragment : Fragment() {
         }
 
         val tag = ByteBuffer.wrap(clearTextTag)
+        val tagId = tag.int
         val id = UUID(tag.long, tag.long)
-        val name = String(ByteArray(tag.get().toInt()), StandardCharsets.ISO_8859_1)
-        val value = tag.short.toInt() + (tag.get().toInt() / 100.0)
+
+        val euros = tag.short.toInt()
+        val cents = tag.get().toInt()
+
+        val nameLength = tag.get().toInt()
+        val nameBytes = ByteArray(nameLength)
+        tag.get(nameBytes)
+
+        val name = String(nameBytes, StandardCharsets.ISO_8859_1)
+        val value = euros + (cents / 100.0)
+
         val newProduct = Product(id, name, value)
 
         listProducts.add(newProduct)

@@ -31,13 +31,13 @@ fun publicKeyToBase64(publicKey: PublicKey?): String {
  */
 fun base64ToPublicKey(base64Key: String): PublicKey? {
     return try {
-        val keyBytes = Base64.getDecoder().decode(base64Key) // Decodifica Base64 para ByteArray
-        val keySpec = X509EncodedKeySpec(keyBytes) // Cria a especificação da chave
-        val keyFactory = KeyFactory.getInstance("RSA") // Defina o algoritmo correto (RSA, EC, etc.)
-        keyFactory.generatePublic(keySpec) // Constrói a chave pública
+        val keyBytes = Base64.getDecoder().decode(base64Key)
+        val keySpec = X509EncodedKeySpec(keyBytes)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        keyFactory.generatePublic(keySpec)
     } catch (e: Exception) {
         e.printStackTrace()
-        null // Retorna null em caso de erro
+        null
     }
 }
 

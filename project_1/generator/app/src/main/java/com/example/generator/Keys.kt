@@ -2,12 +2,6 @@ package com.example.generator
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import android.util.Log
-import com.example.generator.Crypto.ANDROID_KEYSTORE
-import com.example.generator.Crypto.CERT_SERIAL
-import com.example.generator.Crypto.KEY_ALGO
-import com.example.generator.Crypto.KEY_SIZE
-import com.example.generator.Crypto.NAME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
@@ -45,19 +39,19 @@ fun publicKeyToBase64(publicKey: PublicKey?): String {
 fun generateKeys() {
     try {
         val spec = KeyGenParameterSpec.Builder(
-            NAME, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT or
+            Crypto.NAME, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT or
                     KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY
         )
-            .setKeySize(KEY_SIZE)
+            .setKeySize(Crypto.KEY_SIZE)
             .setDigests(KeyProperties.DIGEST_NONE, KeyProperties.DIGEST_SHA256)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
             .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
-            .setCertificateSubject(X500Principal("CN=" + NAME))           // for the certificate containing the public key
-            .setCertificateSerialNumber(BigInteger.valueOf(CERT_SERIAL.toLong()))  // some serial number ...
+            .setCertificateSubject(X500Principal("CN=" + Crypto.NAME))           // for the certificate containing the public key
+            .setCertificateSerialNumber(BigInteger.valueOf(Crypto.CERT_SERIAL.toLong()))  // some serial number ...
             .setCertificateNotBefore(GregorianCalendar().time)
             .setCertificateNotAfter(GregorianCalendar().apply { add(Calendar.YEAR, 10) }.time)
             .build()
-        KeyPairGenerator.getInstance(KEY_ALGO, ANDROID_KEYSTORE).run {
+        KeyPairGenerator.getInstance(Crypto.KEY_ALGO, Crypto.ANDROID_KEYSTORE).run {
             initialize(spec)
             generateKeyPair()
         }

@@ -82,7 +82,7 @@ class MainActivity2 : AppCompatActivity() {
         for (y in 0 until h) {
             val offset = y * w
             for (x in 0 until w) {
-                pixels[offset + x] = if (result.get(x, y)) Color.BLUE else Color.WHITE
+                pixels[offset + x] = if (result.get(x, y)) Color.BLACK else Color.WHITE
             }
         }
 
