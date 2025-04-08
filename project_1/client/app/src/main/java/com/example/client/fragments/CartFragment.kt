@@ -2,7 +2,6 @@ package com.example.client.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +9,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
-import android.widget.Toast
 import com.example.client.R
 import com.example.client.base64ToPublicKey
 import com.example.client.utils.Crypto.RSA_ENC_ALGO
-import com.example.client.utils.byteArrayToHex
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import java.nio.ByteBuffer
@@ -36,7 +33,6 @@ class CartFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val btQR = view.findViewById<Button>(R.id.bottom_button_qr)
-
         btQR.setOnClickListener { scanQRCode() }
 
         productListView = view.findViewById<ListView>(R.id.lv_items)
@@ -47,8 +43,6 @@ class CartFragment : Fragment() {
             adapter = ProductAdapter(requireContext(), listProducts)
         }
         registerForContextMenu(productListView)
-
-
     }
 
     private fun scanQRCode() {
@@ -68,11 +62,10 @@ class CartFragment : Fragment() {
     }
 
     private fun decodeAndShow(encTag: ByteArray) {
-        var clearTextTag: ByteArray = ByteArray(0)
+        var clearTextTag = ByteArray(0)
 
         try {
-            val sharedPreferences =
-                requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
+            val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
             val keyString: String? = sharedPreferences.getString("key", null)
 
             if (keyString != null) {
@@ -83,28 +76,17 @@ class CartFragment : Fragment() {
                 }
             }
         }
-        catch (e: Exception) {
+        catch (_: Exception) {
             return
         }
 
         val tag = ByteBuffer.wrap(clearTextTag)
-        val tId = tag.int
         val id = UUID(tag.long, tag.long)
-        val euros = tag.short.toInt()
-
-        val cents = tag.get().toInt()
-        val bName = ByteArray(tag.get().toInt())
-        tag[bName]
-        val name = String(bName, StandardCharsets.ISO_8859_1)
-        val strCents = String.format("%02d", cents)
-
-        val value: Double = euros + (cents / 100.0)
-
+        val name = String(ByteArray(tag.get().toInt()), StandardCharsets.ISO_8859_1)
+        val value = tag.short.toInt() + (tag.get().toInt() / 100.0)
         val newProduct = Product(id, name, value)
 
         listProducts.add(newProduct)
-
         (productListView.adapter as ProductAdapter).notifyDataSetChanged()
-
     }
 }

@@ -20,6 +20,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Fragment responsible to deal with the login authentication of the user.
+ *
+ * Validates credentials provided against data saved in SharedPreferences, and if valid, redirects the user to the next Activity.
+ * Also handles visual feedback to the user, showing snippets of progress or error.
+ */
 class LoginFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -60,6 +66,12 @@ class LoginFragment : Fragment() {
         }
     }
 
+    /**
+     * Replaces the current fragment in the container with the given fragment.
+     * Uses childFragmentManager to manage inner fragments.
+     *
+     * @param fragment new fragment to be shown
+     */
     private fun loadFragment(fragment: Fragment) {
         childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         childFragmentManager
