@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import com.example.client.R
 import com.example.client.base64ToPublicKey
@@ -23,6 +25,9 @@ import javax.crypto.Cipher
 
 class CartFragment : Fragment() {
 
+    private lateinit var productListView: ListView
+    private lateinit var empty: TextView
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_cart, container, false)
     }
@@ -30,9 +35,20 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var btQR = view.findViewById<Button>(R.id.bottom_button_qr)
+        val btQR = view.findViewById<Button>(R.id.bottom_button_qr)
 
         btQR.setOnClickListener { scanQRCode() }
+
+        productListView = view.findViewById<ListView>(R.id.lv_items)
+        empty = view.findViewById(R.id.empty)
+
+        productListView.run {
+            emptyView = empty
+            adapter = ProductAdapter(requireContext(), listProducts)
+        }
+        registerForContextMenu(productListView)
+
+
     }
 
     private fun scanQRCode() {
@@ -81,6 +97,14 @@ class CartFragment : Fragment() {
         tag[bName]
         val name = String(bName, StandardCharsets.ISO_8859_1)
         val strCents = String.format("%02d", cents)
+
+        val value: Double = euros + (cents / 100.0)
+
+        val newProduct = Product(id, name, value)
+
+        listProducts.add(newProduct)
+
+        (productListView.adapter as ProductAdapter).notifyDataSetChanged()
 
     }
 }
