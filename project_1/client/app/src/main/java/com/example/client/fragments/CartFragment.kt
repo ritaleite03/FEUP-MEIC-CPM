@@ -10,19 +10,23 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
-import android.widget.Toast
 import com.example.client.R
 import com.example.client.base64ToPublicKey
-import com.example.client.utils.Crypto.RSA_ENC_ALGO
-import com.example.client.utils.byteArrayToHex
+import com.example.client.utils.Crypto
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
+import java.security.Signature
 import java.util.UUID
 import javax.crypto.Cipher
 
-
+/**
+ * Fragment to display the shopping cart, allowing viewing and adding products from a QR Code.
+ *
+ * The cart displays a list of products and has the ability to scan a QR Code to add a new product to the cart.
+ * The QR Code contains encrypted information about the product that will be decoded and added to the list.
+ */
 class CartFragment : Fragment() {
 
     private lateinit var productListView: ListView
@@ -38,10 +42,11 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // configuration of the button to scan QR Code
         val btQR = view.findViewById<Button>(R.id.bottom_button_qr)
-
         btQR.setOnClickListener { scanQRCode() }
 
+        // configuration of the ListView to display the products
         productListView = view.findViewById<ListView>(R.id.lv_items)
         empty = view.findViewById(R.id.empty)
         totalTextView = view.findViewById(R.id.tv_total_value)
@@ -56,6 +61,7 @@ class CartFragment : Fragment() {
         //    totalTextView.text = viewModel.getTotal().toString()
         //}
 
+        // if the product list is empty, display the "empty" message
         productListView.run {
             emptyView = empty
             adapter = ProductAdapter(requireContext(), listProducts){
@@ -67,11 +73,17 @@ class CartFragment : Fragment() {
 
     }
 
+    /**
+     * Sum the price of all products.
+     */
     private fun updateTotal(){
         val totalValue = listProducts.sumOf{ it.euros + (it.cents / 100.0) }
         totalTextView.text = getString(R.string.price_format, totalValue)
     }
 
+    /**
+     * Starts the process of scanning a QR Code.
+     */
     private fun scanQRCode() {
         val options = ScanOptions().apply {
             setDesiredBarcodeFormats(ScanOptions.QR_CODE)
@@ -81,6 +93,9 @@ class CartFragment : Fragment() {
         scanCodeLauncher.launch(options)
     }
 
+    /**
+     * Initializes the scanner launch and processes the QR Code result.
+     */
     private val scanCodeLauncher = registerForActivityResult(ScanContract()) {
         if (it != null && it.contents != null) {
             val result = it.contents
@@ -88,43 +103,72 @@ class CartFragment : Fragment() {
         }
     }
 
-    private fun decodeAndShow(encTag: ByteArray) {
-        var clearTextTag: ByteArray = ByteArray(0)
+    /**
+     * Decodes the encrypted QR Code tag and displays the new product in the list.
+     *
+     * The product is identified using a UUID ID, name and value.
+     * This data is extracted from the encrypted tag and converted back to the original format.
+     *
+     * @param combined Encrypted tag obtained from the QR Code.
+     */
+    private fun decodeAndShow(combined: ByteArray) {
+        var clearTextTag = ByteArray(0)
 
+        val numberBytes = Crypto.RSA_KEY_SIZE / 8
+        val totalSize = numberBytes * 2
+
+        if (combined.size < totalSize) {
+            Log.e("decodeAndShow", "Error")
+            return
+        }
+
+        val encryptedTag = combined.copyOfRange(0, numberBytes)
+        val signature = combined.copyOfRange(numberBytes, numberBytes + numberBytes)
         try {
-            val sharedPreferences =
-                requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
+            val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
             val keyString: String? = sharedPreferences.getString("key", null)
 
             if (keyString != null) {
                 val key = base64ToPublicKey(keyString)
-                clearTextTag = Cipher.getInstance(RSA_ENC_ALGO).run {
+
+                clearTextTag = Cipher.getInstance(Crypto.RSA_ENC_ALGO).run {
                     init(Cipher.DECRYPT_MODE, key)
-                    doFinal(encTag)
+                    doFinal(encryptedTag)
+                }
+
+                val signatureVerifier = Signature.getInstance("SHA256withRSA").run {
+                    initVerify(key)
+                    update(encryptedTag)
+                    verify(signature)
+                }
+
+                if(!signatureVerifier) {
+                    Log.e("decodeAndShow", "Error")
+                    return
                 }
             }
         }
-        catch (e: Exception) {
+        catch (_: Exception) {
             return
         }
 
         val tag = ByteBuffer.wrap(clearTextTag)
-        val tId = tag.int
+        val tagId = tag.int
         val id = UUID(tag.long, tag.long)
+
         val euros = tag.short.toInt()
-
         val cents = tag.get().toInt()
-        val bName = ByteArray(tag.get().toInt())
-        tag[bName]
-        val name = String(bName, StandardCharsets.ISO_8859_1)
 
+        val nameLength = tag.get().toInt()
+        val nameBytes = ByteArray(nameLength)
+        tag.get(nameBytes)
+
+        val name = String(nameBytes, StandardCharsets.ISO_8859_1)
         val newProduct = Product(id, name, euros, cents)
 
         listProducts.add(newProduct)
-
         (productListView.adapter as ProductAdapter).notifyDataSetChanged()
+
         updateTotal()
-
     }
-
 }

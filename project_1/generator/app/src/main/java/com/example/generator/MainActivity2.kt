@@ -16,6 +16,10 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 
+/**
+ * Activity responsible for displaying a QR code generated from encrypted content.
+ * The activity receives data in byte array format, converts it into text, and generates a QR code.
+ */
 class MainActivity2 : AppCompatActivity() {
 
     private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar2) }
@@ -29,41 +33,60 @@ class MainActivity2 : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = dpToPx(-8f))
         setInsetsPadding(tvError, bottom=0)
+
+        // get the encrypted data passed from the previous activity
         val content = intent.getByteArrayExtra("data")!!
         val qrContent = String(content, StandardCharsets.ISO_8859_1)
-        Thread {                         // do the creation in a new thread to avoid ANR Exception
+
+        // create the QR code in a separate thread to avoid ANR (Application Not Responding)
+        Thread {
             try {
                 val bitmap = encodeAsBitmap(qrContent)
-                runOnUiThread {              // runOnUiThread method used to do UI task in main thread
+                runOnUiThread {
                     qrCodeImageview.setImageBitmap(bitmap)
                 }
             } catch (e: Exception) {
+                // display error if something goes wrong
                 tvError.text = e.message
             }
         }.start()
     }
 
+    /**
+     * Converts the given string into a QR code and returns a Bitmap representing the generated QR code.
+     *
+     * @param str The text to be encoded into the QR code.
+     * @return The generated QR code as a Bitmap, or `null` if an error occurs during generation.
+     */
     private fun encodeAsBitmap(str: String): Bitmap? {
+        // define the dimensions of the QR code (1000x1000 pixels)
         val DIMENSION = 1000
 
+        // define encoding parameters, including the character set used
         val hints = Hashtable<EncodeHintType, String>().also {
             it[EncodeHintType.CHARACTER_SET] = "ISO-8859-1"
         }
+
+        // try to generate the QR code from the provided text
         val result = try {
             MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, DIMENSION, DIMENSION, hints)
         } catch (iae: IllegalArgumentException) {
             tvError.text = iae.message
             return null
         }
+
+        // convert the result to a Bitmap
         val w = result.getWidth()
         val h = result.getHeight()
         val pixels = IntArray(w * h)
         for (y in 0 until h) {
             val offset = y * w
             for (x in 0 until w) {
-                pixels[offset + x] = if (result.get(x, y)) Color.BLUE else Color.WHITE
+                pixels[offset + x] = if (result.get(x, y)) Color.BLACK else Color.WHITE
             }
         }
+
+        // create and return the Bitmap
         val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         bitmap.setPixels(pixels, 0, w, 0, 0, w, h)
         return bitmap

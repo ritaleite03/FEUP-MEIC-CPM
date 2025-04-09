@@ -16,13 +16,17 @@ import java.security.KeyStore
 import java.security.KeyStore.PrivateKeyEntry
 
 /**
- * Activity used for login and register (without bottom bar)
+ * Activity used for user login and registration, without the bottom navigation bar.
+ *
+ * This activity manages the authentication and registration flow, displaying the appropriate fragments depending on the user's authentication state.
+ * If the user is already registered, the login fragment will be displayed; otherwise the register fragment will be displayed.
+ * Additionally, the activity handles loading encryption keys from the Android Keystore (for RSA and EC).
  */
 class MainActivity : AppCompatActivity() {
 
     private val toolbar by lazy {findViewById<Toolbar>(R.id.toolbar_main)}
 
-    // keys
+    // Android Keystore EC Key
     private var entryEC: PrivateKeyEntry? = null // getting a keystore entry (with KeyName) lazily
         get() {
             if (field == null) {
@@ -33,7 +37,9 @@ class MainActivity : AppCompatActivity() {
             }
             return field
         }
-    private var entryRSA: PrivateKeyEntry? = null    // getting a keystore entry (with KeyName) lazily
+
+    // Android Keystore RSA Key
+    private var entryRSA: PrivateKeyEntry? = null // getting a keystore entry (with KeyName) lazily
         get() {
             if (field == null) {
                 field = KeyStore.getInstance(Crypto.ANDROID_KEYSTORE).run {
@@ -51,20 +57,26 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = 0)
 
+        // check if the username is already saved in the shared preferences (SharedPreferences)
         val sharedPreferences = getSharedPreferences("MyAppPreferences", MODE_PRIVATE)
         val name = sharedPreferences.getString("name", null)
 
-        // register
+        // if the name is empty, it displays the register fragment
         if (name.isNullOrEmpty()) {
             loadFragment(RegisterFragment())
         }
 
-        // login
+        // if the name is present, it displays the login fragment
         else{
             loadFragment(LoginFragment())
         }
     }
 
+    /**
+     * Method used to load a fragment into the Activity.
+     *
+     * @param fragment fragment to display
+     */
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         supportFragmentManager
@@ -74,10 +86,20 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
+    /**
+     * Returns the EC (Elliptic Curve) key entry from the Android Keystore.
+     *
+     * @return EC key entry, or null if not found.
+     */
     fun fetchEntryEC() : PrivateKeyEntry?{
         return entryEC
     }
 
+    /**
+     * Returns the RSA key entry from the Android Keystore.
+     *
+     * @return RSA key entry, or null if not found.
+     */
     fun fetchEntryRSA() : PrivateKeyEntry?{
         return entryRSA
     }

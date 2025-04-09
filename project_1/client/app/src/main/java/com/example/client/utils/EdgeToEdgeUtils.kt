@@ -15,10 +15,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import kotlin.math.min
 
-/*
- * Function to set/add paddings to a View according to the insets existent on the screen (system + hardware cutouts) »
+/**
+ * Function to set/add paddings to a View according to the insets existent on the screen (system + hardware cutouts).
+ * A negative edge value ignores the correspondent inset side, otherwise it sums the value.
  */
-/* A negative edge value ignores the correspondent inset side, otherwise it sums the value */
 fun setInsetsPadding(vw: View, left: Int = -1, top: Int = -1, right: Int = -1, bottom: Int = -1) {
     ViewCompat.setOnApplyWindowInsetsListener(vw) { v, insets ->
         val totalInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
@@ -30,10 +30,11 @@ fun setInsetsPadding(vw: View, left: Int = -1, top: Int = -1, right: Int = -1, b
         insets
     }
 }
-/*
- * Function to set/add margins to a View according to the insets existent on the screen (system + hardware cutouts) *
+
+/**
+ * Function to set/add margins to a View according to the insets existent on the screen (system + hardware cutouts).
+ * A negative edge value ignores the correspondent inset side, otherwise it sums the value.
  */
-/* A negative edge value ignores the correspondent inset side, otherwise it sums the value */
 fun setInsetsMargin(vw: View, left: Int = -1, top: Int = -1, right: Int = -1, bottom: Int = -1) {
     ViewCompat.setOnApplyWindowInsetsListener(vw) { v, insets ->
         val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
@@ -46,12 +47,11 @@ fun setInsetsMargin(vw: View, left: Int = -1, top: Int = -1, right: Int = -1, bo
     }
 }
 
-/*
- * Functions to set the icons on the Status/Navigation Bars as LIGHT or DARK *
- * Lightness.LIGHT makes the icons with a light color
- * Lightness.DARK makes the icons with a dark color
+/**
+ * Functions to set the icons on the Status/Navigation Bars as LIGHT or DARK.
+ * Lightness.LIGHT makes the icons with a light color.
+ * Lightness.DARK makes the icons with a dark color.
  */
-
 enum class Lightness { LIGHT, DARK }
 
 @Suppress("DEPRECATION")
@@ -100,12 +100,14 @@ fun setNavigationBarIconColor(window: Window, lightness: Lightness) {
     }
 }
 
-/* extension function of class AppCompatActivity to convert dpi's into pixels */
+/**
+ * Extension function of class AppCompatActivity to convert dpi's into pixels.
+ */
 fun AppCompatActivity.dpToPx(dp: Float) = (dp*resources.displayMetrics.density).toInt()
 
-/* Smoothing and modify the motion of a FAB, when inside a CoordinatorLayout
-   Assign this class to the FAB app:layout_behavior attribute in the resource layout file:
-     app:layout_behavior="PATH_TO_CLASS.MoveSnackFABBehavior
+/**
+ * Smoothing and modify the motion of a FAB, when inside a CoordinatorLayout.
+ * Assign this class to the FAB app:layout_behavior attribute in the resource layout file: app:layout_behavior="PATH_TO_CLASS.MoveSnackFABBehavior.
  */
 class MoveSnackFABBehavior(context: Context?, attrs: AttributeSet?) : CoordinatorLayout.Behavior<View>(context, attrs) {
     @SuppressLint("RestrictedApi")
@@ -113,7 +115,9 @@ class MoveSnackFABBehavior(context: Context?, attrs: AttributeSet?) : Coordinato
         return dependency is Snackbar.SnackbarLayout
     }
 
-    /* Discount the snack bar height to remove the FAB inset space */
+    /**
+     * Discount the snack bar height to remove the FAB inset space.
+     */
     override fun onDependentViewChanged(parent: CoordinatorLayout, child: View, dependency: View): Boolean {
         val translationY = min(0f, dependency.translationY - dependency.height)
         if (dependency.translationY != 0f)
@@ -121,7 +125,9 @@ class MoveSnackFABBehavior(context: Context?, attrs: AttributeSet?) : Coordinato
         return true
     }
 
-    /* to smooth the FAB fall */
+    /**
+     * To smooth the FAB fall.
+     */
     override fun onDependentViewRemoved(parent: CoordinatorLayout, child: View, dependency: View) {
         child.animate().translationY(0f).setDuration(200).start()
     }

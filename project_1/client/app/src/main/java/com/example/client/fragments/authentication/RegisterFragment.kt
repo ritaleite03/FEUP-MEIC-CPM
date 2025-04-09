@@ -27,7 +27,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 /**
- * Fragment with the register task logic
+ * Fragment responsible to deal with the register authentication of the user.
  */
 class RegisterFragment : Fragment() {
 
@@ -41,10 +41,11 @@ class RegisterFragment : Fragment() {
 
         button.setOnClickListener{
             lifecycleScope.launch {
+                // show fragment showing the loading progress
                 loadFragment(ProgressFragment())
 
                 try {
-                    // generate keys
+                    // generate EC e RSA keys for save communication
                     generateEC()
                     generateRSA()
 
@@ -52,26 +53,29 @@ class RegisterFragment : Fragment() {
                     val entryEC = activity.fetchEntryEC()
                     val entryRSA = activity.fetchEntryRSA()
 
-                    // public keys
+                    // get public keys for EC and RSA
                     var publicEC = getPublicKey(entryEC)
                     var publicRSA = getPublicKey(entryRSA)
 
+                    // register on the server
                     val result = register(publicEC, publicRSA)
 
-                    // check uuid
+                    // attempts to extract the UUID and key from the server response
                     try {
                         var uuid: String? = JSONObject(result).optString("Uuid", null)
                         var key: String? = JSONObject(result).optString("key", null)
 
+                        // if UUID and key are valid
                         if (uuid != null && key != null) {
 
                             var name  = view.findViewById<TextInputEditText>(R.id.input_name).text.toString()
                             var nick  = view.findViewById<TextInputEditText>(R.id.input_nick).text.toString()
                             var pass  = view.findViewById<TextInputEditText>(R.id.input_pass).text.toString()
 
+                            // checks if all required fields have been filled in
                             if(name != "" && nick != "" && pass != ""){
 
-                                // save information
+                                // saves user information to SharedPreferences
                                 val sharedPreferences =  requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
                                 sharedPreferences.edit {
                                     putString("name", name)
@@ -81,6 +85,7 @@ class RegisterFragment : Fragment() {
                                     putString("key", key)
                                 }
 
+                                // redirect to the next activity and close actual
                                 withContext(Dispatchers.Main) {
                                     val intent = Intent(activity, MainActivity2::class.java)
                                     startActivity(intent)
@@ -89,16 +94,24 @@ class RegisterFragment : Fragment() {
                             }
                         }
                     } catch (_: Exception) {
+                        // if there is an error processing the response, it displays an error fragment
                         loadFragment(ErrorFragment())
                     }
                 }
                 catch (_: Exception){
+                    // if there is an error during registration, it displays an error fragment
                     loadFragment(ErrorFragment())
                 }
             }
         }
     }
 
+    /**
+     * Replaces the current fragment in the container with the given fragment.
+     * Uses childFragmentManager to manage inner fragments.
+     *
+     * @param fragment New fragment to be shown.
+     */
     private fun loadFragment(fragment: Fragment) {
         childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         childFragmentManager
