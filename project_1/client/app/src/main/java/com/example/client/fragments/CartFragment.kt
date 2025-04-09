@@ -41,6 +41,9 @@ class CartFragment : Fragment() {
 
     private lateinit var productListView: ListView
     private lateinit var empty: TextView
+    private lateinit var totalTextView: TextView
+
+    //private val viewModel: CartViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_cart, container, false)
@@ -77,13 +80,36 @@ class CartFragment : Fragment() {
         // configuration of the ListView to display the products
         productListView = view.findViewById<ListView>(R.id.lv_items)
         empty = view.findViewById(R.id.empty)
+        totalTextView = view.findViewById(R.id.tv_total_value)
+
+        //productListView.emptyView = empty
+
+        //viewModel.products.observe(viewLifecycleOwner) { products ->
+        //    productListView.adapter = ProductAdapter(requireContext(), products) { pos ->
+        //        viewModel.removeProductAt(pos)
+        //    }
+        //
+        //    totalTextView.text = viewModel.getTotal().toString()
+        //}
 
         // if the product list is empty, display the "empty" message
         productListView.run {
             emptyView = empty
-            adapter = ProductAdapter(requireContext(), listProducts)
+            adapter = ProductAdapter(requireContext(), listProducts){
+                updateTotal()
+            }
         }
-        registerForContextMenu(productListView)
+        updateTotal()
+        //registerForContextMenu(productListView)
+
+    }
+
+    /**
+     * Sum the price of all products.
+     */
+    private fun updateTotal(){
+        val totalValue = listProducts.sumOf{ it.euros + (it.cents / 100.0) }
+        totalTextView.text = getString(R.string.price_format, totalValue)
     }
 
     /**
@@ -169,12 +195,12 @@ class CartFragment : Fragment() {
         tag.get(nameBytes)
 
         val name = String(nameBytes, StandardCharsets.ISO_8859_1)
-        val value = euros + (cents / 100.0)
-
-        val newProduct = Product(id, name, value)
+        val newProduct = Product(id, name, euros, cents)
 
         listProducts.add(newProduct)
         (productListView.adapter as ProductAdapter).notifyDataSetChanged()
+
+        updateTotal()
     }
 
 
