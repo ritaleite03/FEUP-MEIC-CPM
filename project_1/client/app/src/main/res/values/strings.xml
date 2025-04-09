@@ -42,4 +42,7 @@
     <string name="option_qrcode">QR-Code</string>
     <string name="option_nfc">NFC</string>
     <string name="option_close">Close</string>
+
+    <string name="service_name">List and Key</string>
+    <string name="card_title">Sending Card</string>
 </resources>

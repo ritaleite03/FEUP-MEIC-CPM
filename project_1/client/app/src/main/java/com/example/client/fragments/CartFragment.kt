@@ -191,20 +191,18 @@ class CartFragment : Fragment() {
         updateTotal()
     }
 
-
     private fun generateCheckoutMessage(
         userId: UUID,
-        products: List<Pair<UUID, Short>>, // Pair<productId, priceInCents>
-        voucherId: UUID?,                  // pode ser null
+        products: List<Pair<UUID, Short>>,
+        voucherId: UUID?,
         useDiscount: Boolean
     ): ByteArray? {
         try {
             val limitedProducts = products.take(10)
+            val dataLen = 16 + 1 + limitedProducts.size * (16 + 2) + 1 + if (voucherId != null) 16 else 0
+            val message = ByteArray(dataLen)
 
-            // length of userId (16), number of products (1), for each product its id and price (16 + 2), use of discount (1) and voucherId (16)
-            val len = 16 + 1 + limitedProducts.size * (16 + 2) + 1 + if (voucherId != null) 16 else 0
-
-            val message = ByteBuffer.allocate(len).apply {
+            ByteBuffer.wrap(message, 0, dataLen).apply {
                 putLong(userId.mostSignificantBits)
                 putLong(userId.leastSignificantBits)
                 put(limitedProducts.size.toByte())
@@ -218,7 +216,7 @@ class CartFragment : Fragment() {
                     putLong(it.mostSignificantBits)
                     putLong(it.leastSignificantBits)
                 }
-            }.array()
+            }
 
             val activity = requireActivity() as MainActivity2
             val entry = activity.fetchEntryEC()
@@ -229,16 +227,64 @@ class CartFragment : Fragment() {
                 sign()
             }
 
-            return ByteBuffer.allocate(message.size + signature.size).apply {
-                put(message)
-                put(signature)
-            }.array()
+            val sigLen = signature.size
+            val finalMessage = ByteArray(dataLen + sigLen)
+            System.arraycopy(message, 0, finalMessage, 0, dataLen)
+            System.arraycopy(signature, 0, finalMessage, dataLen, sigLen)
+            return finalMessage
 
         } catch (e: Exception) {
             e.printStackTrace()
             return null
         }
     }
+//    --- WORKS FOR NFC ---
+//    private fun generateCheckoutMessage(
+//        userId: UUID,
+//        products: List<Pair<UUID, Short>>,
+//        voucherId: UUID?,
+//        useDiscount: Boolean
+//    ): ByteArray? {
+//        try {
+//            val limitedProducts = products.take(10) //
+//            val dataLen = 16 + 1 + limitedProducts.size * (16 + 2) + 1 + if (voucherId != null) 16 else 0
+//            val sigLen = 64
+//
+//            val message = ByteArray(dataLen + sigLen)
+//
+//            ByteBuffer.wrap(message, 0, dataLen).apply {
+//                putLong(userId.mostSignificantBits)
+//                putLong(userId.leastSignificantBits)
+//                put(limitedProducts.size.toByte())
+//                for ((id, price) in limitedProducts) {
+//                    putLong(id.mostSignificantBits)
+//                    putLong(id.leastSignificantBits)
+//                    putShort(price)
+//                }
+//                put(if (useDiscount) 1 else 0)
+//                voucherId?.let {
+//                    putLong(it.mostSignificantBits)
+//                    putLong(it.leastSignificantBits)
+//                }
+//            }
+//
+//            val activity = requireActivity() as MainActivity2
+//            val entry = activity.fetchEntryEC()
+//
+//            val signature = Signature.getInstance(Crypto.EC_SIGN_ALGO).run {
+//                initSign(getPrivateKey(entry))
+//                update(message, 0, dataLen)
+//                sign()
+//            }
+//
+//            System.arraycopy(signature, 0, message, dataLen, sigLen) //
+//            return message
+//
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            return null
+//        }
+//    }
 
     private fun openPaymentSelection() {
         val dialogView = layoutInflater.inflate(R.layout.popup_payment, null)

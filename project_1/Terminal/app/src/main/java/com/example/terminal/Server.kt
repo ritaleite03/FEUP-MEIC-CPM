@@ -1,6 +1,7 @@
 package com.example.terminal
 
 import android.util.Base64
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -10,6 +11,7 @@ import java.security.PublicKey
 
 suspend fun pay(message : ByteArray): String {
 
+    Log.d("Test","Entrou em pay")
     val url = URL("http://${Server.IP}:${Server.PORT}${Server.PAY}")
     val messageBase64 = Base64.encodeToString(message, Base64.NO_WRAP)
     val payload = "{\"message\": \"$messageBase64\"}"
@@ -49,6 +51,8 @@ suspend fun pay(message : ByteArray): String {
         } catch (e: Exception) {
             result = e.toString()
         }
+        Log.d("Test","Saiu de pay")
+
         urlConnection?.disconnect()
         result
     }

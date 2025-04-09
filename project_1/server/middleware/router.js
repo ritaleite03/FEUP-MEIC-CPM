@@ -90,31 +90,26 @@ async function pay(ctx) {
     }
 
     try {
-        // Decodifica a message de base64 para Buffer
         const buf = Buffer.from(message, "base64");
-
         let offset = 0;
 
-        // UUID do user (16 bytes)
-        const userId = [
+        let userId = [
             buf.readBigUInt64BE(offset).toString(16).padStart(16, "0"),
             buf
                 .readBigUInt64BE(offset + 8)
                 .toString(16)
                 .padStart(16, "0"),
         ].join("-");
+
         offset += 16;
+        console.log("UserID -", userId);
 
-        console.log(userId.toString());
-
-        // Número de produtos (1 byte)
         const numProducts = buf.readUInt8(offset);
         offset += 1;
+        console.log("Number of Products -", numProducts);
 
-        console.log(numProducts.toString());
-
-        // Produtos: UUID (16 bytes) + preço (2 bytes) por produto
         const products = [];
+        console.log("Products");
         for (let i = 0; i < numProducts; i++) {
             const prodId = [
                 buf.readBigUInt64BE(offset).toString(16).padStart(16, "0"),
@@ -123,47 +118,36 @@ async function pay(ctx) {
                     .toString(16)
                     .padStart(16, "0"),
             ].join("-");
+
             offset += 16;
             const price = buf.readInt16BE(offset);
             offset += 2;
             products.push({ productId: prodId, priceInCents: price });
+            console.log("ProductId and Price -", prodId, price);
         }
 
-        for (let product of products) {
-            console.log(
-                product.productId.toString(),
-                product.priceInCents.toString()
-            );
-        }
-
-        // useDiscount (1 byte)
         const useDiscount = buf.readUInt8(offset) === 1;
         offset += 1;
+        console.log("Discount -", useDiscount);
 
-        console.log(useDiscount.toString());
-
-        // voucherId (opcional, 16 bytes se presente)
+        let voucherId = null;
         if (useDiscount === true) {
-            console.log("1");
-            let voucherId = null;
-            if (buf.length - offset > 64) {
-                // heurística: há 64 bytes de assinatura EC?
-                voucherId = [
-                    buf.readBigUInt64BE(offset).toString(16).padStart(16, "0"),
-                    buf
-                        .readBigUInt64BE(offset + 8)
-                        .toString(16)
-                        .padStart(16, "0"),
-                ].join("-");
-                offset += 16;
-            }
-            console.log(voucherId.toString());
+            voucherId = [
+                buf.readBigUInt64BE(offset).toString(16).padStart(16, "0"),
+                buf
+                    .readBigUInt64BE(offset + 8)
+                    .toString(16)
+                    .padStart(16, "0"),
+            ].join("-");
+            offset += 16;
+            console.log("VoucherId -", voucherId);
         }
 
         const messageParte = buf.slice(0, offset);
+        console.log("messageParte:", messageParte);
 
         const signature = buf.subarray(offset);
-        console.log("2");
+        console.log("signature:", signature);
 
         const verified = await usersDB.verifyMessage(
             userId,
@@ -171,12 +155,16 @@ async function pay(ctx) {
             messageParte
         );
 
-        console.log(verified);
+        console.log("verified:", verified);
 
         if (verified === true) {
             ctx.body = {
                 verified,
             };
+            return;
+        } else {
+            ctx.status = 400;
+            ctx.body = { error: "Invalid signature" };
             return;
         }
     } catch (err) {
@@ -184,7 +172,7 @@ async function pay(ctx) {
         ctx.body = { error: "Failed to parse message", details: err.message };
     }
 
-    ctx.body = { error: "Failed to parse message", details: err.message };
+    ctx.body = { error: "Failed to parse message" };
     return;
 }
 

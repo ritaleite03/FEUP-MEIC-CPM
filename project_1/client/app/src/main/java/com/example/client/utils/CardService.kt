@@ -3,7 +3,9 @@ package com.example.client.utils
 import android.content.Intent
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.client.utils.Crypto.ACTION_CARD_DONE
 
 object Card {
   var contentMessage = ByteArray(0)        /* Card state */
@@ -19,15 +21,17 @@ object Card {
 
 class CardService : HostApduService() {
   override fun processCommandApdu(command: ByteArray, extra: Bundle?): ByteArray {
+    Log.d("CardService", (Card.type != 0 && Card.SELECT_APDU.contentEquals(command)).toString())
+    Log.d("CardService", "Sending: ${(byteArrayOf(Card.type.toByte()) + Card.contentMessage + Card.OK_SW).size}")
     return if (Card.type != 0 && Card.SELECT_APDU.contentEquals(command))
-      byteArrayOf(Card.type.toByte()) + Card.contentMessage + Card.OK_SW // send content in response to SELECT AID
+      byteArrayOf(Card.type.toByte()) + Card.contentMessage + Card.OK_SW    // send content in response to SELECT AID
     else
-      Card.UNKNOWN_CMD_SW // APDU command not recognized
+      Card.UNKNOWN_CMD_SW                                                   // APDU command not recognized
   }
 
-  override fun onDeactivated(cause: Int) { // notify the NFCSendActivity that the Card has finished
+  override fun onDeactivated(cause: Int) {                        // notify the NFCSendActivity that the Card has finished
     val localBroadcastManager = LocalBroadcastManager.getInstance(applicationContext)
-    val broadcastIntent = Intent(Crypto.ACTION_CARD_DONE)
+    val broadcastIntent = Intent(ACTION_CARD_DONE)
     localBroadcastManager.sendBroadcast(broadcastIntent)
   }
 }
