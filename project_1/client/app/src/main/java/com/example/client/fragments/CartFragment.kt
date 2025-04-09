@@ -64,7 +64,7 @@ class CartFragment : Fragment() {
             )
             val uuid = sharedPreferences.getString("uuid", null)
             val products: List<Pair<UUID, Short>> = listProducts.map { product ->
-                product.id to (product.value * 100).toInt().toShort()
+                product.id to (product.euros * 100 + product.cents).toInt().toShort()
             }
 
 

@@ -173,16 +173,19 @@ async function pay(ctx) {
 
         console.log(verified);
 
-        ctx.body = {
-            userId,
-            products,
-            useDiscount,
-            voucherId,
-        };
+        if (verified === true) {
+            ctx.body = {
+                verified,
+            };
+            return;
+        }
     } catch (err) {
         ctx.status = 500;
         ctx.body = { error: "Failed to parse message", details: err.message };
     }
+
+    ctx.body = { error: "Failed to parse message", details: err.message };
+    return;
 }
 
 module.exports = router;
