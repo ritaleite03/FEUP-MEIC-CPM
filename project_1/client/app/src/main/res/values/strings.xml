@@ -34,4 +34,12 @@
     <string name="total_value_default">0,00 €</string>
     <string name="lv_empty_message">Empty list</string>
     <string name="price_format">%.2f €</string>
+
+    <string name="tv_nfc_send">Tap to send</string>
+    <string name="tv_nfc_msg">Tap to send</string>
+
+    <string name="option">Choose an option:</string>
+    <string name="option_qrcode">QR-Code</string>
+    <string name="option_nfc">NFC</string>
+    <string name="option_close">Close</string>
 </resources>

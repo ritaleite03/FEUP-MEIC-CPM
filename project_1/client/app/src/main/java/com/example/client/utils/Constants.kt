@@ -84,4 +84,5 @@ object Crypto {
      * Name used for the RSA key in the keystore.
      */
     const val RSA_NAME = "myRSADemoKey"
+    const val ACTION_CARD_DONE = "CMD_PROCESSING_DONE"
 }

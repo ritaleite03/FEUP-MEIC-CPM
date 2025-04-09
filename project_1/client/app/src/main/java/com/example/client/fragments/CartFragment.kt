@@ -1,5 +1,6 @@
 package com.example.client.fragments
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,10 +12,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity
 import com.example.client.MainActivity2
 import com.example.client.MainActivity3
+import com.example.client.MainActivity4
 import com.example.client.R
 import com.example.client.base64ToPublicKey
 import com.example.client.getPrivateKey
@@ -58,23 +62,7 @@ class CartFragment : Fragment() {
 
         val btEnd = view.findViewById<Button>(R.id.bottom_button_end)
         btEnd.setOnClickListener {
-
-            val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences",
-                Context.MODE_PRIVATE
-            )
-            val uuid = sharedPreferences.getString("uuid", null)
-            val products: List<Pair<UUID, Short>> = listProducts.map { product ->
-                product.id to (product.euros * 100 + product.cents).toInt().toShort()
-            }
-
-
-            if (uuid != null && !products.isEmpty()) {
-
-                var encryptedTag = generateCheckoutMessage(UUID.fromString(uuid), products, null, false)
-                startActivity(Intent(this.requireActivity(), MainActivity3::class.java).apply {
-                    putExtra("data", encryptedTag)
-                })
-            }
+            openPaymentSelection()
         }
 
         // configuration of the ListView to display the products
@@ -252,4 +240,44 @@ class CartFragment : Fragment() {
         }
     }
 
+    private fun openPaymentSelection() {
+        val dialogView = layoutInflater.inflate(R.layout.popup_payment, null)
+
+        val dialog = AlertDialog.Builder(this.requireActivity()).setView(dialogView).create()
+
+        val btnQRC: Button = dialogView.findViewById(R.id.btn_option1)
+        val btnNFC: Button = dialogView.findViewById(R.id.btn_option2)
+        val btnClose: Button = dialogView.findViewById(R.id.btn_close)
+
+        btnQRC.setOnClickListener {
+            dialog.dismiss()
+            redirectPaymentSelection(MainActivity3::class.java)
+        }
+
+        btnNFC.setOnClickListener {
+            redirectPaymentSelection(MainActivity4::class.java)
+            dialog.dismiss()
+        }
+
+        btnClose.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    private fun redirectPaymentSelection(activityType : Class<out Activity>){
+        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences",
+            Context.MODE_PRIVATE
+        )
+        val uuid = sharedPreferences.getString("uuid", null)
+        val products: List<Pair<UUID, Short>> = listProducts.map { product ->
+            product.id to (product.euros * 100 + product.cents).toInt().toShort()
+        }
+        if (uuid != null && !products.isEmpty()) {
+            var encryptedTag = generateCheckoutMessage(UUID.fromString(uuid), products, null, false)
+            startActivity(Intent(this.requireActivity(), activityType).apply {
+                putExtra("data", encryptedTag)
+            })
+        }
+    }
 }

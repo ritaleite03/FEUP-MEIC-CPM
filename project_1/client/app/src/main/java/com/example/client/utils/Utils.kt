@@ -22,6 +22,13 @@ fun byteArrayToHex(ba: ByteArray): String {
     return sb.toString()
 }
 
+fun hexStringToByteArray(s: String): ByteArray {
+    val data = ByteArray(s.length/2)
+    for (k in 0 until s.length/2)
+        data[k] = ((Character.digit(s[2*k], 16) shl 4) + Character.digit(s[2*k+1], 16)).toByte()
+    return data
+}
+
 /**
  * Reads the contents of an InputStream and returns it as a string.
  *
