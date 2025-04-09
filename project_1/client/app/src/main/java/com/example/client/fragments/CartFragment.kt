@@ -1,6 +1,7 @@
 package com.example.client.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,11 +11,20 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
+import com.example.client.MainActivity
+import com.example.client.MainActivity2
+import com.example.client.MainActivity3
 import com.example.client.R
 import com.example.client.base64ToPublicKey
+import com.example.client.getPrivateKey
 import com.example.client.utils.Crypto
+import com.google.android.material.textfield.TextInputEditText
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.security.Signature
@@ -42,6 +52,27 @@ class CartFragment : Fragment() {
         // configuration of the button to scan QR Code
         val btQR = view.findViewById<Button>(R.id.bottom_button_qr)
         btQR.setOnClickListener { scanQRCode() }
+
+        val btEnd = view.findViewById<Button>(R.id.bottom_button_end)
+        btEnd.setOnClickListener {
+
+            val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences",
+                Context.MODE_PRIVATE
+            )
+            val uuid = sharedPreferences.getString("uuid", null)
+            val products: List<Pair<UUID, Short>> = listProducts.map { product ->
+                product.id to (product.value * 100).toInt().toShort()
+            }
+
+
+            if (uuid != null && !products.isEmpty()) {
+
+                var encryptedTag = generateCheckoutMessage(UUID.fromString(uuid), products, null, false)
+                startActivity(Intent(this.requireActivity(), MainActivity3::class.java).apply {
+                    putExtra("data", encryptedTag)
+                })
+            }
+        }
 
         // configuration of the ListView to display the products
         productListView = view.findViewById<ListView>(R.id.lv_items)
@@ -145,4 +176,54 @@ class CartFragment : Fragment() {
         listProducts.add(newProduct)
         (productListView.adapter as ProductAdapter).notifyDataSetChanged()
     }
+
+
+    private fun generateCheckoutMessage(
+        userId: UUID,
+        products: List<Pair<UUID, Short>>, // Pair<productId, priceInCents>
+        voucherId: UUID?,                  // pode ser null
+        useDiscount: Boolean
+    ): ByteArray? {
+        try {
+            val limitedProducts = products.take(10)
+
+            // length of userId (16), number of products (1), for each product its id and price (16 + 2), use of discount (1) and voucherId (16)
+            val len = 16 + 1 + limitedProducts.size * (16 + 2) + 1 + if (voucherId != null) 16 else 0
+
+            val message = ByteBuffer.allocate(len).apply {
+                putLong(userId.mostSignificantBits)
+                putLong(userId.leastSignificantBits)
+                put(limitedProducts.size.toByte())
+                for ((id, price) in limitedProducts) {
+                    putLong(id.mostSignificantBits)
+                    putLong(id.leastSignificantBits)
+                    putShort(price)
+                }
+                put(if (useDiscount) 1 else 0)
+                voucherId?.let {
+                    putLong(it.mostSignificantBits)
+                    putLong(it.leastSignificantBits)
+                }
+            }.array()
+
+            val activity = requireActivity() as MainActivity2
+            val entry = activity.fetchEntryEC()
+
+            val signature = Signature.getInstance(Crypto.EC_SIGN_ALGO).run {
+                initSign(getPrivateKey(entry))
+                update(message)
+                sign()
+            }
+
+            return ByteBuffer.allocate(message.size + signature.size).apply {
+                put(message)
+                put(signature)
+            }.array()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
+    }
+
 }

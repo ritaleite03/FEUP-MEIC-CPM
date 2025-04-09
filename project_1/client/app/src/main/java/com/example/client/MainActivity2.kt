@@ -11,7 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.example.client.utils.Crypto
 import com.example.client.utils.setInsetsPadding
+import java.security.KeyStore
+import java.security.KeyStore.PrivateKeyEntry
 
 /**
  * Activity used for the user's main navigation, with the bottom navigation bar.
@@ -23,6 +26,30 @@ import com.example.client.utils.setInsetsPadding
 class MainActivity2 : AppCompatActivity() {
 
     private val toolbar by lazy {findViewById<Toolbar>(R.id.toolbar2)}
+
+    // Android Keystore EC Key
+    private var entryEC: PrivateKeyEntry? = null // getting a keystore entry (with KeyName) lazily
+        get() {
+            if (field == null) {
+                field = KeyStore.getInstance(Crypto.ANDROID_KEYSTORE).run {
+                    load(null)
+                    getEntry(Crypto.EC_NAME, null) as PrivateKeyEntry
+                }
+            }
+            return field
+        }
+
+    // Android Keystore RSA Key
+    private var entryRSA: PrivateKeyEntry? = null // getting a keystore entry (with KeyName) lazily
+        get() {
+            if (field == null) {
+                field = KeyStore.getInstance(Crypto.ANDROID_KEYSTORE).run {
+                    load(null)
+                    getEntry(Crypto.RSA_NAME, null) as PrivateKeyEntry
+                }
+            }
+            return field
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,5 +95,23 @@ class MainActivity2 : AppCompatActivity() {
             .replace(R.id.container_shopping, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    /**
+     * Returns the EC (Elliptic Curve) key entry from the Android Keystore.
+     *
+     * @return EC key entry, or null if not found.
+     */
+    fun fetchEntryEC() : PrivateKeyEntry?{
+        return entryEC
+    }
+
+    /**
+     * Returns the RSA key entry from the Android Keystore.
+     *
+     * @return RSA key entry, or null if not found.
+     */
+    fun fetchEntryRSA() : PrivateKeyEntry?{
+        return entryRSA
     }
 }

@@ -26,6 +26,7 @@ function loadPublicKey(base64Key) {
         console.log("Database initialized successfully");
         router
             .get("/", rootHello)
+            .post("/pay", pay)
             .post("/key", addKey)
             .post("/users/get", getUser)
             .post("/users/add", addUser);
@@ -76,6 +77,111 @@ async function addUser(ctx) {
             Uuid: uuid,
             key: encodePublicKeyToBase64(supermarketPublicKey),
         };
+    }
+}
+
+async function pay(ctx) {
+    const { message } = ctx.request.body;
+
+    if (!message) {
+        ctx.status = 400;
+        ctx.body = { error: "Message missing" };
+        return;
+    }
+
+    try {
+        // Decodifica a message de base64 para Buffer
+        const buf = Buffer.from(message, "base64");
+
+        let offset = 0;
+
+        // UUID do user (16 bytes)
+        const userId = [
+            buf.readBigUInt64BE(offset).toString(16).padStart(16, "0"),
+            buf
+                .readBigUInt64BE(offset + 8)
+                .toString(16)
+                .padStart(16, "0"),
+        ].join("-");
+        offset += 16;
+
+        console.log(userId.toString());
+
+        // Número de produtos (1 byte)
+        const numProducts = buf.readUInt8(offset);
+        offset += 1;
+
+        console.log(numProducts.toString());
+
+        // Produtos: UUID (16 bytes) + preço (2 bytes) por produto
+        const products = [];
+        for (let i = 0; i < numProducts; i++) {
+            const prodId = [
+                buf.readBigUInt64BE(offset).toString(16).padStart(16, "0"),
+                buf
+                    .readBigUInt64BE(offset + 8)
+                    .toString(16)
+                    .padStart(16, "0"),
+            ].join("-");
+            offset += 16;
+            const price = buf.readInt16BE(offset);
+            offset += 2;
+            products.push({ productId: prodId, priceInCents: price });
+        }
+
+        for (let product of products) {
+            console.log(
+                product.productId.toString(),
+                product.priceInCents.toString()
+            );
+        }
+
+        // useDiscount (1 byte)
+        const useDiscount = buf.readUInt8(offset) === 1;
+        offset += 1;
+
+        console.log(useDiscount.toString());
+
+        // voucherId (opcional, 16 bytes se presente)
+        if (useDiscount === true) {
+            console.log("1");
+            let voucherId = null;
+            if (buf.length - offset > 64) {
+                // heurística: há 64 bytes de assinatura EC?
+                voucherId = [
+                    buf.readBigUInt64BE(offset).toString(16).padStart(16, "0"),
+                    buf
+                        .readBigUInt64BE(offset + 8)
+                        .toString(16)
+                        .padStart(16, "0"),
+                ].join("-");
+                offset += 16;
+            }
+            console.log(voucherId.toString());
+        }
+
+        const messageParte = buf.slice(0, offset);
+
+        const signature = buf.subarray(offset);
+        console.log("2");
+
+        const verified = await usersDB.verifyMessage(
+            userId,
+            signature,
+            messageParte
+        );
+
+        console.log(verified);
+
+        ctx.body = {
+            userId,
+            products,
+            useDiscount,
+            voucherId,
+        };
+    } catch (err) {
+        ctx.status = 500;
+        ctx.body = { error: "Failed to parse message", details: err.message };
     }
 }
 

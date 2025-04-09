@@ -8,7 +8,7 @@ object Server {
     /**
      * IP address of the server.
      */
-    const val IP = "192.168.68.125"
+    const val IP = "10.227.154.156" // "192.168.68.125"
 
     /**
      * Server port.
