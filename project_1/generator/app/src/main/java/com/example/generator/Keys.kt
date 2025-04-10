@@ -2,6 +2,14 @@ package com.example.generator
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import com.example.generator.Crypto.CRYPTO_ANDROID_KEYSTORE
+import com.example.generator.Crypto.CRYPTO_CERT_SERIAL
+import com.example.generator.Crypto.CRYPTO_KEY_ALGO
+import com.example.generator.Crypto.CRYPTO_KEY_SIZE
+import com.example.generator.Crypto.CRYPTO_NAME
+import com.example.generator.Server.SERVER_INFORM
+import com.example.generator.Server.SERVER_IP
+import com.example.generator.Server.SERVER_PORT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
@@ -39,19 +47,19 @@ fun publicKeyToBase64(publicKey: PublicKey?): String {
 fun generateKeys() {
     try {
         val spec = KeyGenParameterSpec.Builder(
-            Crypto.NAME, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT or
+            CRYPTO_NAME, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT or
                     KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY
         )
-            .setKeySize(Crypto.KEY_SIZE)
+            .setKeySize(CRYPTO_KEY_SIZE)
             .setDigests(KeyProperties.DIGEST_NONE, KeyProperties.DIGEST_SHA256)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
             .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
-            .setCertificateSubject(X500Principal("CN=" + Crypto.NAME))           // for the certificate containing the public key
-            .setCertificateSerialNumber(BigInteger.valueOf(Crypto.CERT_SERIAL.toLong()))  // some serial number ...
+            .setCertificateSubject(X500Principal("CN=$CRYPTO_NAME"))
+            .setCertificateSerialNumber(BigInteger.valueOf(CRYPTO_CERT_SERIAL.toLong()))
             .setCertificateNotBefore(GregorianCalendar().time)
             .setCertificateNotAfter(GregorianCalendar().apply { add(Calendar.YEAR, 10) }.time)
             .build()
-        KeyPairGenerator.getInstance(Crypto.KEY_ALGO, Crypto.ANDROID_KEYSTORE).run {
+        KeyPairGenerator.getInstance(CRYPTO_KEY_ALGO, CRYPTO_ANDROID_KEYSTORE).run {
             initialize(spec)
             generateKeyPair()
         }
@@ -72,7 +80,7 @@ fun generateKeys() {
  */
 suspend fun informServer(publicKeyRSA: PublicKey?): String {
     val publicKeyRSAString = publicKeyToBase64(publicKeyRSA)
-    val url = URL("http://${Server.IP}:${Server.PORT}${Server.INFORM}")
+    val url = URL("http://${SERVER_IP}:${SERVER_PORT}${SERVER_INFORM}")
     val payload = "{\"keyRSA\": \"$publicKeyRSAString\"}"
 
     return withContext(Dispatchers.IO) {
@@ -91,7 +99,6 @@ suspend fun informServer(publicKeyRSA: PublicKey?): String {
                     flush()
                     close()
                 }
-                // get response
                 result = if (responseCode == 200)
                     readStream(inputStream)
                 else

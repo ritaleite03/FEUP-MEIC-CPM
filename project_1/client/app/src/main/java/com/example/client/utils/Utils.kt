@@ -22,6 +22,16 @@ fun byteArrayToHex(ba: ByteArray): String {
     return sb.toString()
 }
 
+/**
+ * Converts a hexadecimal string to a byte array.
+ *
+ * This function takes a string representing data in hexadecimal format and converts it back to a byte array.
+ * Each pair of hexadecimal characters (e.g. "1A", "FF") is converted to a corresponding byte.
+ * The string must have an even number of characters.
+ *
+ * @param s Hexadecimal string to convert to a byte array.
+ * @return Byte array equivalent to the given hexadecimal string.
+ */
 fun hexStringToByteArray(s: String): ByteArray {
     val data = ByteArray(s.length/2)
     for (k in 0 until s.length/2)

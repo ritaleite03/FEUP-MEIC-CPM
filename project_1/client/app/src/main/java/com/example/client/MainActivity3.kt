@@ -18,8 +18,12 @@ import java.nio.charset.StandardCharsets
 import java.util.Hashtable
 import kotlin.collections.set
 
-
+/**
+ * This activity handles the QR code scanning.
+ */
 class MainActivity3 : AppCompatActivity() {
+
+    // UI elements
     private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar2) }
     private val qrCodeImageview by lazy { findViewById<ImageView>(R.id.img_qr_code) }
     private val tvError by lazy { findViewById<TextView>(R.id.tv_error) }

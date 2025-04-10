@@ -85,5 +85,4 @@ class LoginFragment : Fragment() {
             .replace(R.id.container_login, fragment)
             .commit()
     }
-
 }

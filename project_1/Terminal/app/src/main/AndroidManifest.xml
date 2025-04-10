@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- <uses-permission android:name="android.permission.NFC" />-->
+    <uses-permission android:name="android.permission.NFC" /> <!-- comment this to use device without NFC -->
 
     <uses-feature android:name="android.hardware.nfc" android:required="false" />
 

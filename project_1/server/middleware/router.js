@@ -6,11 +6,21 @@ const router = new KoaRouter();
 
 let supermarketPublicKey = null;
 
+/**
+ * Converts a crypto public key to a Base64-encoded string in DER format.
+ * @param {crypto.KeyObject} publicKey
+ * @returns {string}
+ */
 function encodePublicKeyToBase64(publicKey) {
     const publicKeyBytes = publicKey.export({ format: "der", type: "spki" });
     return publicKeyBytes.toString("base64");
 }
 
+/**
+ * Loads a public key from a Base64-encoded string in DER format.
+ * @param {string} base64Key
+ * @returns {crypto.KeyObject}
+ */
 function loadPublicKey(base64Key) {
     const buffer = Buffer.from(base64Key, "base64");
     return crypto.createPublicKey({
@@ -20,6 +30,7 @@ function loadPublicKey(base64Key) {
     });
 }
 
+// initialize the database and set up routes
 (async () => {
     try {
         await usersDB.init();
@@ -41,6 +52,9 @@ async function rootHello(ctx) {
     ctx.body = "Welcome to this server root API (test 2nd entry: " + res + ")";
 }
 
+/**
+ * Receives and stores the supermarket's RSA public key.
+ */
 async function addKey(ctx) {
     console.log("in addKey()");
     const { keyRSA } = ctx.request.body;
@@ -59,12 +73,16 @@ async function getUser(ctx) {
     ctx.body = result;
 }
 
+/**
+ * Adds a new user to the database with EC and RSA keys.
+ */
 async function addUser(ctx) {
-    // get keys
+    // load keys to verify they are valid
     const { keyEC, keyRSA } = ctx.request.body;
     ec_public_key = loadPublicKey(keyEC);
     rsa_public_key = loadPublicKey(keyRSA);
 
+    // dave them encoded in Base64
     const [uuid, result] = await usersDB.addNewUser(
         encodePublicKeyToBase64(ec_public_key),
         encodePublicKeyToBase64(rsa_public_key)
@@ -80,6 +98,10 @@ async function addUser(ctx) {
     }
 }
 
+/**
+ * Verifies a signed payment message.
+ * Extracts user ID, products, and signature from the binary message.
+ */
 async function pay(ctx) {
     const { message } = ctx.request.body;
 
@@ -93,6 +115,7 @@ async function pay(ctx) {
         const buf = Buffer.from(message, "base64");
         let offset = 0;
 
+        // read UUID (16 bytes)
         let userId = [
             buf.readBigUInt64BE(offset).toString(16).padStart(16, "0"),
             buf
@@ -104,6 +127,7 @@ async function pay(ctx) {
         offset += 16;
         console.log("UserID -", userId);
 
+        // read product count (1 byte)
         const numProducts = buf.readUInt8(offset);
         offset += 1;
         console.log("Number of Products -", numProducts);
@@ -111,6 +135,7 @@ async function pay(ctx) {
         const products = [];
         console.log("Products");
         for (let i = 0; i < numProducts; i++) {
+            // each product UUID (16 bytes)
             const prodId = [
                 buf.readBigUInt64BE(offset).toString(16).padStart(16, "0"),
                 buf
@@ -120,16 +145,20 @@ async function pay(ctx) {
             ].join("-");
 
             offset += 16;
+
+            // price (2 bytes)
             const price = buf.readInt16BE(offset);
             offset += 2;
             products.push({ productId: prodId, priceInCents: price });
             console.log("ProductId and Price -", prodId, price);
         }
 
+        // discount flag (1 byte)
         const useDiscount = buf.readUInt8(offset) === 1;
         offset += 1;
         console.log("Discount -", useDiscount);
 
+        // voucher UUID if discount is applied (optional)
         let voucherId = null;
         if (useDiscount === true) {
             voucherId = [
@@ -143,19 +172,16 @@ async function pay(ctx) {
             console.log("VoucherId -", voucherId);
         }
 
+        // extract message portion and signature portion
         const messageParte = buf.slice(0, offset);
-        console.log("messageParte:", messageParte);
-
         const signature = buf.subarray(offset);
-        console.log("signature:", signature);
 
         const verified = await usersDB.verifyMessage(
             userId,
             signature,
             messageParte
         );
-
-        console.log("verified:", verified);
+        console.log("Verified:", verified);
 
         if (verified === true) {
             ctx.body = {

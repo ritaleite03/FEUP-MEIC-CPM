@@ -11,7 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.example.client.utils.Crypto
+import com.example.client.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
+import com.example.client.utils.Crypto.CRYPTO_EC_NAME
+import com.example.client.utils.Crypto.CRYPTO_RSA_NAME
 import com.example.client.utils.setInsetsPadding
 import java.security.KeyStore
 import java.security.KeyStore.PrivateKeyEntry
@@ -31,9 +33,9 @@ class MainActivity2 : AppCompatActivity() {
     private var entryEC: PrivateKeyEntry? = null // getting a keystore entry (with KeyName) lazily
         get() {
             if (field == null) {
-                field = KeyStore.getInstance(Crypto.ANDROID_KEYSTORE).run {
+                field = KeyStore.getInstance(CRYPTO_ANDROID_KEYSTORE).run {
                     load(null)
-                    getEntry(Crypto.EC_NAME, null) as PrivateKeyEntry
+                    getEntry(CRYPTO_EC_NAME, null) as PrivateKeyEntry
                 }
             }
             return field
@@ -43,9 +45,9 @@ class MainActivity2 : AppCompatActivity() {
     private var entryRSA: PrivateKeyEntry? = null // getting a keystore entry (with KeyName) lazily
         get() {
             if (field == null) {
-                field = KeyStore.getInstance(Crypto.ANDROID_KEYSTORE).run {
+                field = KeyStore.getInstance(CRYPTO_ANDROID_KEYSTORE).run {
                     load(null)
-                    getEntry(Crypto.RSA_NAME, null) as PrivateKeyEntry
+                    getEntry(CRYPTO_RSA_NAME, null) as PrivateKeyEntry
                 }
             }
             return field

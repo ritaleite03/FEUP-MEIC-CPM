@@ -11,39 +11,30 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.launch
-import java.math.BigInteger
 import java.nio.ByteBuffer
-import java.security.KeyFactory
-import java.security.PublicKey
-import java.security.Signature
-import java.security.spec.RSAPublicKeySpec
 import java.util.UUID
 import android.util.Log
+import com.example.terminal.NFC.READER_FLAGS
 
-private var pubKey: PublicKey? = null         // will hold the public key (as long as the app is in memory)
-private const val keysize = 512               // the public key will come with 512 bits
-const val READER_FLAGS = NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
-
-fun hexStringToByteArray(s: String): ByteArray {
-    val data = ByteArray(s.length/2)
-    for (k in 0 until s.length/2)
-        data[k] = ((Character.digit(s[2*k], 16) shl 4) + Character.digit(s[2*k+1], 16)).toByte()
-    return data
-}
-
+/**
+ * Main activity for handling NFC and QR code scanning.
+ */
 class MainActivity : AppCompatActivity() {
+
+    // UI elements
     private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar) }
     private val tvContent by lazy { findViewById<TextView>(R.id.tv_content) }
     private val btClear by lazy { findViewById<Button>(R.id.bt_clear) }
 
+    // NFC and scanner setup
     private val nfc by lazy { NfcAdapter.getDefaultAdapter(applicationContext) }
     private val nfcReader by lazy { NFCReader(::nfcReceived) }
+
+    // QR code scan result handler
     private val scanCodeLauncher = registerForActivityResult(ScanContract()) {
         if (it != null && it.contents != null) {
             lifecycleScope.launch {
@@ -59,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top=dpToPx(-8f))
         setStatusBarIconColor(window, Lightness.LIGHT)
+
         tvContent.setText(R.string.tv_waiting)
         btClear.setOnClickListener { tvContent.setText(R.string.tv_waiting) }
     }
@@ -68,24 +60,14 @@ class MainActivity : AppCompatActivity() {
 //        nfc.enableReaderMode(this, nfcReader, READER_FLAGS, null)
 //    }
 
+    /**
+     * Enables NFC reader mode when activity is resumed.
+     */
     override fun onResume() {
         super.onResume()
-
         val nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        if (nfcAdapter != null) {
-            val options = Bundle()
-            nfcAdapter.enableReaderMode(
-                this,
-                NFCReader { type, data ->
-                    // trata os dados recebidos
-                },
-                NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
-                options
-            )
-        } else {
-            Log.d("NFC", "Dispositivo sem NFC. Modo NFC não ativado.")
-            // Se quiseres, podes esconder botões ou avisar o utilizador aqui
-        }
+        if (nfcAdapter != null) nfc.enableReaderMode(this, nfcReader, READER_FLAGS, null)
+        else Log.d("NFC", "The device does not have NFC or is not activated.")
     }
 
 
@@ -94,15 +76,14 @@ class MainActivity : AppCompatActivity() {
 //        nfc.disableReaderMode(this)
 //    }
 
+    /**
+     * Disables NFC reader mode when activity is paused.
+     */
     override fun onPause() {
         super.onPause()
-
         val nfcAdapter = NfcAdapter.getDefaultAdapter(this)
-        if (nfcAdapter != null) {
-            nfcAdapter.disableReaderMode(this)
-        } else {
-            Log.d("NFC", "Dispositivo sem NFC. Nada para desativar.")
-        }
+        if (nfcAdapter != null) nfcAdapter.disableReaderMode(this)
+        else Log.d("NFC", "The device does not have NFC (nothing to deactivate).")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -120,23 +101,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Called when NFC data is received.
+     * Triggers message parsing and UI update.
+     */
     private fun nfcReceived(type: Int, content: ByteArray) {
         runOnUiThread {
-            when (type) {
-                1 -> {
-                    lifecycleScope.launch{
-                        showCheckoutMessage(content)
-                    }
-                }
-                2 ->
-                    lifecycleScope.launch{
-                    showCheckoutMessage(content)
-                }
+            lifecycleScope.launch {
+                showCheckoutMessage(content)
             }
         }
+//        runOnUiThread {
+//            when (type) {
+//                1 -> {
+//                    lifecycleScope.launch{
+//                        showCheckoutMessage(content)
+//                    }
+//                }
+//                2 ->
+//                    lifecycleScope.launch{
+//                    showCheckoutMessage(content)
+//                }
+//            }
+//        }
     }
 
-    // reading with a QR code (menu option)
+    /**
+     * Launches QR code scanner.
+     */
     private fun scanOrderQR() {
         val options = ScanOptions().apply {
             setDesiredBarcodeFormats(ScanOptions.QR_CODE)
@@ -146,32 +138,49 @@ class MainActivity : AppCompatActivity() {
         scanCodeLauncher.launch(options)
     }
 
-
-    // when receiving a list (comes with a signature)
+    /**
+     * Parses and displays order information from a byte array.
+     * This function expects a specific binary structure in the `order` parameter, which it decodes in the following format:
+     *
+     * 1. 16 bytes: User ID (UUID - two longs)
+     * 2. 1 byte: Number of products
+     * 3. For each product:
+     *    - 16 bytes: Product ID (UUID - two longs)
+     *    - 2 bytes: Price (in cents, as Short)
+     * 4. 1 byte: Discount flag (0 or 1)
+     * 5. Optional 16 bytes: Voucher ID (UUID) if present
+     * 6. Remaining bytes: Signature (byte array)
+     *
+     * @param order Byte array containing the encoded order data.
+     */
     private suspend fun showCheckoutMessage(order: ByteArray) {
-        Log.d("test", "showCheckoutMessage")
         val sb = StringBuilder()
-
         try {
             val bb: ByteBuffer = ByteBuffer.wrap(order)
 
+            // Parse user ID from two long values
             val userIdMostSigBits = bb.long
             val userIdLeastSigBits = bb.long
-            val userId = UUID(userIdMostSigBits, userIdLeastSigBits)
+            val userId = UUID(userIdMostSigBits, userIdLeastSigBits) // val userId = UUID(bb.long, bb.long)
 
+            // Parse number of products
             val numberOfProducts = bb.get().toInt()
 
+            // Parse each product's data
             val products = mutableListOf<Pair<UUID, Short>>()
-            for (i in 0 until numberOfProducts) {
+            // for (i in 0 until numberOfProducts)
+            (0 until numberOfProducts).forEach { i ->
                 val productIdMostSigBits = bb.long
                 val productIdLeastSigBits = bb.long
+                val productId = UUID(productIdMostSigBits, productIdLeastSigBits) // val productId = UUID(bb.long, bb.long)
                 val price = bb.short
-                val productId = UUID(productIdMostSigBits, productIdLeastSigBits)
                 products.add(Pair(productId, price))
             }
 
+            // Parse discount flag (1 means discount applied)
             val useDiscount = bb.get().toInt() == 1
 
+            // Optionally parse voucher ID if available
             val voucherId: UUID? = if (bb.remaining() >= 16) {
                 val voucherIdMostSigBits = bb.long
                 val voucherIdLeastSigBits = bb.long
@@ -180,26 +189,25 @@ class MainActivity : AppCompatActivity() {
                 null
             }
 
+            // Extract the remaining bytes as the digital signature
             val signature = ByteArray(bb.remaining())
             bb.get(signature)
 
+            // Build the display message
             sb.append("User ID: $userId\n")
             sb.append("Products: \n")
             for (product in products) {
-                sb.append(" - Produto ID: ${product.first}, Preço: ${product.second / 100.0}€\n")
+                sb.append(" - Product ID: ${product.first}, Price: ${product.second / 100.0}€\n")
             }
-            sb.append("Desconto aplicado: $useDiscount\n")
+            sb.append("Discount Applied: $useDiscount\n")
             voucherId?.let { sb.append("Voucher ID: $it\n") }
-
             val result = pay(order)
             sb.append(result)
 
         } catch (ex: Exception) {
-            sb.append("Erro ao processar a mensagem: ${ex.message}")
+            sb.append("Error in message processing: ${ex.message}")
         }
 
-        //val result = pay(order)
-        //sb.append(result)
         tvContent.text = sb.toString()
     }
 

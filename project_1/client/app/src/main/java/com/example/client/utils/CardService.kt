@@ -3,35 +3,40 @@ package com.example.client.utils
 import android.content.Intent
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.example.client.utils.Crypto.ACTION_CARD_DONE
+import com.example.client.utils.NFC.NFC_ACTION_CARD_DONE
 
 object Card {
-  var contentMessage = ByteArray(0)        /* Card state */
+  var contentMessage = ByteArray(0)
   var type = 0
 
-  private const val CARD_AID = "F010203040"         // AID for this applet service.
-  private const val CMD_SEL_AID = "00A40400"        // SmartCard select AID command
+  // AID for this applet service.
+  private const val CARD_AID = "F010203040"
+  // SmartCard select AID command
+  private const val CMD_SEL_AID = "00A40400"
 
-  val SELECT_APDU = hexStringToByteArray(CMD_SEL_AID + String.format("%02X", CARD_AID.length/2) + CARD_AID)  /* SELECT AID command */
-  val OK_SW = hexStringToByteArray("9000")               // "OK" status word (0x9000)
-  val UNKNOWN_CMD_SW = hexStringToByteArray("0000")      // "UNKNOWN" command status word (0X0000)
+  // SELECT AID command
+  val SELECT_APDU = hexStringToByteArray(CMD_SEL_AID + String.format("%02X", CARD_AID.length/2) + CARD_AID)
+  // "OK" status word (0x9000)
+  val OK_SW = hexStringToByteArray("9000")
+  // "UNKNOWN" command status word (0X0000)
+  val UNKNOWN_CMD_SW = hexStringToByteArray("0000")
 }
 
 class CardService : HostApduService() {
   override fun processCommandApdu(command: ByteArray, extra: Bundle?): ByteArray {
-    Log.d("CardService", (Card.type != 0 && Card.SELECT_APDU.contentEquals(command)).toString())
-    Log.d("CardService", "Sending: ${(byteArrayOf(Card.type.toByte()) + Card.contentMessage + Card.OK_SW).size}")
     return if (Card.type != 0 && Card.SELECT_APDU.contentEquals(command))
-      byteArrayOf(Card.type.toByte()) + Card.contentMessage + Card.OK_SW    // send content in response to SELECT AID
+      byteArrayOf(Card.type.toByte()) + Card.contentMessage + Card.OK_SW
     else
-      Card.UNKNOWN_CMD_SW                                                   // APDU command not recognized
+      Card.UNKNOWN_CMD_SW
   }
 
-  override fun onDeactivated(cause: Int) {                        // notify the NFCSendActivity that the Card has finished
+  /**
+   * Notify the NFCSendActivity that the Card has finished.
+   */
+  override fun onDeactivated(cause: Int) {
     val localBroadcastManager = LocalBroadcastManager.getInstance(applicationContext)
-    val broadcastIntent = Intent(ACTION_CARD_DONE)
+    val broadcastIntent = Intent(NFC_ACTION_CARD_DONE)
     localBroadcastManager.sendBroadcast(broadcastIntent)
   }
 }

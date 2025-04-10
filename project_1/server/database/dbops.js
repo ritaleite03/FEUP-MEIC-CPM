@@ -4,6 +4,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
 
+// path to the SQLite database
 const DB_PATH = path.resolve("database/users.db");
 
 class DBOps {
@@ -23,6 +24,11 @@ class DBOps {
         }
     }
 
+    /**
+     * Creates the 'Users' table if it doesn't exist in the database.
+     * The table stores the UUID, EC public key, and RSA public key of users.
+     * @returns {Promise<void>} - Returns a Promise that resolves when the tables are created.
+     */
     async createTables() {
         const sql = `
         CREATE TABLE IF NOT EXISTS Users (
@@ -57,6 +63,12 @@ class DBOps {
         return result;
     }
 
+    /**
+     * Adds a new user to the database with their EC and RSA public keys.
+     * @param {string} keyEC The EC public key encoded in Base64.
+     * @param {string} keyRSA The RSA public key encoded in Base64.
+     * @returns {Promise<[string, Object]>} - Returns the user's UUID and the result of the database operation.
+     */
     async addNewUser(keyEC, keyRSA) {
         let result;
         let uuid;
@@ -73,9 +85,16 @@ class DBOps {
         return [uuid, result];
     }
 
+    /**
+     * Verifies the ECDSA signature of a payment message.
+     * Uses the EC public key stored in the database to verify the signature.
+     * @param {string} userId The UUID of the user making the payment.
+     * @param {Buffer} signature The signature of the message.
+     * @param {Buffer} messageContent The content of the message that was signed.
+     * @returns {Promise<boolean>} Returns 'true' if the signature is valid, 'false' otherwise.
+     */
     async verifyMessage(userId, signature, messageContent) {
-        console.log("In verifyMessage");
-
+        // remove hyphens from the user UUID and format it correctly
         let uuidWithoutHyphen = userId.replace("-", "");
         let formattedUUID = uuidWithoutHyphen.replace(
             /([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/,
@@ -83,18 +102,17 @@ class DBOps {
         );
 
         try {
+            // retrieve the EC public key from the database for the specified user
             const row = await this.db.get(
                 `SELECT KeyEC FROM Users WHERE Uuid = ?`,
                 [formattedUUID]
             );
-
-            if (!row) {
-                throw new Error("Utilizador não encontrado");
-            }
+            if (!row) throw new Error("User not found!");
 
             const publicKeyString = row.KeyEC;
             const buffer = Buffer.from(publicKeyString, "base64");
 
+            // verify the signature using the public key and message content
             const publicKey = crypto.createPublicKey({
                 key: buffer,
                 format: "der",
@@ -110,8 +128,8 @@ class DBOps {
 
             return verified;
         } catch (err) {
-            console.log("Erro na verificação da assinatura:", err);
-            throw new Error("Falha na verificação da assinatura");
+            console.log("Error in signature verification:", err);
+            throw new Error("Error in signature verification");
         }
     }
 }

@@ -22,6 +22,7 @@ import com.google.zxing.MultiFormatWriter
  */
 class MainActivity2 : AppCompatActivity() {
 
+    // UI elements
     private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar2) }
     private val qrCodeImageview by lazy { findViewById<ImageView>(R.id.img_qr_code) }
     private val tvError by lazy { findViewById<TextView>(R.id.tv_error) }

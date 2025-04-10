@@ -3,13 +3,17 @@ package com.example.generator
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
+import com.example.generator.Crypto.CRYPTO_ANDROID_KEYSTORE
+import com.example.generator.Crypto.CRYPTO_ENC_ALGO
+import com.example.generator.Crypto.CRYPTO_NAME
+import com.example.generator.Crypto.CRYPTO_SIGN_ALGO
+import com.example.generator.Crypto.CRYPTO_TAG_ID
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
@@ -37,9 +41,9 @@ class MainActivity : AppCompatActivity() {
     private var entry: KeyStore.PrivateKeyEntry? = null
         get() {
             if (field == null)
-                field = KeyStore.getInstance(Crypto.ANDROID_KEYSTORE).run {
+                field = KeyStore.getInstance(CRYPTO_ANDROID_KEYSTORE).run {
                     load(null)
-                    getEntry(Crypto.NAME, null) as KeyStore.PrivateKeyEntry?
+                    getEntry(CRYPTO_NAME, null) as KeyStore.PrivateKeyEntry?
                 }
             return field
         }
@@ -52,14 +56,8 @@ class MainActivity : AppCompatActivity() {
         setInsetsPadding(toolbar, top = 0)
 
         // generate keys if they don't exist
-        if (entry == null) {
-            Log.d("DEBUG", "if")
-            defineKeys(true)
-        }
-        else {
-            Log.d("DEBUG", "else")
-            defineKeys(false)
-        }
+        if (entry == null) defineKeys(true)
+        else defineKeys(false)
 
         // set up button click listener to capture user input and encrypt data
         button.setOnClickListener {
@@ -109,22 +107,22 @@ class MainActivity : AppCompatActivity() {
         val len = 4 + 16 + 2 + 1 + 1 + subName.length
 
         val tag = ByteBuffer.allocate(len).apply {
-            putInt(Crypto.tagId)
+            putInt(CRYPTO_TAG_ID)
             putLong(uuid.mostSignificantBits)
             putLong(uuid.leastSignificantBits)
             putShort(euro.toShort())
             put(cent.toByte())
             put(subName.length.toByte())
-            put(subName.toByteArray(StandardCharsets.ISO_8859_1)) // 1 byte per char without code translation
+            put(subName.toByteArray(StandardCharsets.ISO_8859_1))
         }
 
         try {
-            var encryptedTag = Cipher.getInstance(Crypto.ENC_ALGO).run {
+            var encryptedTag = Cipher.getInstance(CRYPTO_ENC_ALGO).run {
                 init(Cipher.ENCRYPT_MODE, getPrivateKey(entry))
                 doFinal(tag.array())
             }
 
-            var signature = Signature.getInstance(Crypto.SIGN_ALGO).run {
+            var signature = Signature.getInstance(CRYPTO_SIGN_ALGO).run {
                 initSign(getPrivateKey(entry))
                 update(encryptedTag)
                 sign()

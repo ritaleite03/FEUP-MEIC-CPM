@@ -1,6 +1,8 @@
 package com.example.client
 
-import com.example.client.utils.Server
+import com.example.client.utils.Server.SERVER_IP
+import com.example.client.utils.Server.SERVER_PORT
+import com.example.client.utils.Server.SERVER_REGISTER
 import com.example.client.utils.readStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -55,7 +57,7 @@ suspend fun register(publicEC: PublicKey?, publicRSA: PublicKey?): String {
     val publicStringEC = publicKeyToBase64(publicEC)
     val publicStringRSA = publicKeyToBase64(publicRSA)
 
-    val url = URL("http://${Server.IP}:${Server.PORT}${Server.REGISTER}")
+    val url = URL("http://${SERVER_IP}:${SERVER_PORT}${SERVER_REGISTER}")
     val payload = "{\"keyEC\": \"$publicStringEC\", \"keyRSA\": \"$publicStringRSA\"}"
 
     return withContext(Dispatchers.IO) {

@@ -12,23 +12,19 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.lifecycleScope
-import com.example.client.MainActivity
 import com.example.client.MainActivity2
 import com.example.client.MainActivity3
 import com.example.client.MainActivity4
 import com.example.client.R
 import com.example.client.base64ToPublicKey
 import com.example.client.getPrivateKey
-import com.example.client.utils.Crypto
-import com.google.android.material.textfield.TextInputEditText
+import com.example.client.utils.Crypto.CRYPTO_EC_SIGN_ALGO
+import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
+import com.example.client.utils.Crypto.CRYPTO_RSA_KEY_SIZE
+import com.example.client.utils.Crypto.CRYPTO_RSA_SIGN_ALGO
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.security.Signature
@@ -133,16 +129,14 @@ class CartFragment : Fragment() {
     private fun decodeAndShow(combined: ByteArray) {
         var clearTextTag = ByteArray(0)
 
-        val numberBytes = Crypto.RSA_KEY_SIZE / 8
+        val numberBytes = CRYPTO_RSA_KEY_SIZE / 8
         val totalSize = numberBytes * 2
 
-        if (combined.size < totalSize) {
-            Log.e("decodeAndShow", "Error")
-            return
-        }
+        if (combined.size < totalSize) return
 
         val encryptedTag = combined.copyOfRange(0, numberBytes)
         val signature = combined.copyOfRange(numberBytes, numberBytes + numberBytes)
+
         try {
             val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
             val keyString: String? = sharedPreferences.getString("key", null)
@@ -150,21 +144,18 @@ class CartFragment : Fragment() {
             if (keyString != null) {
                 val key = base64ToPublicKey(keyString)
 
-                clearTextTag = Cipher.getInstance(Crypto.RSA_ENC_ALGO).run {
+                clearTextTag = Cipher.getInstance(CRYPTO_RSA_ENC_ALGO).run {
                     init(Cipher.DECRYPT_MODE, key)
                     doFinal(encryptedTag)
                 }
 
-                val signatureVerifier = Signature.getInstance("SHA256withRSA").run {
+                val signatureVerifier = Signature.getInstance(CRYPTO_RSA_SIGN_ALGO).run {
                     initVerify(key)
                     update(encryptedTag)
                     verify(signature)
                 }
 
-                if(!signatureVerifier) {
-                    Log.e("decodeAndShow", "Error")
-                    return
-                }
+                if(!signatureVerifier) return
             }
         }
         catch (_: Exception) {
@@ -191,6 +182,23 @@ class CartFragment : Fragment() {
         updateTotal()
     }
 
+    /**
+     * Generates a checkout message encoded as a ByteArray for payment processing.
+     *
+     * The generated message includes the following:
+     * - User ID (UUID)
+     * - A list of products, each with an ID (UUID) and price (Short in cents)
+     * - Whether a discount is applied (Boolean)
+     * - An optional voucher ID (UUID)
+     * - A digital signature (to be added later in the process)
+     *
+     * @param userId The UUID representing the user's ID.
+     * @param products A list of pairs, each containing a product's UUID and its price (in cents).
+     * @param voucherId An optional UUID representing the voucher ID (if available).
+     * @param useDiscount A boolean flag indicating whether a discount is applied.
+     *
+     * @return ByteArray representing the generated checkout message. Returns `null` if there is an error during generation.
+     */
     private fun generateCheckoutMessage(
         userId: UUID,
         products: List<Pair<UUID, Short>>,
@@ -221,7 +229,7 @@ class CartFragment : Fragment() {
             val activity = requireActivity() as MainActivity2
             val entry = activity.fetchEntryEC()
 
-            val signature = Signature.getInstance(Crypto.EC_SIGN_ALGO).run {
+            val signature = Signature.getInstance(CRYPTO_EC_SIGN_ALGO).run {
                 initSign(getPrivateKey(entry))
                 update(message)
                 sign()
@@ -238,53 +246,6 @@ class CartFragment : Fragment() {
             return null
         }
     }
-//    --- WORKS FOR NFC ---
-//    private fun generateCheckoutMessage(
-//        userId: UUID,
-//        products: List<Pair<UUID, Short>>,
-//        voucherId: UUID?,
-//        useDiscount: Boolean
-//    ): ByteArray? {
-//        try {
-//            val limitedProducts = products.take(10) //
-//            val dataLen = 16 + 1 + limitedProducts.size * (16 + 2) + 1 + if (voucherId != null) 16 else 0
-//            val sigLen = 64
-//
-//            val message = ByteArray(dataLen + sigLen)
-//
-//            ByteBuffer.wrap(message, 0, dataLen).apply {
-//                putLong(userId.mostSignificantBits)
-//                putLong(userId.leastSignificantBits)
-//                put(limitedProducts.size.toByte())
-//                for ((id, price) in limitedProducts) {
-//                    putLong(id.mostSignificantBits)
-//                    putLong(id.leastSignificantBits)
-//                    putShort(price)
-//                }
-//                put(if (useDiscount) 1 else 0)
-//                voucherId?.let {
-//                    putLong(it.mostSignificantBits)
-//                    putLong(it.leastSignificantBits)
-//                }
-//            }
-//
-//            val activity = requireActivity() as MainActivity2
-//            val entry = activity.fetchEntryEC()
-//
-//            val signature = Signature.getInstance(Crypto.EC_SIGN_ALGO).run {
-//                initSign(getPrivateKey(entry))
-//                update(message, 0, dataLen)
-//                sign()
-//            }
-//
-//            System.arraycopy(signature, 0, message, dataLen, sigLen) //
-//            return message
-//
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            return null
-//        }
-//    }
 
     private fun openPaymentSelection() {
         val dialogView = layoutInflater.inflate(R.layout.popup_payment, null)

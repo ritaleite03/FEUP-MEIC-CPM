@@ -1,21 +1,26 @@
 package com.example.terminal
 
 import android.util.Base64
-import android.util.Log
+import com.example.terminal.Server.SERVER_IP
+import com.example.terminal.Server.SERVER_PAY
+import com.example.terminal.Server.SERVER_PORT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
-import java.security.PublicKey
 
+/**
+ * Sends a payment message to a server for verification and returns the result.
+ *
+ * @param message The payment message as a `ByteArray` to be sent to the server.
+ * @return A string indicating the result of the verification.
+ */
 suspend fun pay(message : ByteArray): String {
 
-    Log.d("Test","Entrou em pay")
-    val url = URL("http://${Server.IP}:${Server.PORT}${Server.PAY}")
+    val url = URL("http://${SERVER_IP}:${SERVER_PORT}${SERVER_PAY}")
     val messageBase64 = Base64.encodeToString(message, Base64.NO_WRAP)
     val payload = "{\"message\": \"$messageBase64\"}"
-    //val payload = "{\"message\": \"$message\"}"
 
     return withContext(Dispatchers.IO) {
         var urlConnection: HttpURLConnection? = null
@@ -42,16 +47,12 @@ suspend fun pay(message : ByteArray): String {
                 val jsonResponse = JSONObject(result)
                 val verified = jsonResponse.getBoolean("verified")
 
-                if (verified) {
-                    result = "A verificação foi bem-sucedida"
-                } else {
-                    result = "A verificação falhou"
-                }
+                if (verified) result = "Success in the verification."
+                else result = "Failure in the verification."
             }
         } catch (e: Exception) {
             result = e.toString()
         }
-        Log.d("Test","Saiu de pay")
 
         urlConnection?.disconnect()
         result
