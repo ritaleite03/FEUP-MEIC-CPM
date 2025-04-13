@@ -38,11 +38,20 @@
     <string name="tv_nfc_send">Tap to send</string>
     <string name="tv_nfc_msg">Tap to send</string>
 
-    <string name="option">Choose an option:</string>
+    <string name="optionDiscount">Select if you want to use your discount:</string>
+
+    <string name="option">Choose the payment option:</string>
     <string name="option_qrcode">QR-Code</string>
     <string name="option_nfc">NFC</string>
     <string name="option_close">Close</string>
 
     <string name="service_name">List and Key</string>
     <string name="card_title">Sending Card</string>
+    <string name="contentDescriptionClose">Close</string>
+
+    <string name="checkout_option_discount">Select if you want to use your discount:</string>
+    <string name="checkout_option_voucher">Select the voucher ypu want to use. Select "None" to not use any:</string>
+    <string name="checkout_option_type_pay">Select the payment type:</string>
+    <string name="checkout_confirm">Checkout</string>
+
 </resources>

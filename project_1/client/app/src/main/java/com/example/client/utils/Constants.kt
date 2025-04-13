@@ -10,6 +10,9 @@ object Server {
     const val SERVER_PORT = "8000"
     /** Path of the user registration route on the server. */
     const val SERVER_REGISTER = "/users/add"
+
+    const val SERVER_CHALLENGE_VOUCHERS = "/challenge/vouchers"
+    const val SERVER_VOUCHERS = "/vouchers"
 }
 
 /**
@@ -42,6 +45,8 @@ object Crypto {
     const val CRYPTO_RSA_ENC_ALGO = "RSA/NONE/PKCS1Padding"
     /** Name used for the RSA key in the keystore. */
     const val CRYPTO_RSA_NAME = "myRSADemoKey"
+    /** Certificate serial number. */
+    const val CRYPTO_CERT_SERIAL = 12121212
 }
 
 /**

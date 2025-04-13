@@ -10,6 +10,7 @@ import com.example.client.utils.Crypto.CRYPTO_RSA_KEY_ALGO
 import com.example.client.utils.Crypto.CRYPTO_RSA_KEY_SIZE
 import com.example.client.utils.Crypto.CRYPTO_RSA_NAME
 import com.example.client.utils.Crypto.CRYPTO_SERIAL_NR
+import com.example.client.utils.Crypto.CRYPTO_CERT_SERIAL
 import java.math.BigInteger
 import java.security.KeyPairGenerator
 import java.security.KeyStore
@@ -66,7 +67,8 @@ fun generateRSA(): Boolean {
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
             .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
             .setCertificateSubject(X500Principal("CN=$CRYPTO_RSA_NAME"))
-            .setCertificateSerialNumber(BigInteger.valueOf(CRYPTO_SERIAL_NR))
+            .setCertificateSerialNumber(BigInteger.valueOf(CRYPTO_CERT_SERIAL.toLong()))
+//            .setCertificateSerialNumber(BigInteger.valueOf(CRYPTO_SERIAL_NR))
             .setCertificateNotBefore(GregorianCalendar().time)
             .setCertificateNotAfter(GregorianCalendar().apply { add(Calendar.YEAR, 10) }.time)
             .build()

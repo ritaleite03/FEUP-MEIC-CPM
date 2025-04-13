@@ -1,10 +1,7 @@
 package com.example.client.fragments
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,14 +9,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import com.example.client.MainActivity2
-import com.example.client.MainActivity3
-import com.example.client.MainActivity4
 import com.example.client.R
 import com.example.client.base64ToPublicKey
-import com.example.client.getPrivateKey
-import com.example.client.utils.Crypto.CRYPTO_EC_SIGN_ALGO
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
 import com.example.client.utils.Crypto.CRYPTO_RSA_KEY_SIZE
 import com.example.client.utils.Crypto.CRYPTO_RSA_SIGN_ALGO
@@ -58,7 +49,7 @@ class CartFragment : Fragment() {
 
         val btEnd = view.findViewById<Button>(R.id.bottom_button_end)
         btEnd.setOnClickListener {
-            openPaymentSelection()
+            openCheckout(this)
         }
 
         // configuration of the ListView to display the products
@@ -180,111 +171,5 @@ class CartFragment : Fragment() {
         (productListView.adapter as ProductAdapter).notifyDataSetChanged()
 
         updateTotal()
-    }
-
-    /**
-     * Generates a checkout message encoded as a ByteArray for payment processing.
-     *
-     * The generated message includes the following:
-     * - User ID (UUID)
-     * - A list of products, each with an ID (UUID) and price (Short in cents)
-     * - Whether a discount is applied (Boolean)
-     * - An optional voucher ID (UUID)
-     * - A digital signature (to be added later in the process)
-     *
-     * @param userId The UUID representing the user's ID.
-     * @param products A list of pairs, each containing a product's UUID and its price (in cents).
-     * @param voucherId An optional UUID representing the voucher ID (if available).
-     * @param useDiscount A boolean flag indicating whether a discount is applied.
-     *
-     * @return ByteArray representing the generated checkout message. Returns `null` if there is an error during generation.
-     */
-    private fun generateCheckoutMessage(
-        userId: UUID,
-        products: List<Pair<UUID, Short>>,
-        voucherId: UUID?,
-        useDiscount: Boolean
-    ): ByteArray? {
-        try {
-            val limitedProducts = products.take(10)
-            val dataLen = 16 + 1 + limitedProducts.size * (16 + 2) + 1 + if (voucherId != null) 16 else 0
-            val message = ByteArray(dataLen)
-
-            ByteBuffer.wrap(message, 0, dataLen).apply {
-                putLong(userId.mostSignificantBits)
-                putLong(userId.leastSignificantBits)
-                put(limitedProducts.size.toByte())
-                for ((id, price) in limitedProducts) {
-                    putLong(id.mostSignificantBits)
-                    putLong(id.leastSignificantBits)
-                    putShort(price)
-                }
-                put(if (useDiscount) 1 else 0)
-                voucherId?.let {
-                    putLong(it.mostSignificantBits)
-                    putLong(it.leastSignificantBits)
-                }
-            }
-
-            val activity = requireActivity() as MainActivity2
-            val entry = activity.fetchEntryEC()
-
-            val signature = Signature.getInstance(CRYPTO_EC_SIGN_ALGO).run {
-                initSign(getPrivateKey(entry))
-                update(message)
-                sign()
-            }
-
-            val sigLen = signature.size
-            val finalMessage = ByteArray(dataLen + sigLen)
-            System.arraycopy(message, 0, finalMessage, 0, dataLen)
-            System.arraycopy(signature, 0, finalMessage, dataLen, sigLen)
-            return finalMessage
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
-    }
-
-    private fun openPaymentSelection() {
-        val dialogView = layoutInflater.inflate(R.layout.popup_payment, null)
-
-        val dialog = AlertDialog.Builder(this.requireActivity()).setView(dialogView).create()
-
-        val btnQRC: Button = dialogView.findViewById(R.id.btn_option1)
-        val btnNFC: Button = dialogView.findViewById(R.id.btn_option2)
-        val btnClose: Button = dialogView.findViewById(R.id.btn_close)
-
-        btnQRC.setOnClickListener {
-            dialog.dismiss()
-            redirectPaymentSelection(MainActivity3::class.java)
-        }
-
-        btnNFC.setOnClickListener {
-            redirectPaymentSelection(MainActivity4::class.java)
-            dialog.dismiss()
-        }
-
-        btnClose.setOnClickListener {
-            dialog.dismiss()
-        }
-        dialog.show()
-    }
-
-    private fun redirectPaymentSelection(activityType : Class<out Activity>){
-        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences",
-            Context.MODE_PRIVATE
-        )
-        val uuid = sharedPreferences.getString("uuid", null)
-        val products: List<Pair<UUID, Short>> = listProducts.map { product ->
-            product.id to (product.euros * 100 + product.cents).toInt().toShort()
-        }
-        if (uuid != null && !products.isEmpty()) {
-            var encryptedTag = generateCheckoutMessage(UUID.fromString(uuid), products, null, false)
-            startActivity(Intent(this.requireActivity(), activityType).apply {
-                putExtra("data", encryptedTag)
-            })
-        }
     }
 }

@@ -1,8 +1,10 @@
 package com.example.client
 
+import com.example.client.utils.Server.SERVER_CHALLENGE_VOUCHERS
 import com.example.client.utils.Server.SERVER_IP
 import com.example.client.utils.Server.SERVER_PORT
 import com.example.client.utils.Server.SERVER_REGISTER
+import com.example.client.utils.Server.SERVER_VOUCHERS
 import com.example.client.utils.readStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,6 +14,8 @@ import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
+import kotlin.uuid.Uuid
+import android.util.Log
 
 /**
  * Converts a public key of type `PublicKey` into a Base64 encoded string.
@@ -43,6 +47,20 @@ fun base64ToPublicKey(base64Key: String): PublicKey? {
     }
 }
 
+suspend fun actionChallengeVouchers(uuid: String) : String {
+    val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_CHALLENGE_VOUCHERS}"
+    val payload = "{\"user\": \"$uuid\"}"
+    return sendMessageServer(url, payload)
+}
+
+suspend fun actionGetVouchers(uuid: String, message : ByteArray) : String {
+    val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_VOUCHERS}"
+    Log.d("Test", message.size.toString())
+    val messageBase64 = android.util.Base64.encodeToString(message, android.util.Base64.NO_WRAP)
+    val payload = "{\"user\": \"$uuid\", \"message\": \"$messageBase64\"}"
+    return sendMessageServer(url, payload)
+}
+
 /**
  * Performs the user registration process on the server.
  *
@@ -57,14 +75,19 @@ suspend fun register(publicEC: PublicKey?, publicRSA: PublicKey?): String {
     val publicStringEC = publicKeyToBase64(publicEC)
     val publicStringRSA = publicKeyToBase64(publicRSA)
 
-    val url = URL("http://${SERVER_IP}:${SERVER_PORT}${SERVER_REGISTER}")
+    val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_REGISTER}"
     val payload = "{\"keyEC\": \"$publicStringEC\", \"keyRSA\": \"$publicStringRSA\"}"
 
+    return sendMessageServer(url, payload)
+}
+
+
+suspend fun sendMessageServer(url: String, payload: String): String {
     return withContext(Dispatchers.IO) {
         var urlConnection: HttpURLConnection? = null
         var result: String
         try {
-            urlConnection = (url.openConnection() as HttpURLConnection).apply {
+            urlConnection = (URL(url).openConnection() as HttpURLConnection).apply {
                 doOutput = true
                 doInput = true
                 requestMethod = "POST"
