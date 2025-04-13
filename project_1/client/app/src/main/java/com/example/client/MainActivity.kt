@@ -2,7 +2,6 @@ package com.example.client
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -66,15 +65,11 @@ class MainActivity : AppCompatActivity() {
 
         // if the name is empty, it displays the register fragment
         if (name.isNullOrEmpty()) {
-            Log.d("Test","register")
             loadFragment(RegisterFragment())
         }
 
         // if the name is present, it displays the login fragment
         else{
-            Log.d("Test","login")
-            Log.d("Test",name)
-
             loadFragment(LoginFragment())
         }
     }

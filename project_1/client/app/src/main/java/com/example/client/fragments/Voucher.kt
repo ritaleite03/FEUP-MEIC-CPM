@@ -9,13 +9,28 @@ import android.widget.TextView
 import com.example.client.R
 import java.util.UUID
 
+/**
+ * Data class representing a voucher.
+ *
+ * @property id Unique identifier of the product.
+ * @property value Value of the voucher (15%).
+ */
 data class Voucher(
     val id: UUID,
     val value: Int
 )
 
+/**
+ * List of the all the vouchers (initially empty).
+ */
 val listVouchers = arrayListOf<Voucher>()
 
+/**
+ * Adapter to bind [Voucher] objects to an [android.widget.ListView].
+ * @param ctx context of the Fragment where the Adapter will be used.
+ * @param listVouchers list of the vouchers that is going to be displayed.
+ * @param function
+ */
 class VoucherAdapter(
     private val ctx: Context,
     private val listVouchers: ArrayList<Voucher>,

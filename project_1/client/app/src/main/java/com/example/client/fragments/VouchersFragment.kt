@@ -7,21 +7,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity2
 import com.example.client.R
 import com.example.client.actionChallengeVouchers
 import com.example.client.actionGetVouchers
+import com.example.client.fragments.feedback.ErrorFragment
 import com.example.client.getPrivateKey
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
 import java.nio.ByteBuffer
 import java.util.UUID
 import javax.crypto.Cipher
 
+/**
+ * Fragment used to show the user's vouchers.
+ */
 class VouchersFragment : Fragment() {
-
 
     private lateinit var vouchersListView: ListView
 
@@ -43,11 +48,20 @@ class VouchersFragment : Fragment() {
 
         lifecycleScope.launch {
 
-            val result1 = JSONObject(actionChallengeVouchers(uuid.toString()))
-            val nonce = UUID.fromString(result1.getString("nonce").toString())
+            var nonce : UUID? = null
+
+            // get nonce challenge
+            try {
+                val result = JSONObject(actionChallengeVouchers(uuid.toString()))
+                nonce = UUID.fromString(result.getString("nonce").toString())
+            } catch (_ : Exception) {
+                loadFragment(ErrorFragment.newInstance("Error - The server was not available. Try again!"))
+                return@launch
+            }
 
             val activity = requireActivity() as MainActivity2
             val entry = activity.fetchEntryRSA()
+
             val buffer = ByteBuffer.allocate(16).apply {
                 putLong(nonce.mostSignificantBits)
                 putLong(nonce.leastSignificantBits)
@@ -57,8 +71,15 @@ class VouchersFragment : Fragment() {
                 doFinal(buffer.array())
             }
 
-            val result2 = JSONObject(actionGetVouchers(uuid.toString(), encrypted))
-            val vouchers = result2.getJSONArray("vouchers")
+            var vouchers : JSONArray? = null
+            try {
+                val result = JSONObject(actionGetVouchers(uuid.toString(), encrypted))
+                vouchers = result.getJSONArray("vouchers")
+
+            } catch (_ : Exception) {
+                loadFragment(ErrorFragment.newInstance("Error - The server was not available. Try again!"))
+                return@launch
+            }
 
             for(i in 0 until vouchers.length()) {
                 val voucherObject = vouchers.getJSONObject(i)
@@ -72,5 +93,19 @@ class VouchersFragment : Fragment() {
             }
             (vouchersListView.adapter as VoucherAdapter).notifyDataSetChanged()
         }
+    }
+
+    /**
+     * Replaces the current fragment in the container with the given fragment.
+     * Uses childFragmentManager to manage inner fragments.
+     *
+     * @param fragment New fragment to be shown.
+     */
+    private fun loadFragment(fragment: Fragment) {
+        childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        childFragmentManager
+            .beginTransaction()
+            .replace(R.id.container_vouchers, fragment)
+            .commit()
     }
 }

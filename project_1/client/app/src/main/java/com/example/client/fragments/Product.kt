@@ -60,9 +60,7 @@ val listProducts = arrayListOf<Product>()
  */
 class ProductAdapter(
     private val ctx: Context,
-
     private val listProducts: ArrayList<Product>,
-
     private val onRemove: (Int) -> Unit
 ):
     ArrayAdapter<Product>(ctx, R.layout.list_item, listProducts) {

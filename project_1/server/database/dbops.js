@@ -71,19 +71,29 @@ class DBOps {
         }
     }
 
+    /**
+     * Checks the existence of an user according with his Id.
+     * @param {*} user Id of the user to be retrieve
+     * @returns Array of size 2 where the first element indicates the success (Boolean) and the second the error if exists
+     */
     async actionGetUser(user) {
+        console.log("---- START Action Get User (db) ----");
+
+        let result;
         try {
             const row = await this.db.get(
                 `SELECT * FROM Users WHERE Uuid = ?`,
                 [user]
             );
-            if (!row) {
-                throw new Error("User not found!");
-            }
-            return [true, null];
+            if (!row) throw new Error("User not found!");
+
+            result = [true, null];
         } catch (error) {
-            return [false, error];
+            result = [false, error];
         }
+
+        console.log("---- END Action Get User (db) ----");
+        return result;
     }
 
     async getUserDiscount(userId) {
@@ -94,7 +104,6 @@ class DBOps {
                 [userId]
             );
             if (!row) {
-                console.log("User not found!");
                 return null;
             }
             return row.Discount;
@@ -121,12 +130,10 @@ class DBOps {
                 `SELECT * FROM Vouchers WHERE UserUuid = ?`,
                 [user]
             );
-            console.log(1);
 
             if (!rows || rows.length === 0) {
                 return [true, []];
             }
-            console.log(1);
 
             let vouchers = [];
             for (const row of rows) {
@@ -171,21 +178,35 @@ class DBOps {
     async actionRegistration(keyEC, keyRSA) {
         let result;
         let uuid;
+        let row = null;
         try {
             uuid = uuidv4();
-            result = await this.db.run(
-                "insert into Users(Uuid, KeyEC, KeyRSA) values(?,?,?)",
+            await this.db.run(
+                `
+                INSERT OR IGNORE INTO Users (Uuid, KeyEC, KeyRSA)
+                VALUES (?, ?, ?)
+            `,
                 [uuid, keyEC, keyRSA]
             );
-            if (result.changes === 0) result.lastID = 0;
-        } catch (err) {
-            result = err;
+
+            row = await this.db.get(
+                `
+                SELECT Uuid FROM Users WHERE KeyEC = ? AND KeyRSA = ?
+            `,
+                [keyEC, keyRSA]
+            );
+            if (result.changes === 0) result = false;
+        } catch (error) {
+            result = false;
         }
-        return [uuid, result];
+        if (row === null) {
+            return [null, false];
+        }
+        return [row.Uuid, true];
     }
 
     async actionPayment(user, voucher, usedDiscount, total, discount) {
-        console.log("\nStart Payment Transaction.");
+        console.log("---- START Payment Transaction (db) ----");
         await this.db.run("BEGIN");
         try {
             // delete voucher if it was used
@@ -209,6 +230,7 @@ class DBOps {
         } catch (error) {
             await this.db.run("ROLLBACK");
             console.log("Failure in payment transaction 1!", error);
+            console.log("---- END Payment Transaction (db) ----");
             return false;
         }
 
@@ -244,11 +266,13 @@ class DBOps {
             }
             await this.db.run("COMMIT");
             console.log("Success in payment transaction 2!");
-            console.log("End Payment Transaction.\n");
+            console.log("End Payment Transaction.");
+            console.log("---- END Payment Transaction (db) ----");
             return true;
         } catch (error) {
             await this.db.run("ROLLBACK");
             console.log("Failure in payment transaction 2!", error);
+            console.log("---- END Payment Transaction (db) ----");
             return false;
         }
     }
@@ -309,63 +333,66 @@ class DBOps {
     }
 
     async verifyNonce(message, user, type) {
-        console.log("\n---- In Verify Nonce----\n");
+        console.log("---- START Verify Nonce (db) ----");
         try {
-            console.log("Getting Public Key.");
-            const row = await this.db.get(
+            // getting public key
+            let row = await this.db.get(
                 `SELECT KeyRSA FROM Users WHERE Uuid = ?`,
                 [user]
             );
+            if (!row) {
+                throw new Error("No match for user according with Uuid!");
+            }
 
-            if (!row) throw new Error("User not found!");
-
-            console.log("Building Public Key.");
-            const publicKeyString = row.KeyRSA;
-            const buffer = Buffer.from(publicKeyString, "base64");
-            const publicKey = crypto.createPublicKey({
-                key: buffer,
+            // building public key
+            const buf = Buffer.from(row.KeyRSA, "base64");
+            const key = crypto.createPublicKey({
+                key: buf,
                 format: "der",
                 type: "spki",
             });
 
-            console.log("Getting Nonce.");
-
-            const row1 = await this.db.get(
+            // getting nonce for type (VOUCHER or TRANSACTION)
+            row = await this.db.get(
                 `SELECT Uuid FROM Nonce WHERE UserUuid = ? AND type = ?`,
                 [user, type]
             );
-            if (!row1) throw new Error("No match");
-            const nonce = row1.Uuid;
+            if (!row) {
+                throw new Error(
+                    "No match for nonce according with UserUuid and type!"
+                );
+            }
 
             console.log("Verifying Nonce.");
 
-            const decrypted = crypto
+            // verifying if nonce is correct
+            let nonce = crypto
                 .publicDecrypt(
                     {
-                        key: publicKey,
+                        key: key,
                         padding: crypto.constants.RSA_PKCS1_PADDING,
                     },
                     Buffer.from(message, "base64")
                 )
                 .toString("hex");
 
-            const decryptedUuid = [
-                decrypted.slice(0, 8),
-                decrypted.slice(8, 12),
-                decrypted.slice(12, 16),
-                decrypted.slice(16, 20),
-                decrypted.slice(20),
+            nonce = [
+                nonce.slice(0, 8),
+                nonce.slice(8, 12),
+                nonce.slice(12, 16),
+                nonce.slice(16, 20),
+                nonce.slice(20),
             ].join("-");
 
-            if (decryptedUuid.toString("hex") !== nonce) {
-                throw new Error("Nonce is incorrect");
+            if (nonce.toString("hex") !== row.Uuid) {
+                throw new Error("Nonce is incorrect!");
             }
 
-            console.log("\n------------------------\n");
+            console.log("---- END Verify Nonce (db) ----");
             return [true, null];
         } catch (error) {
             console.log(error);
-            console.log("\n------------------------\n");
+            console.log("---- END Verify Nonce (db) ----");
             return [false, error];
         }
     }

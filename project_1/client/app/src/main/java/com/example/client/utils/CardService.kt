@@ -7,6 +7,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.client.utils.NFC.NFC_ACTION_CARD_DONE
 
 object Card {
+
   var contentMessage = ByteArray(0)
   var type = 0
 

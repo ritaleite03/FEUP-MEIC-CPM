@@ -3,7 +3,6 @@ package com.example.client.fragments
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Base64
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
@@ -21,11 +20,21 @@ import java.util.UUID
 import androidx.lifecycle.lifecycleScope
 import com.example.client.actionChallengeVouchers
 import com.example.client.actionGetVouchers
+import com.example.client.fragments.feedback.ErrorFragment
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
 import javax.crypto.Cipher
 
+/**
+ * Opens checkout pop up, for the user to select:
+ *      - The use of discount;
+ *      - The use of vouchers;
+ *      - The payment method (QR-Code or NFC)
+ *
+ * @param fragment Fragment of the cart list.
+ */
 fun openCheckout(fragment: CartFragment) {
 
     val sharedPreferences = fragment.requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
@@ -35,11 +44,19 @@ fun openCheckout(fragment: CartFragment) {
 
     fragment.lifecycleScope.launch {
 
-        val result1 = JSONObject(actionChallengeVouchers(uuid.toString()))
-        val nonce = UUID.fromString(result1.getString("nonce").toString())
+        // get nonce challenge
+        var nonce : UUID? = null
+        try {
+            val result = JSONObject(actionChallengeVouchers(uuid.toString()))
+            nonce = UUID.fromString(result.getString("nonce").toString())
+        } catch (_ : Exception) {
+            fragment.loadFragment(ErrorFragment.newInstance("Error - The server was not available. Try again!"))
+            return@launch
+        }
 
         val activity = fragment.requireActivity() as MainActivity2
         val entry = activity.fetchEntryRSA()
+
         val buffer = ByteBuffer.allocate(16).apply {
             putLong(nonce.mostSignificantBits)
             putLong(nonce.leastSignificantBits)
@@ -49,8 +66,15 @@ fun openCheckout(fragment: CartFragment) {
             doFinal(buffer.array())
         }
 
-        val result2 = JSONObject(actionGetVouchers(uuid.toString(), encrypted))
-        val vouchers = result2.getJSONArray("vouchers")
+        var vouchers : JSONArray? = null
+        try {
+            val result = JSONObject(actionGetVouchers(uuid.toString(), encrypted))
+            vouchers = result.getJSONArray("vouchers")
+
+        } catch (_ : Exception) {
+            fragment.loadFragment(ErrorFragment.newInstance("Error - The server was not available. Try again!"))
+            return@launch
+        }
 
         val optionsVoucher = arrayListOf<String>("None")
         for(i in 0 until vouchers.length()) {
@@ -66,19 +90,31 @@ fun openCheckout(fragment: CartFragment) {
         setUpSpinner(fragment, optionsVoucher, spinnerVoucher)
 
         setUpClose(dialogView, dialog)
-        setUpCheckout(dialogView, dialog, fragment, spinnerTypePay, spinnerDiscount, spinnerVoucher)
-
+        setUpCheckout(dialogView, fragment, spinnerTypePay, spinnerDiscount, spinnerVoucher)
         dialog.show()
 
     }
 }
 
+/**
+ * Sets up the spinner with its options.
+ *
+ * @param fragment Fragment of the cart list.
+ * @param options Options available in the spinner.
+ * @param spinner Spinner widget.
+ */
 private fun setUpSpinner(fragment: CartFragment, options: List<String>, spinner: Spinner){
     val adapter = android.widget.ArrayAdapter(fragment.requireContext(), android.R.layout.simple_spinner_item, options)
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
     spinner.adapter = adapter
 }
 
+/**
+ * Sets up the close button.
+ *
+ * @param dialogView
+ * @param dialog
+ */
 private fun setUpClose(dialogView : View, dialog : AlertDialog) {
     val btnClose: ImageButton = dialogView.findViewById(R.id.btn_close)
     btnClose.setOnClickListener {
@@ -86,7 +122,16 @@ private fun setUpClose(dialogView : View, dialog : AlertDialog) {
     }
 }
 
-private fun setUpCheckout(dialogView: View, dialog: AlertDialog, fragment : CartFragment, spinnerTypePay : Spinner, spinnerDiscount : Spinner, spinnerVoucher : Spinner) {
+/**
+ * Sets up the checkout button.
+ *
+ * @param dialogView
+ * @param fragment Fragment of the cart list.
+ * @param spinnerTypePay Spinner with the options of payment.
+ * @param spinnerDiscount Spinner with the options of discount use.
+ * @param spinnerVoucher Spinner with the options of vouchers.
+ */
+private fun setUpCheckout(dialogView: View, fragment : CartFragment, spinnerTypePay : Spinner, spinnerDiscount : Spinner, spinnerVoucher : Spinner) {
     val btnCheckout: Button = dialogView.findViewById(R.id.bt_checkout)
     btnCheckout.setOnClickListener {
 
@@ -112,6 +157,14 @@ private fun setUpCheckout(dialogView: View, dialog: AlertDialog, fragment : Cart
     }
 }
 
+/**
+ * Change the activity according with the payment method
+ *
+ * @param activityType Activity type to change to.
+ * @param fragment Fragment of the cart list.
+ * @param voucherId Id of the voucher selected (can be null).
+ * @param useDiscount Boolean that corresponds to the use of discount.
+ */
 private fun redirectCheckout(activityType : Class<out Activity>, fragment: CartFragment, voucherId: UUID?, useDiscount: Boolean){
     val sharedPreferences = fragment.requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
     val uuid = sharedPreferences.getString("uuid", null)
@@ -131,12 +184,12 @@ private fun redirectCheckout(activityType : Class<out Activity>, fragment: CartF
  * Generates a checkout message encoded as a ByteArray for payment processing.
  *
  * The generated message includes the following:
- * - User ID (UUID)
- * - A list of products, each with an ID (UUID) and price (Short in cents)
- * - Whether a discount is applied (Boolean)
- * - Whether a voucher is applied (Boolean)
- * - An optional voucher ID (UUID)
- * - A digital signature (to be added later in the process)
+ *      - User ID (UUID)
+ *      - A list of products, each with an ID (UUID) and price (Short in cents)
+ *      - Whether a discount is applied (Boolean)
+ *      - Whether a voucher is applied (Boolean)
+ *      - An optional voucher ID (UUID)
+ *      - A digital signature (to be added later in the process)
  *
  * @param userId The UUID representing the user's ID.
  * @param products A list of pairs, each containing a product's UUID and its price (in cents).

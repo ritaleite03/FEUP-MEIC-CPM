@@ -10,8 +10,9 @@ object Server {
     const val SERVER_PORT = "8000"
     /** Path of the user registration route on the server. */
     const val SERVER_REGISTER = "/users/add"
-
+    /** Path of the vouchers' challenge route on the server. */
     const val SERVER_CHALLENGE_VOUCHERS = "/challenge/vouchers"
+    /** Path of the vouchers route on the server. */
     const val SERVER_VOUCHERS = "/vouchers"
 }
 

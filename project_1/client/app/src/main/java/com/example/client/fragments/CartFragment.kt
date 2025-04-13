@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import com.example.client.R
 import com.example.client.base64ToPublicKey
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
@@ -171,5 +172,19 @@ class CartFragment : Fragment() {
         (productListView.adapter as ProductAdapter).notifyDataSetChanged()
 
         updateTotal()
+    }
+
+    /**
+     * Replaces the current fragment in the container with the given fragment.
+     * Uses childFragmentManager to manage inner fragments.
+     *
+     * @param fragment New fragment to be shown.
+     */
+    fun loadFragment(fragment: Fragment) {
+        childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        childFragmentManager
+            .beginTransaction()
+            .replace(R.id.container_cart, fragment)
+            .commit()
     }
 }

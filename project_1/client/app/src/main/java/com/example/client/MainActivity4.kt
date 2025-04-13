@@ -23,12 +23,6 @@ class MainActivity4 : AppCompatActivity() {
             Toast.makeText(this@MainActivity4, "NFC link lost", Toast.LENGTH_LONG).show()
             finish()
         }
-//            override fun onReceive(ctx: Context, intent: Intent) {
-//                Toast.makeText(this@MainActivity4, "NFC link lost", Toast.LENGTH_SHORT).show()
-//                Handler(Looper.getMainLooper()).postDelayed({
-//                    finish()
-//                }, 1000)
-//            }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

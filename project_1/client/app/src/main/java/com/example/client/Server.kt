@@ -14,7 +14,6 @@ import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
-import kotlin.uuid.Uuid
 import android.util.Log
 
 /**
@@ -47,12 +46,24 @@ fun base64ToPublicKey(base64Key: String): PublicKey? {
     }
 }
 
+/**
+ * Performs the request for the challenge (Nonce).
+ * @param uuid Uuid of the user.
+ * @return String containing the server response or an error message.
+ */
 suspend fun actionChallengeVouchers(uuid: String) : String {
     val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_CHALLENGE_VOUCHERS}"
     val payload = "{\"user\": \"$uuid\"}"
     return sendMessageServer(url, payload)
 }
 
+/**
+ * Performs the fetch of the user's vouchers
+ *
+ * @param uuid Uuid of the user.
+ * @param message Encrypted nonce.
+ * @return String containing the server response or an error message.
+ */
 suspend fun actionGetVouchers(uuid: String, message : ByteArray) : String {
     val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_VOUCHERS}"
     Log.d("Test", message.size.toString())
@@ -64,24 +75,32 @@ suspend fun actionGetVouchers(uuid: String, message : ByteArray) : String {
 /**
  * Performs the user registration process on the server.
  *
- * This method makes an HTTP `POST` request to the server to register the user's EC public key and RSA public key.
- * The request is sent in JSON format, containing the keys encoded in Base64.
- *
  * @param publicEC User's EC (Elliptic Curve) public key.
  * @param publicRSA User's RSA public key.
  * @return String containing the server response or an error message.
  */
-suspend fun register(publicEC: PublicKey?, publicRSA: PublicKey?): String {
-    val publicStringEC = publicKeyToBase64(publicEC)
-    val publicStringRSA = publicKeyToBase64(publicRSA)
+suspend fun actionRegistration(publicEC: PublicKey?, publicRSA: PublicKey?): String {
+    try {
+        val publicStringEC = publicKeyToBase64(publicEC)
+        val publicStringRSA = publicKeyToBase64(publicRSA)
 
-    val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_REGISTER}"
-    val payload = "{\"keyEC\": \"$publicStringEC\", \"keyRSA\": \"$publicStringRSA\"}"
+        val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_REGISTER}"
+        val payload = "{\"keyEC\": \"$publicStringEC\", \"keyRSA\": \"$publicStringRSA\"}"
 
-    return sendMessageServer(url, payload)
+        val result = sendMessageServer(url, payload)
+        return result
+    }
+    catch (_: Exception) {
+        return "Error - The server was not available. Try again!"
+    }
 }
 
-
+/**
+ * This method makes an HTTP `POST` request to the server.
+ * @param url Url with the route for the request
+ * @param payload Content of the request
+ * @return String containing the server response or an error message.
+ */
 suspend fun sendMessageServer(url: String, payload: String): String {
     return withContext(Dispatchers.IO) {
         var urlConnection: HttpURLConnection? = null

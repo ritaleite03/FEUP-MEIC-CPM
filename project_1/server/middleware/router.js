@@ -12,7 +12,7 @@ let supermarketPublicKey = null;
  * @param {crypto.KeyObject} publicKey
  * @returns {string}
  */
-function encodePublicKeyToBase64(publicKey) {
+function encodeKeyBase64(publicKey) {
     const publicKeyBytes = publicKey.export({ format: "der", type: "spki" });
     return publicKeyBytes.toString("base64");
 }
@@ -22,7 +22,7 @@ function encodePublicKeyToBase64(publicKey) {
  * @param {string} base64Key
  * @returns {crypto.KeyObject}
  */
-function loadPublicKey(base64Key) {
+function loadKey(base64Key) {
     const buffer = Buffer.from(base64Key, "base64");
     return crypto.createPublicKey({
         key: buffer,
@@ -49,80 +49,77 @@ function loadPublicKey(base64Key) {
 
 /**
  * Receives and stores the supermarket's RSA public key.
+ * @param {*} ctx
  */
 async function actionMarketKey(ctx) {
-    console.log("in addKey()");
+    console.log("\n---- START Action Market Key (router) ----");
     const { keyRSA } = ctx.request.body;
-    supermarketPublicKey = loadPublicKey(keyRSA);
+    supermarketPublicKey = loadKey(keyRSA);
     ctx.body = {};
+    console.log("---- END Action Market Key (router) ----\n");
 }
 
 /**
  * Adds a new user to the database with EC and RSA keys.
+ * @param {*} ctx
  */
 async function actionRegistration(ctx) {
-    console.log("\n---- Action Registration----\n");
+    console.log("\n---- START Action Registration (router) ----");
 
-    console.log("Loading and verifying the keys.");
+    // loading and verifying the keys
     const { keyEC, keyRSA } = ctx.request.body;
-    ec_public_key = loadPublicKey(keyEC);
-    rsa_public_key = loadPublicKey(keyRSA);
+    ec_public_key = loadKey(keyEC);
+    rsa_public_key = loadKey(keyRSA);
 
-    console.log("Perform registration.");
+    // perform registration
     const [uuid, result] = await db.actionRegistration(
-        encodePublicKeyToBase64(ec_public_key),
-        encodePublicKeyToBase64(rsa_public_key)
+        encodeKeyBase64(ec_public_key),
+        encodeKeyBase64(rsa_public_key)
     );
 
     // check if it was a bad request
-    if ("errno" in result || result.lastID === 0) {
-        console.log("Error.");
+    if (result === false) {
         ctx.status = 400;
         ctx.body = {};
     } else {
-        console.log("Success.");
         ctx.body = {
             Uuid: uuid,
-            key: encodePublicKeyToBase64(supermarketPublicKey),
+            key: encodeKeyBase64(supermarketPublicKey),
         };
     }
 
-    console.log("\n----------------------------\n");
+    console.log("---- END Action Registration (router) ----\n");
 }
 
 /**
- * Verifies a signed payment message.
- * Extracts user ID, products, and signature from the binary message.
+ * Verifies the payment message and performs it if everything is right.
+ * @param {*} ctx
  */
 async function actionPayment(ctx) {
-    console.log("\n---- Action Payment ----\n");
-
-    const { message } = ctx.request.body;
-    if (!message) {
-        throw new Error("Message is missing.");
-    }
+    console.log("\n---- START Action Payment (router) ----");
 
     try {
-        console.log("Read payment.");
+        const { message } = ctx.request.body;
+        if (!message) throw new Error("The message is missing!");
         const [user, prods, disc, voucher, part, sign] = readPayment(message);
 
-        console.log("Verifying signature.");
+        // verifying signature
         const verifySign = await db.verifySignature(user, sign, part);
-        if (verifySign === false) {
-            throw new Error("Invalid signature.");
-        }
+        if (verifySign === false) throw new Error("Invalid signature!");
 
-        console.log("Calculating total value to pay.");
+        // calculating total value to pay
         let priceTotal = 0;
         let usedDiscount = 0;
         for (const prod of prods) {
             priceTotal += prod.priceInCents;
         }
+
+        // apply discount if needed
         if (disc === true) {
             const discount = await db.getUserDiscount(user);
-            if (discount === null) {
-                throw new Error("Invalid discount.");
-            }
+            if (discount === null) throw new Error("Invalid discount!");
+
+            // update price according with the discount
             if (priceTotal > discount) {
                 priceTotal -= discount;
                 usedDiscount = discount;
@@ -132,16 +129,15 @@ async function actionPayment(ctx) {
             }
         }
 
-        console.log("Calculating accumulated discount.");
+        // calculating accumulated discount
         let accumulated = 0;
         if (voucher !== null) {
             const verifyVoucher = await db.verifyVoucher(user, voucher);
-            if (verifyVoucher === false) {
-                throw new Error("Invalid voucher.");
-            }
+            if (verifyVoucher === false) throw new Error("Invalid voucher.");
             accumulated = priceTotal * 0.15;
         }
 
+        // perform payment
         const result = await db.actionPayment(
             user,
             voucher,
@@ -163,27 +159,29 @@ async function actionPayment(ctx) {
             details: error.message,
         };
     }
-    console.log("\n------------------------\n");
+
+    console.log("---- END Action Payment (router) ----\n");
 }
 
+/**
+ * Sends a nonce to the user for him to be able to retrieve his vouchers.
+ * Saves it in the database to later retrieve.
+ * @param {*} ctx
+ */
 async function actionChallengeVouchers(ctx) {
-    console.log("\n---- Action Challenge Vouchers ----\n");
+    console.log("\n---- START Action Challenge Vouchers (router) ----");
+
     try {
-        console.log("Checking user.");
+        // checking user
         let { user } = ctx.request.body;
         let [success, result] = await db.actionGetUser(user);
 
         if (success === true) {
-            console.log("Perform adding of nonce.");
+            // perform adding of nonce
             [success, result] = await db.actionAddNonce(user, "VOUCHER");
-            if (success === true) {
-                ctx.body = { nonce: result };
-            } else {
-                console.log("Failure in perform adding of nonce.");
-                throw new Error(result);
-            }
+            if (success === true) ctx.body = { nonce: result };
+            else throw new Error(result);
         } else {
-            console.log("Failure in checking user.");
             throw new Error(result);
         }
     } catch (error) {
@@ -191,17 +189,25 @@ async function actionChallengeVouchers(ctx) {
         ctx.status = 400;
         ctx.body = {};
     }
-    console.log("\n-----------------------------------\n");
+
+    console.log("---- END Action Challenge Vouchers (router) ----\n");
 }
 
 async function actionChallengeTransaction(ctx) {
     // TODO
 }
 
+/**
+ *
+ * @param {*} ctx
+ */
 async function actionGetVouchers(ctx) {
+    console.log("\n---- START Action Get Vouchers (router) ----");
+
     try {
         let { user, message } = ctx.request.body;
         const [success, result] = await db.actionGetVouchers(user, message);
+
         if (success === false) {
             ctx.body = { error: result };
         } else {
@@ -213,10 +219,22 @@ async function actionGetVouchers(ctx) {
         console.log("Get Vouchers - ", error);
         ctx.status = 400;
         ctx.body = { error: error };
-        return;
     }
+
+    console.log("---- END Action Get Vouchers (router) ----\n");
 }
 
+/**
+ * Reads the payment message and extracts its components without verifying nothing.
+ * @param {*} message Message with the payment information
+ * @returns Array in the formar [user, products, discount, voucher, part, sign], where
+ *      - user - id of the user that is paying
+ *      - products - array with objects that represent a product ({id,price})
+ *      - discount - true if discount is used and false otherwise
+ *      - voucher - id of the voucher to be used, null otherwise
+ *      - part - part of the message not including the signature
+ *      - sign - signature of the user
+ */
 function readPayment(message) {
     const buf = Buffer.from(message, "base64");
     let offset = 0;
@@ -288,6 +306,11 @@ function readPayment(message) {
     return [user, products, discount, voucher, part, sign];
 }
 
+/**
+ * Converts a string to the UUID format
+ * @param {String} str
+ * @returns
+ */
 function formatStringToUUID(str) {
     return str
         .replace("-", "")

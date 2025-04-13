@@ -17,9 +17,10 @@ import com.google.zxing.MultiFormatWriter
 import java.nio.charset.StandardCharsets
 import java.util.Hashtable
 import kotlin.collections.set
+import androidx.core.graphics.createBitmap
 
 /**
- * This activity handles the QR code scanning.
+ * Activity that handles the QR code scanning.
  */
 class MainActivity3 : AppCompatActivity() {
 
@@ -62,7 +63,7 @@ class MainActivity3 : AppCompatActivity() {
      */
     private fun encodeAsBitmap(str: String): Bitmap? {
         // define the dimensions of the QR code (1000x1000 pixels)
-        val DIMENSION = 1000
+        val dimension = 1000
 
         // define encoding parameters, including the character set used
         val hints = Hashtable<EncodeHintType, String>().also {
@@ -71,15 +72,15 @@ class MainActivity3 : AppCompatActivity() {
 
         // try to generate the QR code from the provided text
         val result = try {
-            MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, DIMENSION, DIMENSION, hints)
+            MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, dimension, dimension, hints)
         } catch (iae: IllegalArgumentException) {
             tvError.text = iae.message
             return null
         }
 
         // convert the result to a Bitmap
-        val w = result.getWidth()
-        val h = result.getHeight()
+        val w = result.width
+        val h = result.height
         val pixels = IntArray(w * h)
         for (y in 0 until h) {
             val offset = y * w
@@ -89,7 +90,7 @@ class MainActivity3 : AppCompatActivity() {
         }
 
         // create and return the Bitmap
-        val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(w, h)
         bitmap.setPixels(pixels, 0, w, 0, 0, w, h)
         return bitmap
     }

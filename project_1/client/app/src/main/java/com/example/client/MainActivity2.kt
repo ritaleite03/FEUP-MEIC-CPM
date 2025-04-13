@@ -70,7 +70,8 @@ class MainActivity2 : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-                R.id.action_profile -> { loadFragment(VouchersFragment())
+            R.id.action_profile -> {
+                Toast.makeText(this, "action_profile", Toast.LENGTH_SHORT).show()
                 true
             }
             R.id.action_transactions -> {
@@ -78,7 +79,7 @@ class MainActivity2 : AppCompatActivity() {
                 true
             }
             R.id.action_vouchers -> {
-                Toast.makeText(this, "action_vouchers", Toast.LENGTH_SHORT).show()
+                loadFragment(VouchersFragment())
                 true
             }
             else -> super.onOptionsItemSelected(item)

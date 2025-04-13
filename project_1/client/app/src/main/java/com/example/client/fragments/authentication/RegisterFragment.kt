@@ -14,17 +14,18 @@ import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity
 import com.example.client.MainActivity2
 import com.example.client.R
+import com.example.client.actionRegistration
 import com.example.client.fragments.feedback.ErrorFragment
 import com.example.client.fragments.feedback.ProgressFragment
 import com.example.client.generateEC
 import com.example.client.generateRSA
 import com.example.client.getPublicKey
-import com.example.client.register
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.security.PublicKey
 
 /**
  * Fragment responsible to deal with the register authentication of the user.
@@ -44,8 +45,31 @@ class RegisterFragment : Fragment() {
                 // show fragment showing the loading progress
                 loadFragment(ProgressFragment())
 
+                var publicEC : PublicKey? = null
+                var publicRSA : PublicKey? = null
+
+                // check user input
+                var name = view.findViewById<TextInputEditText>(R.id.input_name).text.toString()
+                var nick = view.findViewById<TextInputEditText>(R.id.input_nick).text.toString()
+                var pass = view.findViewById<TextInputEditText>(R.id.input_pass).text.toString()
+
+                if (name == "") {
+                    loadFragment(ErrorFragment.newInstance("Error - At least the input \"Name\" is missing. Please fill all the inputs!"))
+                    return@launch
+                }
+
+                if (nick == "") {
+                    loadFragment(ErrorFragment.newInstance("Error - At least the input \"Nickname\" is missing. Please fill all the inputs!"))
+                    return@launch
+                }
+
+                if (pass == "") {
+                    loadFragment(ErrorFragment.newInstance("Error - The input \"Password\" is missing. Please fill all the inputs!"))
+                    return@launch
+                }
+
+                // generate EC e RSA keys
                 try {
-                    // generate EC e RSA keys for save communication
                     generateEC()
                     generateRSA()
 
@@ -53,54 +77,60 @@ class RegisterFragment : Fragment() {
                     val entryEC = activity.fetchEntryEC()
                     val entryRSA = activity.fetchEntryRSA()
 
-                    // get public keys for EC and RSA
-                    var publicEC = getPublicKey(entryEC)
-                    var publicRSA = getPublicKey(entryRSA)
+                    publicEC = getPublicKey(entryEC)
+                    publicRSA = getPublicKey(entryRSA)
 
-                    // register on the server
-                    val result = register(publicEC, publicRSA)
+                    if(publicEC == null || publicRSA == null) {
+                        throw Exception("Error")
+                    }
+                }
+                catch(_: Exception) {
+                    loadFragment(ErrorFragment.newInstance("Error - A problem occur when generating your keys. Try again!"))
+                    return@launch
+                }
 
-                    // attempts to extract the UUID and key from the server response
-                    try {
-                        var uuid: String? = JSONObject(result).optString("Uuid", null)
-                        var key: String? = JSONObject(result).optString("key", null)
+                // perform registration on the server
+                var result : String? = null
+                try {
+                    result = actionRegistration(publicEC, publicRSA)
+                    if(result.startsWith("Error")) {
+                        loadFragment(ErrorFragment.newInstance(result))
+                        return@launch
+                    }
+                }
+                catch (_: Exception) {
+                    loadFragment(ErrorFragment.newInstance("Error - The server was not available. Try again!"))
+                    return@launch
+                }
 
-                        // if UUID and key are valid
-                        if (uuid != null && key != null) {
+                // save credentials
+                try {
+                    var uuid: String? = JSONObject(result).optString("Uuid", null)
+                    var key: String? = JSONObject(result).optString("key", null)
 
-                            var name  = view.findViewById<TextInputEditText>(R.id.input_name).text.toString()
-                            var nick  = view.findViewById<TextInputEditText>(R.id.input_nick).text.toString()
-                            var pass  = view.findViewById<TextInputEditText>(R.id.input_pass).text.toString()
+                    if (uuid != null && key != null) {
 
-                            // checks if all required fields have been filled in
-                            if(name != "" && nick != "" && pass != ""){
-
-                                // saves user information to SharedPreferences
-                                val sharedPreferences =  requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-                                sharedPreferences.edit {
-                                    putString("name", name)
-                                    putString("nick", nick)
-                                    putString("pass", pass)
-                                    putString("uuid", uuid)
-                                    putString("key", key)
-                                }
-
-                                // redirect to the next activity and close actual
-                                withContext(Dispatchers.Main) {
-                                    val intent = Intent(activity, MainActivity2::class.java)
-                                    startActivity(intent)
-                                    activity.finish()
-                                }
-                            }
+                        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
+                        sharedPreferences.edit {
+                            putString("name", name)
+                            putString("nick", nick)
+                            putString("pass", pass)
+                            putString("uuid", uuid)
+                            putString("key", key)
                         }
-                    } catch (_: Exception) {
-                        // if there is an error processing the response, it displays an error fragment
-                        loadFragment(ErrorFragment())
+
+                        // redirect to the next activity and close actual
+                        withContext(Dispatchers.Main) {
+                            val intent = Intent(activity, MainActivity2::class.java)
+                            startActivity(intent)
+                            activity?.finish()
+
+                        }
                     }
                 }
                 catch (_: Exception){
-                    // if there is an error during registration, it displays an error fragment
-                    loadFragment(ErrorFragment())
+                    loadFragment(ErrorFragment.newInstance("Error - A problem occur when saving the credentials. Try again!"))
+                    return@launch
                 }
             }
         }

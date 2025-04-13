@@ -5,8 +5,17 @@
     android:layout_height="match_parent"
     tools:context=".fragments.VouchersFragment">
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/container_vouchers"
+        android:name="com.example.client.fragments.feedback.BlankFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="5sp"
+        android:layout_marginVertical="5sp" />
+
     <ListView
         android:id="@+id/lv_voucher"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 </FrameLayout>
