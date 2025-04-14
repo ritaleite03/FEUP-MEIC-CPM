@@ -52,8 +52,9 @@ class DBOps {
             CREATE TABLE IF NOT EXISTS Nonce (
             Uuid UUID,
             UserUuid UUID,
-            Type TEXT NOT NULL,
-            PRIMARY KEY (Uuid, UserUuid, Type),
+            Timestamp INTEGER,
+            Type TEXT,
+            PRIMARY KEY (Uuid, UserUuid),
             FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
         );
         `;
@@ -148,22 +149,16 @@ class DBOps {
 
     async actionAddNonce(user, type) {
         try {
+            const timestamp = Date.now();
             const uuid = uuidv4();
             await this.db.run(
                 `
-                INSERT OR IGNORE INTO Nonce (UserUuid, Uuid, Type)
-                VALUES (?, ?, ?)
+                INSERT OR IGNORE INTO Nonce (UserUuid, Uuid, Timestamp, Type)
+                VALUES (?, ?, ?, ?)
             `,
-                [user, uuid, type]
+                [user, uuid, timestamp, type]
             );
-
-            const row = await this.db.get(
-                `
-                SELECT Uuid FROM Nonce WHERE UserUuid = ? AND Type = ?
-            `,
-                [user, type]
-            );
-            return [true, row.Uuid];
+            return [true, uuid];
         } catch (error) {
             return [false, error];
         }
@@ -352,14 +347,15 @@ class DBOps {
                 type: "spki",
             });
 
-            // getting nonce for type (VOUCHER or TRANSACTION)
-            row = await this.db.get(
-                `SELECT Uuid FROM Nonce WHERE UserUuid = ? AND type = ?`,
-                [user, type]
+            // getting nonce
+            const limit = Date.now() - 2 * 60 * 1000;
+            let rows = await this.db.all(
+                `SELECT Uuid FROM Nonce WHERE UserUuid = ? AND Type = ? AND Timestamp >= ?`,
+                [user, type, limit]
             );
-            if (!row) {
+            if (!rows || rows.length === 0) {
                 throw new Error(
-                    "No match for nonce according with UserUuid and type!"
+                    "No match for nonce according with UserUuid, type and timestamp!"
                 );
             }
 
@@ -384,7 +380,15 @@ class DBOps {
                 nonce.slice(20),
             ].join("-");
 
-            if (nonce.toString("hex") !== row.Uuid) {
+            let correctNonce = false
+            for (const row of rows) {
+                if (nonce.toString("hex") === row.Uuid) {
+                    correctNonce = true;
+                    await this.db.run(`DELETE FROM Nonce WHERE Uuid = ? AND UserUuid = ? AND Type = ?`, [row.Uuid, user, type]);
+                    break;
+                }
+            }
+            if (correctNonce === false) {
                 throw new Error("Nonce is incorrect!");
             }
 
@@ -396,6 +400,17 @@ class DBOps {
             return [false, error];
         }
     }
+
+    // Removes expired nonces
+    async removeExpiredNonces() {
+        const limit = Date.now() - 2 * 60 * 1000;
+        const result = await this.db.run(
+          `DELETE FROM Nonce WHERE Timestamp < ?`,
+          [limit]
+        );
+        console.log(`🧹 ${result.changes} expired nonces removed.`);
+    }
+  
 }
 
 module.exports = new DBOps();

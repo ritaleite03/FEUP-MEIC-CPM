@@ -35,6 +35,7 @@ function loadKey(base64Key) {
 (async () => {
     try {
         await db.init();
+        await startAutoCleanup()
         router
             .post("/key", actionMarketKey)
             .post("/users/add", actionRegistration)
@@ -318,6 +319,16 @@ function formatStringToUUID(str) {
             /([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/,
             "$1-$2-$3-$4-$5"
         );
+}
+
+/**
+ * Starts automatic cleanup loop
+ * @param {Integer} intervalMs - interval in milliseconds for the cleanup loop
+ */
+async function startAutoCleanup(intervalMs = 60 * 1000) {
+    setInterval(() => {
+        db.removeExpiredNonces().catch(console.error);
+    }, intervalMs);
 }
 
 module.exports = router;
