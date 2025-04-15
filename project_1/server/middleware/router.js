@@ -195,7 +195,28 @@ async function actionChallengeVouchers(ctx) {
 }
 
 async function actionChallengeTransaction(ctx) {
-    // TODO
+    console.log("\n---- START Action Challenge Transaction (router) ----");
+
+    try {
+
+        let { user } = ctx.request.body;
+        let [success, result] = await db.actionGetUser(user);
+
+        if (success === true) {
+            [success, result] = await db.actionAddNonce(user, "TRANSACTION");
+            if (success === true) ctx.body = {nonce: result};
+            else throw new Error(result);
+        }
+        else {
+            throw new Error(result);
+        }
+    } catch (error) {
+        console.log(error);
+        ctx.status = 400;
+        ctx.body = {};
+    }
+
+    console.log("\n---- END Action Challenge Vouchers (router) ----");
 }
 
 /**

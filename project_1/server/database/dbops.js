@@ -58,9 +58,19 @@ class DBOps {
             FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
         );
         `;
+            const tableTransactions = `
+            CREATE TABLE IF NOT EXISTS Transactions(
+            Uuid UUID,
+            Price REAL,
+            UserUuid UUID,
+            PRIMARY KEY (Uuid, UserUuid),
+            FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
+            );  
+        `;
             await this.db.run(tableUser);
             await this.db.run(tableVoucher);
             await this.db.run(tableNonce);
+            await this.db.run(tableTransactions);
             console.log("Success in the database initialization!");
 
             const check = await this.db.all(
@@ -176,7 +186,7 @@ class DBOps {
         let row = null;
         try {
             uuid = uuidv4();
-            await this.db.run(
+            result = await this.db.run(
                 `
                 INSERT OR IGNORE INTO Users (Uuid, KeyEC, KeyRSA)
                 VALUES (?, ?, ?)
@@ -261,14 +271,41 @@ class DBOps {
             }
             await this.db.run("COMMIT");
             console.log("Success in payment transaction 2!");
-            console.log("End Payment Transaction.");
             console.log("---- END Payment Transaction (db) ----");
-            return true;
         } catch (error) {
             await this.db.run("ROLLBACK");
             console.log("Failure in payment transaction 2!", error);
             console.log("---- END Payment Transaction (db) ----");
             return false;
+        }
+
+        await this.db.run("BEGIN");
+        try {
+            const uuid = uuidv4();
+            await this.db.run(
+                `
+                INSERT INTO Transactions (Uuid, Price, UserUuid)
+                VALUES (?, ?, ?)
+                `,
+                [uuid, total, user]
+            );
+            await this.db.run("COMMIT");
+            console.log("Success in payment transaction 3!");
+            const rows = await this.db.run(
+                `SELECT * FROM Transactions WHERE UserUuid = ?`,
+                [user]
+            );
+
+            console.log("aqui:", rows);
+            return true;
+        }
+        catch (error) {
+            await this.db.run("ROLLBACK");
+            console.log("Failure in payment transaction 3!", error);
+            return false;
+        }
+        finally {
+            console.log("---- END Payment Transaction (db) ----");
         }
     }
 
