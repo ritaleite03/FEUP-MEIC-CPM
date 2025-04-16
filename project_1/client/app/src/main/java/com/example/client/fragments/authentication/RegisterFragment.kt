@@ -1,5 +1,6 @@
 package com.example.client.fragments.authentication
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -26,6 +29,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.security.PublicKey
+import java.text.SimpleDateFormat
+import java.util.Date
+import android.util.Log
 
 /**
  * Fragment responsible to deal with the register authentication of the user.
@@ -38,6 +44,7 @@ class RegisterFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_register, container, false)
     }
 
+    @SuppressLint("SimpleDateFormat")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var button  = view.findViewById<Button>(R.id.button)
@@ -55,6 +62,9 @@ class RegisterFragment : Fragment() {
                 var nick = view.findViewById<TextInputEditText>(R.id.input_nick).text.toString()
                 var pass = view.findViewById<TextInputEditText>(R.id.input_pass).text.toString()
 
+                var cardNumber = view.findViewById<TextInputEditText>(R.id.input_card_number).text.toString()
+                var cardDate = view.findViewById<TextInputEditText>(R.id.input_card_date).text.toString()
+
                 if (name == "") {
                     loadFragment(ErrorFragment.newInstance("Error - At least the input \"Name\" is missing. Please fill all the inputs!"))
                     return@launch
@@ -67,6 +77,44 @@ class RegisterFragment : Fragment() {
 
                 if (pass == "") {
                     loadFragment(ErrorFragment.newInstance("Error - The input \"Password\" is missing. Please fill all the inputs!"))
+                    return@launch
+                }
+
+                if (cardNumber == "") {
+                    loadFragment(ErrorFragment.newInstance("Error - At least the card number is missing. Please fill all the inputs!"))
+                    return@launch
+                }
+
+                if (cardDate == ""){
+                    loadFragment(ErrorFragment.newInstance("Error - At least the card expiration date is missing. Please fill all the inputs!"))
+                    return@launch
+                }
+
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+                dateFormat.isLenient = false
+
+                var cardDateValid : String? = null
+
+                try {
+                    var cardDateValidTemp = dateFormat.parse(cardDate)
+                    cardDateValid = dateFormat.format(cardDateValidTemp)
+                    Log.d("TEST",cardDateValid)
+                }
+                catch (_: Exception) {
+                    loadFragment(ErrorFragment.newInstance("Error - The card expiration date is not valid. Please correct it!"))
+                    return@launch
+                }
+
+                val radioGroup = view.findViewById<RadioGroup>(R.id.input_type_card)
+                val selectedRadioButtonId = radioGroup.checkedRadioButtonId
+                var selectedCardType : String? = null
+
+                if (selectedRadioButtonId != -1) {
+                    val selectedRadioButton = view.findViewById<RadioButton>(selectedRadioButtonId)
+                    selectedCardType = selectedRadioButton.text.toString()
+
+                } else {
+                    loadFragment(ErrorFragment.newInstance("Error - The card type is missing. Please fill all the inputs!"))
                     return@launch
                 }
 
@@ -99,7 +147,7 @@ class RegisterFragment : Fragment() {
                 // perform registration on the server
                 var result : String? = null
                 try {
-                    result = actionRegistration(publicEC, publicRSA)
+                    result = actionRegistration(publicEC, publicRSA, name, nick, cardNumber, cardDateValid, selectedCardType)
                     if(result.startsWith("Error")) {
                         loadFragment(ErrorFragment.newInstance(result))
                         return@launch
@@ -122,6 +170,9 @@ class RegisterFragment : Fragment() {
                             putString("name", name)
                             putString("nick", nick)
                             putString("pass", pass)
+                            putString("cardNumber", cardNumber)
+                            putString("cardDate", cardDateValid)
+                            putString("selectedCardType", selectedCardType)
                             putString("uuid", uuid)
                             putString("key", key)
                         }

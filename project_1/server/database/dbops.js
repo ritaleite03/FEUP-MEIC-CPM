@@ -35,6 +35,11 @@ class DBOps {
             Uuid UUID PRIMARY KEY, 
             KeyEC TEXT NOT NULL, 
             KeyRSA TEXT NOT NULL,
+            Name TEXT NOT NULL, 
+            Nick TEXT NOT NULL, 
+            CardNumber TEXT NOT NULL, 
+            CardDate TEXT NOT NULL, 
+            SelectedCardType TEXT NOT NULL,
             Current REAL DEFAULT 0,
             Discount REAL DEFAULT 0
         );
@@ -168,20 +173,42 @@ class DBOps {
      * Adds a new user to the database with their EC and RSA public keys.
      * @param {string} keyEC The EC public key encoded in Base64.
      * @param {string} keyRSA The RSA public key encoded in Base64.
+     * @param {string} name The name of the user.
+     * @param {string} nick The nickname of the user.
+     * @param {string} cardNumber The number (in string) of the user's card.
+     * @param {string} cardDate The experiration date (in string) of the user's card
+     * @param {string} selectedCardType The type of the user's card.
      * @returns {Promise<[string, Object]>} - Returns the user's UUID and the result of the database operation.
      */
-    async actionRegistration(keyEC, keyRSA) {
+    async actionRegistration(
+        keyEC,
+        keyRSA,
+        name,
+        nick,
+        cardNumber,
+        cardDate,
+        selectedCardType
+    ) {
         let result;
         let uuid;
         let row = null;
         try {
             uuid = uuidv4();
-            await this.db.run(
+            let result = await this.db.run(
                 `
-                INSERT OR IGNORE INTO Users (Uuid, KeyEC, KeyRSA)
-                VALUES (?, ?, ?)
+                INSERT OR IGNORE INTO Users (Uuid, KeyEC, KeyRSA, Name, Nick, CardNumber, CardDate, SelectedCardType)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `,
-                [uuid, keyEC, keyRSA]
+                [
+                    uuid,
+                    keyEC,
+                    keyRSA,
+                    name,
+                    nick,
+                    cardNumber,
+                    cardDate,
+                    selectedCardType,
+                ]
             );
 
             row = await this.db.get(
@@ -192,6 +219,7 @@ class DBOps {
             );
             if (result.changes === 0) result = false;
         } catch (error) {
+            console.log(error);
             result = false;
         }
         if (row === null) {
@@ -380,11 +408,14 @@ class DBOps {
                 nonce.slice(20),
             ].join("-");
 
-            let correctNonce = false
+            let correctNonce = false;
             for (const row of rows) {
                 if (nonce.toString("hex") === row.Uuid) {
                     correctNonce = true;
-                    await this.db.run(`DELETE FROM Nonce WHERE Uuid = ? AND UserUuid = ? AND Type = ?`, [row.Uuid, user, type]);
+                    await this.db.run(
+                        `DELETE FROM Nonce WHERE Uuid = ? AND UserUuid = ? AND Type = ?`,
+                        [row.Uuid, user, type]
+                    );
                     break;
                 }
             }
@@ -405,12 +436,11 @@ class DBOps {
     async removeExpiredNonces() {
         const limit = Date.now() - 2 * 60 * 1000;
         const result = await this.db.run(
-          `DELETE FROM Nonce WHERE Timestamp < ?`,
-          [limit]
+            `DELETE FROM Nonce WHERE Timestamp < ?`,
+            [limit]
         );
         console.log(`🧹 ${result.changes} expired nonces removed.`);
     }
-  
 }
 
 module.exports = new DBOps();
