@@ -26,7 +26,6 @@ import androidx.core.graphics.createBitmap
 class MainActivity3 : AppCompatActivity() {
 
     // UI elements
-    private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar2) }
     private val qrCodeImageview by lazy { findViewById<ImageView>(R.id.img_qr_code) }
     private val tvError by lazy { findViewById<TextView>(R.id.tv_error) }
 
@@ -34,8 +33,6 @@ class MainActivity3 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main3)
-        setSupportActionBar(toolbar)
-        setInsetsPadding(toolbar, top = dpToPx(-8f))
         setInsetsPadding(tvError, bottom=0)
 
         // get the encrypted data passed from the previous activity

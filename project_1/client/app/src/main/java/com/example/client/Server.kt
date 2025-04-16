@@ -1,5 +1,7 @@
 package com.example.client
 
+import android.annotation.SuppressLint
+import android.util.Log
 import com.example.client.utils.Server.SERVER_CHALLENGE_VOUCHERS
 import com.example.client.utils.Server.SERVER_CHALLENGE_TRANSACTIONS
 import com.example.client.utils.Server.SERVER_IP
@@ -16,7 +18,6 @@ import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
-import android.util.Log
 
 /**
  * Converts a public key of type `PublicKey` into a Base64 encoded string.
@@ -68,7 +69,6 @@ suspend fun actionChallengeVouchers(uuid: String) : String {
  */
 suspend fun actionGetVouchers(uuid: String, message : ByteArray) : String {
     val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_VOUCHERS}"
-    Log.d("Test", message.size.toString())
     val messageBase64 = android.util.Base64.encodeToString(message, android.util.Base64.NO_WRAP)
     val payload = "{\"user\": \"$uuid\", \"message\": \"$messageBase64\"}"
     return sendMessageServer(url, payload)
@@ -93,16 +93,21 @@ suspend fun actionGetTransactions(uuid: String, message: ByteArray): String {
  *
  * @param publicEC User's EC (Elliptic Curve) public key.
  * @param publicRSA User's RSA public key.
+ * @param name Name of the user.
+ * @param nick Nickname of the user.
+ * @param cardNumber Number (in string) of the user's card.
+ * @param cardDate Expiration Date (in string) of the user's card.
+ * @param selectedCardType Type of the user's card
  * @return String containing the server response or an error message.
  */
-suspend fun actionRegistration(publicEC: PublicKey?, publicRSA: PublicKey?): String {
+@SuppressLint("SimpleDateFormat")
+suspend fun actionRegistration(publicEC: PublicKey?, publicRSA: PublicKey?, name : String, nick : String, cardNumber : String, cardDate : String, selectedCardType : String): String {
     try {
         val publicStringEC = publicKeyToBase64(publicEC)
         val publicStringRSA = publicKeyToBase64(publicRSA)
 
         val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_REGISTER}"
-        val payload = "{\"keyEC\": \"$publicStringEC\", \"keyRSA\": \"$publicStringRSA\"}"
-
+        val payload = "{\"keyEC\": \"$publicStringEC\", \"keyRSA\": \"$publicStringRSA\", \"name\": \"$name\", \"nick\": \"$nick\", \"cardNumber\": \"$cardNumber\", \"cardDate\": \"$cardDate\", \"selectedCardType\": \"$selectedCardType\"}"
         val result = sendMessageServer(url, payload)
         return result
     }

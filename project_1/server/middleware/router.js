@@ -35,7 +35,7 @@ function loadKey(base64Key) {
 (async () => {
     try {
         await db.init();
-        await startAutoCleanup()
+        await startAutoCleanup();
         router
             .post("/key", actionMarketKey)
             .post("/users/add", actionRegistration)
@@ -69,14 +69,35 @@ async function actionRegistration(ctx) {
     console.log("\n---- START Action Registration (router) ----");
 
     // loading and verifying the keys
-    const { keyEC, keyRSA } = ctx.request.body;
-    ec_public_key = loadKey(keyEC);
-    rsa_public_key = loadKey(keyRSA);
+    const {
+        keyEC,
+        keyRSA,
+        name,
+        nick,
+        cardNumber,
+        cardDate,
+        selectedCardType,
+    } = ctx.request.body;
+
+    console.log("The user information is:");
+    console.log("  - Name", name);
+    console.log("  - Nick", nick);
+    console.log("  - Card Number", cardNumber);
+    console.log("  - Card Date", cardDate);
+    console.log("  - Selected Card Type", selectedCardType);
+
+    let ec_public_key = loadKey(keyEC);
+    let rsa_public_key = loadKey(keyRSA);
 
     // perform registration
     const [uuid, result] = await db.actionRegistration(
         encodeKeyBase64(ec_public_key),
-        encodeKeyBase64(rsa_public_key)
+        encodeKeyBase64(rsa_public_key),
+        name,
+        nick,
+        cardNumber,
+        cardDate,
+        selectedCardType
     );
 
     // check if it was a bad request
