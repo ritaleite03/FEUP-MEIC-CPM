@@ -2,6 +2,7 @@ package com.example.client
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -25,8 +26,6 @@ import java.security.KeyStore.PrivateKeyEntry
  * Additionally, the activity handles loading encryption keys from the Android Keystore (for RSA and EC).
  */
 class MainActivity : AppCompatActivity() {
-
-    private val toolbar by lazy {findViewById<Toolbar>(R.id.toolbar_main)}
 
     // Android Keystore EC Key
     private var entryEC: PrivateKeyEntry? = null // getting a keystore entry (with KeyName) lazily
@@ -56,8 +55,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-        setInsetsPadding(toolbar, top = 0)
 
         // check if the username is already saved in the shared preferences (SharedPreferences)
         val sharedPreferences = getSharedPreferences("MyAppPreferences", MODE_PRIVATE)

@@ -18,8 +18,7 @@
         android:theme="?attr/actionBarTheme"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/title_main2"
-        app:titleTextColor="@color/white" />
+        app:titleTextColor="@color/design_default_color_background" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/container_shopping"

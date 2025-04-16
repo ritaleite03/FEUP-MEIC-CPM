@@ -2,6 +2,9 @@
     <string name="app_name">Client</string>
     <string name="title_main2">Shopping Cart</string>
 
+    <string name="welcome">Welcome</string>
+    <string name="details">Please enter your details</string>
+
     // register fragment
     <string name="register_hint_name">Name</string>
     <string name="register_hint_nick">Nickname</string>
@@ -50,7 +53,7 @@
     <string name="contentDescriptionClose">Close</string>
 
     <string name="checkout_option_discount">Select if you want to use your discount:</string>
-    <string name="checkout_option_voucher">Select the voucher ypu want to use. Select "None" to not use any:</string>
+    <string name="checkout_option_voucher">Select the voucher you want to use:</string>
     <string name="checkout_option_type_pay">Select the payment type:</string>
     <string name="checkout_confirm">Checkout</string>
 

@@ -32,6 +32,8 @@ import java.security.PublicKey
  */
 class RegisterFragment : Fragment() {
 
+    private var generated = false;
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_register, container, false)
     }
@@ -70,10 +72,15 @@ class RegisterFragment : Fragment() {
 
                 // generate EC e RSA keys
                 try {
-                    generateEC()
-                    generateRSA()
 
                     val activity = requireActivity() as MainActivity
+
+                    if (!generated) {
+                        generateEC()
+                        generateRSA()
+                        generated = true
+                    }
+
                     val entryEC = activity.fetchEntryEC()
                     val entryRSA = activity.fetchEntryRSA()
 
