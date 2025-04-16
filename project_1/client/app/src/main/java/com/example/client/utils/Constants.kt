@@ -12,8 +12,12 @@ object Server {
     const val SERVER_REGISTER = "/users/add"
     /** Path of the vouchers' challenge route on the server. */
     const val SERVER_CHALLENGE_VOUCHERS = "/challenge/vouchers"
+    /** Path of the transactions' challenge route on the server. */
+    const val SERVER_CHALLENGE_TRANSACTIONS = "/challenge/transactions"
     /** Path of the vouchers route on the server. */
     const val SERVER_VOUCHERS = "/vouchers"
+    /** Path of the transactions route on the server. */
+    const val SERVER_TRANSACTIONS = "/transactions"
 }
 
 /**

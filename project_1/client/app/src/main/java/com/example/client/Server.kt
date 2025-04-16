@@ -1,10 +1,12 @@
 package com.example.client
 
 import com.example.client.utils.Server.SERVER_CHALLENGE_VOUCHERS
+import com.example.client.utils.Server.SERVER_CHALLENGE_TRANSACTIONS
 import com.example.client.utils.Server.SERVER_IP
 import com.example.client.utils.Server.SERVER_PORT
 import com.example.client.utils.Server.SERVER_REGISTER
 import com.example.client.utils.Server.SERVER_VOUCHERS
+import com.example.client.utils.Server.SERVER_TRANSACTIONS
 import com.example.client.utils.readStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -66,6 +68,20 @@ suspend fun actionChallengeVouchers(uuid: String) : String {
  */
 suspend fun actionGetVouchers(uuid: String, message : ByteArray) : String {
     val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_VOUCHERS}"
+    Log.d("Test", message.size.toString())
+    val messageBase64 = android.util.Base64.encodeToString(message, android.util.Base64.NO_WRAP)
+    val payload = "{\"user\": \"$uuid\", \"message\": \"$messageBase64\"}"
+    return sendMessageServer(url, payload)
+}
+
+suspend fun actionChallengeTransactions(uuid: String): String {
+    val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_CHALLENGE_TRANSACTIONS}"
+    val payload = "{\"user\": \"$uuid\"}"
+    return sendMessageServer(url, payload)
+}
+
+suspend fun actionGetTransactions(uuid: String, message: ByteArray): String {
+    val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_TRANSACTIONS}"
     Log.d("Test", message.size.toString())
     val messageBase64 = android.util.Base64.encodeToString(message, android.util.Base64.NO_WRAP)
     val payload = "{\"user\": \"$uuid\", \"message\": \"$messageBase64\"}"

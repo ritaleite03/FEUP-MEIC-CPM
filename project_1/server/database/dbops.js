@@ -62,6 +62,7 @@ class DBOps {
             CREATE TABLE IF NOT EXISTS Transactions(
             Uuid UUID,
             Price REAL,
+            Date DATETIME NOT NULL DEFAULT (strftime('%d-%m-%Y %H:%M', 'now', 'localtime')),
             UserUuid UUID,
             PRIMARY KEY (Uuid, UserUuid),
             FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
@@ -153,6 +154,39 @@ class DBOps {
             return [true, vouchers];
         } catch (error) {
             console.log("Error in voucher fetch!", error);
+            return [false, error];
+        }
+    }
+
+    async actionGetTransactions(user, message) {
+        try {
+            const [success, result] = await this.verifyNonce(
+                message,
+                user,
+                "TRANSACTION"
+            );
+
+            if (success === false) {
+                throw new Error(result);
+            }
+
+            const rows = await this.db.all(
+                `SELECT * FROM Transactions WHERE UserUuid = ?`,
+                [user]
+            );
+
+            if (!rows || rows.length === 0) {
+                return [true, []];
+            }
+
+            let transactions = [];
+            for (const row of rows) {
+                transactions.push({ uuid: row.Uuid, price: row.Price, date: row.Date });
+            }
+            return [true, transactions];
+        }
+        catch (error) {
+            console.log("Error in transaction fecth!", error);
             return [false, error];
         }
     }
@@ -289,6 +323,7 @@ class DBOps {
                 `,
                 [uuid, total, user]
             );
+            console.log("Total", total)
             await this.db.run("COMMIT");
             console.log("Success in payment transaction 3!");
             const rows = await this.db.run(

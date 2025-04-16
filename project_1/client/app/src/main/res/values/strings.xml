@@ -30,6 +30,7 @@
 
     <string name="product_name">Product Name</string>
     <string name="product_value">Value</string>
+    <string name="product_price">Price</string>
     <string name="total_value_label">Total value:</string>
     <string name="total_value_default">0,00 €</string>
     <string name="lv_empty_message">Empty list</string>
