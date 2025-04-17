@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +34,8 @@ import java.security.PublicKey
 import java.text.SimpleDateFormat
 import java.util.Date
 import android.util.Log
+import android.view.MotionEvent
+import androidx.core.widget.addTextChangedListener
 
 /**
  * Fragment responsible to deal with the register authentication of the user.
@@ -47,7 +51,58 @@ class RegisterFragment : Fragment() {
     @SuppressLint("SimpleDateFormat")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var button  = view.findViewById<Button>(R.id.button)
+
+        val cardDate = view.findViewById<TextInputEditText>(R.id.input_card_date)
+        cardDate.setSelection(0)
+
+        cardDate.addTextChangedListener(object: TextWatcher {
+
+            var isEditing = false
+            var isDeleting = false
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                if (isEditing || s == null) return
+
+                isDeleting = s.split("").count { it == "/" } != 2
+                isEditing = true
+
+                val digits = s.replace(Regex("\\D"), "")
+                val formatted = StringBuilder("__/__/____")
+
+                var lastDigitPos = 0
+
+                for (i in digits.indices) {
+                    if (i < 8) {
+                        val pos = if (i < 2) i else if (i < 4) i+1 else i+2
+
+                        if (isDeleting) {
+                            lastDigitPos = pos
+                        }
+
+                        formatted.setCharAt(pos, digits[i])
+                    }
+                }
+
+                if (isDeleting) {
+                    formatted.setCharAt(lastDigitPos, '_')
+                    isDeleting = false
+                }
+
+                cardDate.setText(formatted)
+
+                val nextPos = formatted.indexOf('_').takeIf { it != -1 } ?: formatted.length
+
+                cardDate.setSelection(nextPos)
+
+                isEditing = false
+            }
+        })
+
+        var button = view.findViewById<Button>(R.id.button)
 
         button.setOnClickListener{
             lifecycleScope.launch {
