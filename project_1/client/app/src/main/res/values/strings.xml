@@ -4,7 +4,7 @@
 
     <string name="welcome">Welcome</string>
     <string name="details">Please enter your details</string>
-
+<string name="update">Update</string>
     // register fragment
     <string name="register_hint_name">Name</string>
     <string name="register_hint_nick">Nickname</string>

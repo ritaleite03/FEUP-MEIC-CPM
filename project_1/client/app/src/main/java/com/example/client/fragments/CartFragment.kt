@@ -9,9 +9,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
-import androidx.fragment.app.FragmentManager
 import com.example.client.R
 import com.example.client.base64ToPublicKey
+import com.example.client.data.ProductsDB
+import com.example.client.domain.Product
+import com.example.client.domain.ProductAdapter
+import com.example.client.domain.listProducts
+import com.example.client.domain.productsDB
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
 import com.example.client.utils.Crypto.CRYPTO_RSA_KEY_SIZE
 import com.example.client.utils.Crypto.CRYPTO_RSA_SIGN_ALGO
@@ -35,14 +39,13 @@ class CartFragment : Fragment() {
     private lateinit var empty: TextView
     private lateinit var totalTextView: TextView
 
-    //private val viewModel: CartViewModel by viewModels()
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_cart, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        productsDB = ProductsDB(requireActivity().applicationContext)
 
         // configuration of the button to scan QR Code
         val btQR = view.findViewById<Button>(R.id.bottom_button_qr)
@@ -58,26 +61,26 @@ class CartFragment : Fragment() {
         empty = view.findViewById(R.id.empty)
         totalTextView = view.findViewById(R.id.tv_total_value)
 
-        //productListView.emptyView = empty
-
-        //viewModel.products.observe(viewLifecycleOwner) { products ->
-        //    productListView.adapter = ProductAdapter(requireContext(), products) { pos ->
-        //        viewModel.removeProductAt(pos)
-        //    }
-        //
-        //    totalTextView.text = viewModel.getTotal().toString()
-        //}
-
         // if the product list is empty, display the "empty" message
         productListView.run {
             emptyView = empty
-            adapter = ProductAdapter(requireContext(), listProducts){
+            adapter = ProductAdapter(requireContext(), listProducts) {
+                updateTotal()
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        productsDB.getProducts()
+        productListView.run {
+            emptyView = empty
+            adapter = ProductAdapter(requireContext(), listProducts) {
                 updateTotal()
             }
         }
         updateTotal()
-        //registerForContextMenu(productListView)
-
+        registerForContextMenu(productListView)
     }
 
     /**
@@ -168,23 +171,10 @@ class CartFragment : Fragment() {
         val name = String(nameBytes, StandardCharsets.ISO_8859_1)
         val newProduct = Product(id, name, euros, cents)
 
+        productsDB.insert(newProduct)
         listProducts.add(newProduct)
         (productListView.adapter as ProductAdapter).notifyDataSetChanged()
 
         updateTotal()
-    }
-
-    /**
-     * Replaces the current fragment in the container with the given fragment.
-     * Uses childFragmentManager to manage inner fragments.
-     *
-     * @param fragment New fragment to be shown.
-     */
-    fun loadFragment(fragment: Fragment) {
-        childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        childFragmentManager
-            .beginTransaction()
-            .replace(R.id.container_cart, fragment)
-            .commit()
     }
 }

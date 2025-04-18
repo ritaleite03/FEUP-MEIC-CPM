@@ -1,73 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.authentication.LoginFragment">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="5sp"
-            android:layout_marginVertical="5sp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:width="300dp"
-                android:hint="@string/login_hint_name"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="5sp"
-            android:layout_marginVertical="5sp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_nick"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:width="300dp"
-                android:hint="@string/login_hint_nick"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="5sp"
-            android:layout_marginVertical="5sp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_pass"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:width="300dp"
-                android:hint="@string/login_hint_pass"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/login_button"
+        <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5sp"
-            android:layout_marginVertical="5sp"
-            android:width="300dp"
-            android:text="@string/login_button" />
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/container_login"
-            android:name="com.example.client.fragments.feedback.BlankFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="5sp"
+                android:layout_marginVertical="5sp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:width="300dp"
+                    android:hint="@string/login_hint_name"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="5sp"
+                android:layout_marginVertical="5sp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_nick"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:width="300dp"
+                    android:hint="@string/login_hint_nick"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="5sp"
+                android:layout_marginVertical="5sp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_pass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:width="300dp"
+                    android:hint="@string/login_hint_pass"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/login_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5sp"
+                android:layout_marginVertical="5sp"
+                android:width="300dp"
+                android:text="@string/login_button" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </FrameLayout>
