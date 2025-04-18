@@ -3,6 +3,7 @@ package com.example.client
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.SystemBarStyle
@@ -48,6 +49,7 @@ class MainActivity3 : AppCompatActivity() {
             } catch (e: Exception) {
                 // display error if something goes wrong
                 tvError.text = e.message
+                Log.d("Error", e.message.toString())
             }
         }.start()
     }

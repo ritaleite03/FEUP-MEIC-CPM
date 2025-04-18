@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.client.fragments.VouchersFragment
+import com.example.client.fragments.transactions.TransactionsFragment
 import com.example.client.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
 import com.example.client.utils.Crypto.CRYPTO_EC_NAME
 import com.example.client.utils.Crypto.CRYPTO_RSA_NAME
@@ -75,7 +76,7 @@ class MainActivity2 : AppCompatActivity() {
                 true
             }
             R.id.action_transactions -> {
-                Toast.makeText(this, "action_transactions", Toast.LENGTH_SHORT).show()
+                loadFragment(TransactionsFragment())
                 true
             }
             R.id.action_vouchers -> {

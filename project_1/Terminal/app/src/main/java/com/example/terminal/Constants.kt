@@ -7,7 +7,7 @@ import android.nfc.NfcAdapter
  */
 object Server {
     /** IP address of the server. */
-    const val SERVER_IP = "192.168.68.125"
+    const val SERVER_IP = "192.168.1.118"
     /** Server port. */
     const val SERVER_PORT = "8000"
     /** Path of the user registration route on the server. */

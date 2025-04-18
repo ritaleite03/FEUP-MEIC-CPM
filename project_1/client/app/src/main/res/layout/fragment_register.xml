@@ -82,14 +82,14 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:hint="@string/register_cart_date"
                 android:layout_weight="1">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_card_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5sp"
-                    android:hint="@string/register_cart_date"
+                    android:text="@string/register_cart_date_mask"
                     android:inputType="datetime|date" />
             </com.google.android.material.textfield.TextInputLayout>
 

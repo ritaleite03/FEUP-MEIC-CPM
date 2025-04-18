@@ -63,9 +63,20 @@ class DBOps {
             FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
         );
         `;
+            const tableTransactions = `
+            CREATE TABLE IF NOT EXISTS Transactions(
+            Uuid UUID,
+            Price REAL,
+            Date DATETIME NOT NULL DEFAULT (strftime('%d-%m-%Y %H:%M', 'now', 'localtime')),
+            UserUuid UUID,
+            PRIMARY KEY (Uuid, UserUuid),
+            FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
+            );  
+        `;
             await this.db.run(tableUser);
             await this.db.run(tableVoucher);
             await this.db.run(tableNonce);
+            await this.db.run(tableTransactions);
             console.log("Success in the database initialization!");
 
             const check = await this.db.all(
@@ -152,6 +163,39 @@ class DBOps {
         }
     }
 
+    async actionGetTransactions(user, message) {
+        try {
+            const [success, result] = await this.verifyNonce(
+                message,
+                user,
+                "TRANSACTION"
+            );
+
+            if (success === false) {
+                throw new Error(result);
+            }
+
+            const rows = await this.db.all(
+                `SELECT * FROM Transactions WHERE UserUuid = ?`,
+                [user]
+            );
+
+            if (!rows || rows.length === 0) {
+                return [true, []];
+            }
+
+            let transactions = [];
+            for (const row of rows) {
+                transactions.push({ uuid: row.Uuid, price: row.Price, date: row.Date });
+            }
+            return [true, transactions];
+        }
+        catch (error) {
+            console.log("Error in transaction fecth!", error);
+            return [false, error];
+        }
+    }
+
     async actionAddNonce(user, type) {
         try {
             const timestamp = Date.now();
@@ -194,7 +238,7 @@ class DBOps {
         let row = null;
         try {
             uuid = uuidv4();
-            let result = await this.db.run(
+            result = await this.db.run(
                 `
                 INSERT OR IGNORE INTO Users (Uuid, KeyEC, KeyRSA, Name, Nick, CardNumber, CardDate, SelectedCardType)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -289,14 +333,42 @@ class DBOps {
             }
             await this.db.run("COMMIT");
             console.log("Success in payment transaction 2!");
-            console.log("End Payment Transaction.");
             console.log("---- END Payment Transaction (db) ----");
-            return true;
         } catch (error) {
             await this.db.run("ROLLBACK");
             console.log("Failure in payment transaction 2!", error);
             console.log("---- END Payment Transaction (db) ----");
             return false;
+        }
+
+        await this.db.run("BEGIN");
+        try {
+            const uuid = uuidv4();
+            await this.db.run(
+                `
+                INSERT INTO Transactions (Uuid, Price, UserUuid)
+                VALUES (?, ?, ?)
+                `,
+                [uuid, total, user]
+            );
+            console.log("Total", total)
+            await this.db.run("COMMIT");
+            console.log("Success in payment transaction 3!");
+            const rows = await this.db.run(
+                `SELECT * FROM Transactions WHERE UserUuid = ?`,
+                [user]
+            );
+
+            console.log("aqui:", rows);
+            return true;
+        }
+        catch (error) {
+            await this.db.run("ROLLBACK");
+            console.log("Failure in payment transaction 3!", error);
+            return false;
+        }
+        finally {
+            console.log("---- END Payment Transaction (db) ----");
         }
     }
 

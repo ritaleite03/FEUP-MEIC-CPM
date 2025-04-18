@@ -41,8 +41,9 @@ function loadKey(base64Key) {
             .post("/users/add", actionRegistration)
             .post("/pay", actionPayment)
             .post("/challenge/vouchers", actionChallengeVouchers)
-            .post("/challenge/transaction", actionChallengeTransaction)
-            .post("/vouchers", actionGetVouchers);
+            .post("/challenge/transactions", actionChallengeTransaction)
+            .post("/vouchers", actionGetVouchers)
+            .post("/transactions", actionGetTransactions);
     } catch (error) {
         console.error("Error initializing database:", error);
     }
@@ -216,7 +217,28 @@ async function actionChallengeVouchers(ctx) {
 }
 
 async function actionChallengeTransaction(ctx) {
-    // TODO
+    console.log("\n---- START Action Challenge Transaction (router) ----");
+
+    try {
+
+        let { user } = ctx.request.body;
+        let [success, result] = await db.actionGetUser(user);
+
+        if (success === true) {
+            [success, result] = await db.actionAddNonce(user, "TRANSACTION");
+            if (success === true) ctx.body = {nonce: result};
+            else throw new Error(result);
+        }
+        else {
+            throw new Error(result);
+        }
+    } catch (error) {
+        console.log(error);
+        ctx.status = 400;
+        ctx.body = {};
+    }
+
+    console.log("\n---- END Action Challenge Vouchers (router) ----");
 }
 
 /**
@@ -244,6 +266,31 @@ async function actionGetVouchers(ctx) {
     }
 
     console.log("---- END Action Get Vouchers (router) ----\n");
+}
+
+async function actionGetTransactions(ctx) {
+    console.log("\n---- START Action Get Transactions (router) ----");
+    
+    try {
+        let { user, message } = ctx.request.body;
+        const [success, result] = await db.actionGetTransactions(user, message);
+
+        if (success === false) {
+            ctx.body = { error: result };
+        }
+        else {
+            ctx.body = {
+                transactions : result
+            };
+        }
+    }
+    catch (error) {
+        console.log("Get Transactions - ", error);
+        ctx.status = 400;
+        ctx.body = { error: error};
+    }
+
+    console.log("---- END Action Get Transactions (router) ----\n");
 }
 
 /**
