@@ -15,7 +15,7 @@
     <string name="register_cart_date">Expiration Date</string>
     <string name="register_cart_type_1">Visa</string>
     <string name="register_cart_type_2">Mastercard</string>
-    <string name="register_cart_type_3">American Express	</string>
+    <string name="register_cart_type_3">Discover</string>
     // login fragment
     <string name="login_hint_name">Name</string>
     <string name="login_hint_nick">Nickname</string>
