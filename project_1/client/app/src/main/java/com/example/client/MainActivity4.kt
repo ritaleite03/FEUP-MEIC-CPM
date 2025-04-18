@@ -6,11 +6,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.client.domain.productsDB
 import com.example.client.utils.Card
 import com.example.client.utils.NFC.NFC_ACTION_CARD_DONE
 
@@ -29,6 +31,19 @@ class MainActivity4 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main4)
+
+        var btnBack = findViewById<Button>(R.id.btn_go_back)
+        btnBack.setOnClickListener { finish() }
+
+        var btnConclude = findViewById<Button>(R.id.btn_conclude)
+        btnConclude.setOnClickListener {
+            productsDB.deleteAll()
+            val intent = Intent(this, MainActivity2::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            startActivity(intent)
+            this.finish()
+        }
     }
 
     override fun onResume() {

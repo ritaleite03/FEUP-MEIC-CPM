@@ -61,6 +61,13 @@ class ProductsDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
     }
 
     /**
+     * Deletes all products from the database
+     */
+    fun deleteAll() {
+        writableDatabase.delete(tableProducts, null, null)
+    }
+
+    /**
      * Gets all the products from the database
      */
     fun getProducts() {

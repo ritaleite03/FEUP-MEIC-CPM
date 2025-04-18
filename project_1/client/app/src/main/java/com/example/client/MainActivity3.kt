@@ -1,17 +1,17 @@
 package com.example.client
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import com.example.client.utils.setInsetsPadding
-import com.example.client.utils.dpToPx
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets
 import java.util.Hashtable
 import kotlin.collections.set
 import androidx.core.graphics.createBitmap
+import com.example.client.domain.productsDB
 
 /**
  * Activity that handles the QR code scanning.
@@ -34,6 +35,19 @@ class MainActivity3 : AppCompatActivity() {
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main3)
         setInsetsPadding(tvError, bottom=0)
+
+        var btnBack = findViewById<Button>(R.id.btn_go_back)
+        btnBack.setOnClickListener { finish() }
+
+        var btnConclude = findViewById<Button>(R.id.btn_conclude)
+        btnConclude.setOnClickListener {
+            productsDB.deleteAll()
+            val intent = Intent(this, MainActivity2::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            startActivity(intent)
+            this.finish()
+        }
 
         // get the encrypted data passed from the previous activity
         val content = intent.getByteArrayExtra("data")!!

@@ -230,7 +230,6 @@ class RegisterFragment : Fragment() {
                             val intent = Intent(activity, MainActivity2::class.java)
                             startActivity(intent)
                             activity?.finish()
-
                         }
                     }
                 }
