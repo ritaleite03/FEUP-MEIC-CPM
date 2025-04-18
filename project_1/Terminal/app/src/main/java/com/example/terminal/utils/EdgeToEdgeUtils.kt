@@ -1,4 +1,4 @@
-package com.example.terminal
+package com.example.terminal.utils
 
 import android.annotation.SuppressLint
 import android.content.Context

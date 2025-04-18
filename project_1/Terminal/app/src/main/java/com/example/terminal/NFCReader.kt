@@ -4,8 +4,9 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
-import com.example.terminal.NFC.NFC_CARD_AID
-import com.example.terminal.NFC.NFC_CMD_SEL_AID
+import com.example.terminal.utils.NFC.NFC_CARD_AID
+import com.example.terminal.utils.NFC.NFC_CMD_SEL_AID
+import com.example.terminal.utils.hexStringToByteArray
 import java.io.IOException
 
 private val RES_OK_SW = hexStringToByteArray("9000")
@@ -38,7 +39,12 @@ class NFCReader(private val listener: (Int, ByteArray)->Unit) : NfcAdapter.Reade
 
         // send the 'select AID' command with the card AID
         val result = isoDep.transceive(
-          hexStringToByteArray(NFC_CMD_SEL_AID + String.format("%02X", NFC_CARD_AID.length/2) + NFC_CARD_AID)
+          hexStringToByteArray(
+            NFC_CMD_SEL_AID + String.format(
+              "%02X",
+              NFC_CARD_AID.length / 2
+            ) + NFC_CARD_AID
+          )
         )
         val rLen = result.size
 
