@@ -10,6 +10,7 @@ object Server {
     const val SERVER_PORT = "8000"
     /** Path of the informative action route on the server. */
     const val SERVER_INFORM = "/key"
+    const val SERVER_GROCERIES = "/groceries"
 }
 
 /**

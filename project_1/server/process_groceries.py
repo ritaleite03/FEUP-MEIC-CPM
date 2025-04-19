@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import re
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -39,9 +40,11 @@ if __name__ == "__main__":
 
         if dirs == []:
             categories = root.split("/")[1:]
+
             grocery_info["category"] = categories[0]
             grocery_info["sub_category"] = categories[1]
             grocery_info["name"] = categories[1] if len(categories) == 2 else categories[2]
+            grocery_info["image_path"] = grocery_info["name"].replace("-", "_").lower()
 
             print(grocery_info["name"])
 
@@ -49,13 +52,13 @@ if __name__ == "__main__":
                 file_path = os.path.join(root, file)
                 if file.endswith("_Description.txt"):
                     with open(file_path) as f: grocery_info["description"] = f.read()
-                elif file.endswith("_Iconic.jpg"):
-                    grocery_info["image_path"] = file_path
                 elif file.endswith("_Information.txt"):
                     with open(file_path) as f: file_contents = f.read()
                     url = file_contents.split("URL:")[1]
                     price = get_price(url, driver)
-                    grocery_info["price"] = swedish_krona_to_euro(price, )
+                    grocery_info["price"] = swedish_krona_to_euro(price, 2)
+                elif not (file.endswith("_Iconic.jpg") or file.endswith("_Description.txt") or file.endswith("_Swedish.txt")) :
+                    os.rename(file_path, os.path.join(root, file.lower()))
 
             groceries_info.append(grocery_info)
 

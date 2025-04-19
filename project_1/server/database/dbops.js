@@ -105,6 +105,7 @@ class DBOps {
         console.log("---- START Populating Grocery Table (db) ----");
         try {
             for (const grocery_info of groceries_data) {
+                console.log(grocery_info)
                 await this.insertGroceryIntoTable(grocery_info);
             }
         } catch(error) {
@@ -129,6 +130,30 @@ class DBOps {
                 grocery_info["price"]
             ]
         );
+    }
+
+    async getGroceries() {
+        console.log("---- START Action Get Grocery (db) ----");
+
+        let result;
+        try {
+            const rows = await this.db.all(
+                `SELECT * FROM Grocery`
+            );
+
+            console.log("rows", rows)
+
+            if (!rows || rows.length === 0) {
+                throw new Error("Error obtaining groceries");
+            }
+
+            result = [true, rows];
+        } catch (error) {
+            result = [false, error];
+        }
+
+        console.log("---- END Action Get Groceries (db) ----");
+        return result;
     }
 
     /**

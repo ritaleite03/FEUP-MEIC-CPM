@@ -43,7 +43,8 @@ function loadKey(base64Key) {
             .post("/challenge/vouchers", actionChallengeVouchers)
             .post("/challenge/transactions", actionChallengeTransaction)
             .post("/vouchers", actionGetVouchers)
-            .post("/transactions", actionGetTransactions);
+            .post("/transactions", actionGetTransactions)
+            .get("/groceries", actionGetGroceries);
     } catch (error) {
         console.error("Error initializing database:", error);
     }
@@ -266,6 +267,27 @@ async function actionGetVouchers(ctx) {
     }
 
     console.log("---- END Action Get Vouchers (router) ----\n");
+}
+
+async function actionGetGroceries(ctx) {
+    console.log("\n---- START Action Get Groceries (router) ----");
+
+    try {
+        const [success, result] = await db.getGroceries();
+        if (success === false) {
+            ctx.body = { error: result };
+        }
+        else {
+            ctx.body = {
+                groceries: result
+            }
+        }
+    } catch (error) {
+        ctx.status = 400;
+        ctx.body = { error: error };
+    }
+
+    console.log("---- END Action Get Groceries (router) ----\n");
 }
 
 async function actionGetTransactions(ctx) {

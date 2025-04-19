@@ -2,13 +2,10 @@
     <string name="app_name">Generator</string>
     <string name="title">Generator</string>
 
-    <string name="product_name">Name</string>
-    <string name="product_price">Price</string>
-    <string name="product_euros">Euros</string>
-    <string name="product_comma">.</string>
-    <string name="product_cents">Cents</string>
-    <string name="product_coins">€</string>
-
+    <string name="add_cart_button">Add to Cart</string>
+    <string name="content_description">Grocery list</string>
     <string name="tv_qrtitle">Product Code</string>
+
+    <string name="grocery_price">€%1$s/kg</string>
 
 </resources>
