@@ -51,6 +51,8 @@ data class Grocery (
 class GroceryAdapter(private val groceries: List<Grocery>, private val mainContext: MainActivity):
     RecyclerView.Adapter<GroceryAdapter.GroceryViewHolder>() {
 
+    private var filteredList: List<Grocery> = groceries
+
     class GroceryViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val category: TextView = view.findViewById(R.id.groceryCategory)
         val image: ImageView = view.findViewById(R.id.groceryImage)
@@ -69,7 +71,7 @@ class GroceryAdapter(private val groceries: List<Grocery>, private val mainConte
 
     @SuppressLint("DiscouragedApi")
     override fun onBindViewHolder(holder: GroceryViewHolder, position: Int) {
-        val grocery = groceries[position]
+        val grocery = filteredList[position]
 
         val resourceID = mainContext.resources.getIdentifier(
             grocery.imagePath,
@@ -104,5 +106,30 @@ class GroceryAdapter(private val groceries: List<Grocery>, private val mainConte
         }
     }
 
-    override fun getItemCount() = groceries.size
+    override fun getItemCount() = filteredList.size
+
+    fun applyFilter(searchText: String, category: String, sortOption: String) {
+        var tempList = groceries
+
+        if (category != "All") {
+            tempList = tempList.filter { it.category.equals(category, ignoreCase = true) }
+        }
+
+        if (searchText.isNotBlank()) {
+            tempList = tempList.filter {
+                it.name.contains(searchText, ignoreCase = true) ||
+                it.subCategory.contains(searchText, ignoreCase = true)
+            }
+        }
+
+        filteredList = when (sortOption) {
+            "Name (A-Z)" -> tempList.sortedBy { it.subCategory }
+            "Name (Z-A)" -> tempList.sortedByDescending { it.subCategory }
+            "Price (Low to High)" -> tempList.sortedBy { it.price }
+            "Price (High to Low)" -> tempList.sortedByDescending { it.price }
+            else -> tempList
+        }
+
+        notifyDataSetChanged()
+    }
 }

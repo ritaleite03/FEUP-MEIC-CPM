@@ -3,10 +3,14 @@ package com.example.generator
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.Spinner
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +30,11 @@ import java.security.PublicKey
  */
 class MainActivity : AppCompatActivity() {
 
-    private val toolbar by lazy {findViewById<Toolbar>(R.id.toolbar)}
+    private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar) }
+    private val searchField by lazy { findViewById<EditText>(R.id.searchField) }
+    private val categorySpinner by lazy { findViewById<Spinner>(R.id.categorySpinner) }
+    private val sortSpinner by lazy { findViewById<Spinner>(R.id.sortSpinner) }
+    private lateinit var adapter: GroceryAdapter
     private var privateKey: PrivateKey? = null
     private var publicKey: PublicKey? = null
 
@@ -47,6 +55,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = 0)
+
+        categorySpinner.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            listOf("All", "Fruit", "Vegetables", "Packages")
+        )
+
+        sortSpinner.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            listOf("None", "Name (A-Z)", "Name (Z-A)", "Price (Low to High)", "Price (High to Low)")
+        )
 
         Log.d("entry", entry.toString())
 
@@ -69,8 +89,37 @@ class MainActivity : AppCompatActivity() {
     private fun setupRecyclerView(groceries: JSONObject) {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val adapter = GroceryAdapter(parseGroceries(groceries), this)
+        adapter = GroceryAdapter(parseGroceries(groceries), this)
         recyclerView.adapter = adapter
+
+        setupFilters()
+    }
+
+    private fun setupFilters() {
+        val applyFilters = {
+            val search = searchField.text.toString()
+            val category = categorySpinner.selectedItem.toString()
+            val sort = sortSpinner.selectedItem.toString()
+            adapter.applyFilter(search, category, sort)
+        }
+
+        searchField.addTextChangedListener { applyFilters() }
+
+        categorySpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
+                applyFilters()
+            }
+
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>) {}
+        }
+
+        sortSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
+                applyFilters()
+            }
+
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>) {}
+        }
     }
 
 }
