@@ -97,7 +97,7 @@ class MainActivity2 : AppCompatActivity() {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.container_shopping, fragment)
-            .addToBackStack(null)
+            //.addToBackStack(null)
             .commit()
     }
 

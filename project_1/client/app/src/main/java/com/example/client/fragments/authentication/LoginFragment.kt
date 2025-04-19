@@ -63,7 +63,7 @@ class LoginFragment : Fragment() {
 
             // if the data does not match, then show error fragment
             else {
-                ErrorFragment.newInstance("Error - The credentials are incorrect. Try again!").show(parentFragmentManager, "error_popup")
+                ErrorFragment.newInstance("The credentials are incorrect. Try again!").show(parentFragmentManager, "error_popup")
             }
         }
     }

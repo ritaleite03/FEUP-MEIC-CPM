@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.client.domain.Product
 import com.example.client.domain.listProducts
+import com.example.client.domain.listProductsTime
 import java.util.UUID
 
 private const val DB_NAME = "products.db"
@@ -73,6 +74,7 @@ class ProductsDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
     fun getProducts() {
         val cursor = readableDatabase.rawQuery("SELECT * FROM  $tableProducts", null)
         listProducts.clear()
+        listProductsTime.clear()
         while (cursor.moveToNext()) {
             val product = Product(UUID.randomUUID(),"",0,0)
             with (product) {
@@ -82,6 +84,7 @@ class ProductsDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
                 cents = cursor.getInt(cursor.getColumnIndexOrThrow(colCents))
             }
             listProducts.add(product)
+            listProductsTime.add(product)
         }
         cursor.close()
     }

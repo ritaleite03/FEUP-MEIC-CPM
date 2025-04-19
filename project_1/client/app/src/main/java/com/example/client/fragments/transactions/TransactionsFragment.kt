@@ -49,7 +49,8 @@ class TransactionsFragment: Fragment() {
                 val result = JSONObject(actionChallengeTransactions(uuid.toString()))
                 nonce = UUID.fromString(result.getString("nonce").toString())
             } catch (_: Exception) {
-                ErrorFragment.newInstance("Error1 - The server was not available. Try again!").show(parentFragmentManager, "error_popup")
+                if (!isAdded) return@launch
+                ErrorFragment.newInstance("The server was not available. Try again!").show(parentFragmentManager, "error_popup")
                 return@launch
             }
 
@@ -73,7 +74,8 @@ class TransactionsFragment: Fragment() {
                 transactions = result.getJSONArray("transactions")
                 Log.d("transactions", transactions.toString())
             } catch (_: Exception) {
-                ErrorFragment.newInstance("Error2 - The server was not available. Try again!").show(parentFragmentManager, "error_popup")
+                if (!isAdded) return@launch
+                ErrorFragment.newInstance("The server was not available. Try again!").show(parentFragmentManager, "error_popup")
                 return@launch
             }
 

@@ -51,7 +51,8 @@ fun openCheckout(fragment: CartFragment) {
             val result = JSONObject(actionChallengeVouchers(uuid.toString()))
             nonce = UUID.fromString(result.getString("nonce").toString())
         } catch (_ : Exception) {
-            ErrorFragment.newInstance("Error - The server was not available. Try again!").show(fragment.parentFragmentManager, "error_popup")
+            if (!fragment.isAdded) return@launch
+            ErrorFragment.newInstance("The server was not available. Try again!").show(fragment.parentFragmentManager, "error_popup")
             return@launch
         }
 
@@ -73,7 +74,8 @@ fun openCheckout(fragment: CartFragment) {
             vouchers = result.getJSONArray("vouchers")
 
         } catch (_ : Exception) {
-            ErrorFragment.newInstance("Error - The server was not available. Try again!").show(fragment.parentFragmentManager, "error_popup")
+            if (!fragment.isAdded) return@launch
+            ErrorFragment.newInstance("The server was not available. Try again!").show(fragment.parentFragmentManager, "error_popup")
             return@launch
         }
 

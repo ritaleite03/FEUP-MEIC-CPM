@@ -47,6 +47,8 @@
     <string name="lv_empty_message">Empty list</string>
     <string name="price_format">%.2f €</string>
 
+    <string name="spinner_order">Order by </string>
+
     <string name="tv_nfc_send">Tap to send</string>
     <string name="tv_nfc_msg">Tap to send</string>
 

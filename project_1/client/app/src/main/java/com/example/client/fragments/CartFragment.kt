@@ -6,26 +6,24 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.Button
 import android.widget.ListView
+import android.widget.Spinner
 import android.widget.TextView
 import com.example.client.R
-import com.example.client.base64ToPublicKey
 import com.example.client.data.ProductsDB
-import com.example.client.domain.Product
+import com.example.client.domain.OrderProduct
 import com.example.client.domain.ProductAdapter
+import com.example.client.domain.currentOrderProduct
 import com.example.client.domain.listProducts
 import com.example.client.domain.productsDB
-import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
-import com.example.client.utils.Crypto.CRYPTO_RSA_KEY_SIZE
-import com.example.client.utils.Crypto.CRYPTO_RSA_SIGN_ALGO
+import com.example.client.domain.productsDecodeMessage
+import com.example.client.domain.productsSort
+import com.example.client.domain.productsUpdateList
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
-import java.security.Signature
-import java.util.UUID
-import javax.crypto.Cipher
 
 /**
  * Fragment to display the shopping cart, allowing viewing and adding products from a QR Code.
@@ -39,48 +37,63 @@ class CartFragment : Fragment() {
     private lateinit var empty: TextView
     private lateinit var totalTextView: TextView
 
+    private lateinit var spinnerOrder: Spinner
+    private lateinit var btQR: Button
+    private lateinit var btEnd: Button
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_cart, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        productsDB = ProductsDB(requireActivity().applicationContext)
-
-        // configuration of the button to scan QR Code
-        val btQR = view.findViewById<Button>(R.id.bottom_button_qr)
-        btQR.setOnClickListener { scanQRCode() }
-
-        val btEnd = view.findViewById<Button>(R.id.bottom_button_end)
-        btEnd.setOnClickListener {
-            openCheckout(this)
-        }
 
         // configuration of the ListView to display the products
+        productsDB = ProductsDB(requireActivity().applicationContext)
         productListView = view.findViewById<ListView>(R.id.lv_items)
         empty = view.findViewById(R.id.empty)
         totalTextView = view.findViewById(R.id.tv_total_value)
+        currentOrderProduct = OrderProduct.ASCENDING_TIME
 
-        // if the product list is empty, display the "empty" message
-        productListView.run {
-            emptyView = empty
-            adapter = ProductAdapter(requireContext(), listProducts) {
-                updateTotal()
-            }
-        }
+        // configuration of buttons
+        spinnerOrder = view.findViewById<Spinner>(R.id.order_spinner)
+        btQR = view.findViewById<Button>(R.id.bottom_button_qr)
+        btEnd = view.findViewById<Button>(R.id.bottom_button_end)
+
+        configuratorProductsListView()
+        configuratorBottomButtons()
+        configuratorSpinnerOrder()
     }
 
-    override fun onStart() {
-        super.onStart()
+    fun configuratorProductsListView(){
         productsDB.getProducts()
         productListView.run {
             emptyView = empty
-            adapter = ProductAdapter(requireContext(), listProducts) {
-                updateTotal()
-            }
+            adapter = ProductAdapter(requireContext(), listProducts) { updateTotal() }
         }
         updateTotal()
         registerForContextMenu(productListView)
+    }
+
+    fun configuratorBottomButtons() {
+        btQR.setOnClickListener { scanQRCode() }
+        btEnd.setOnClickListener { openCheckout(this) }
+    }
+
+    fun configuratorSpinnerOrder() {
+        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item,
+            OrderProduct.entries.map { it.name.replace("_", " ").lowercase().replaceFirstChar(Char::uppercaseChar) }
+        )
+        spinnerOrder.adapter = adapter
+        spinnerOrder.setSelection(0)
+        spinnerOrder.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val orderType = OrderProduct.entries[position]
+                productsSort(orderType)
+                (productListView.adapter as ProductAdapter).notifyDataSetChanged()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
     }
 
     /**
@@ -122,59 +135,15 @@ class CartFragment : Fragment() {
      * @param combined Encrypted tag obtained from the QR Code.
      */
     private fun decodeAndShow(combined: ByteArray) {
-        var clearTextTag = ByteArray(0)
+        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
+        val keyString: String? = sharedPreferences.getString("key", null)
 
-        val numberBytes = CRYPTO_RSA_KEY_SIZE / 8
-        val totalSize = numberBytes * 2
-
-        if (combined.size < totalSize) return
-
-        val encryptedTag = combined.copyOfRange(0, numberBytes)
-        val signature = combined.copyOfRange(numberBytes, numberBytes + numberBytes)
-
-        try {
-            val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-            val keyString: String? = sharedPreferences.getString("key", null)
-
-            if (keyString != null) {
-                val key = base64ToPublicKey(keyString)
-
-                clearTextTag = Cipher.getInstance(CRYPTO_RSA_ENC_ALGO).run {
-                    init(Cipher.DECRYPT_MODE, key)
-                    doFinal(encryptedTag)
-                }
-
-                val signatureVerifier = Signature.getInstance(CRYPTO_RSA_SIGN_ALGO).run {
-                    initVerify(key)
-                    update(encryptedTag)
-                    verify(signature)
-                }
-
-                if(!signatureVerifier) return
+        if (keyString != null) {
+            val product = productsDecodeMessage(combined, keyString)
+            if (product != null) {
+                productsUpdateList(product, (productListView.adapter as ProductAdapter))
+                updateTotal()
             }
         }
-        catch (_: Exception) {
-            return
-        }
-
-        val tag = ByteBuffer.wrap(clearTextTag)
-        val tagId = tag.int
-        val id = UUID(tag.long, tag.long)
-
-        val euros = tag.short.toInt()
-        val cents = tag.get().toInt()
-
-        val nameLength = tag.get().toInt()
-        val nameBytes = ByteArray(nameLength)
-        tag.get(nameBytes)
-
-        val name = String(nameBytes, StandardCharsets.ISO_8859_1)
-        val newProduct = Product(id, name, euros, cents)
-
-        productsDB.insert(newProduct)
-        listProducts.add(newProduct)
-        (productListView.adapter as ProductAdapter).notifyDataSetChanged()
-
-        updateTotal()
     }
 }

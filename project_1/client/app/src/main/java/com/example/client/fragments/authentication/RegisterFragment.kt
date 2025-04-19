@@ -114,27 +114,32 @@ class RegisterFragment : Fragment() {
                 var cardDate = view.findViewById<TextInputEditText>(R.id.input_card_date).text.toString()
 
                 if (name == "") {
-                    ErrorFragment.newInstance("Error - At least the input \"Name\" is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
+                    if (!isAdded) return@launch
+                    ErrorFragment.newInstance("At least the input \"Name\" is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
                     return@launch
                 }
 
                 if (nick == "") {
-                    ErrorFragment.newInstance("Error - At least the input \"Nickname\" is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
+                    if (!isAdded) return@launch
+                    ErrorFragment.newInstance("At least the input \"Nickname\" is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
                     return@launch
                 }
 
                 if (pass == "") {
-                    ErrorFragment.newInstance("Error - The input \"Password\" is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
+                    if (!isAdded) return@launch
+                    ErrorFragment.newInstance("The input \"Password\" is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
                     return@launch
                 }
 
                 if (cardNumber == "") {
-                    ErrorFragment.newInstance("Error - At least the card number is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
+                    if (!isAdded) return@launch
+                    ErrorFragment.newInstance("At least the card number is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
                     return@launch
                 }
 
                 if (cardDate == ""){
-                    ErrorFragment.newInstance("Error - At least the card expiration date is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
+                    if (!isAdded) return@launch
+                    ErrorFragment.newInstance("At least the card expiration date is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
                     return@launch
                 }
 
@@ -149,7 +154,8 @@ class RegisterFragment : Fragment() {
                     Log.d("TEST",cardDateValid)
                 }
                 catch (_: Exception) {
-                    ErrorFragment.newInstance("Error - The card expiration date is not valid. Please correct it!").show(parentFragmentManager, "error_popup")
+                    if (!isAdded) return@launch
+                    ErrorFragment.newInstance("The card expiration date is not valid. Please correct it!").show(parentFragmentManager, "error_popup")
                     return@launch
                 }
 
@@ -162,7 +168,8 @@ class RegisterFragment : Fragment() {
                     selectedCardType = selectedRadioButton.text.toString()
 
                 } else {
-                    ErrorFragment.newInstance("Error - The card type is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
+                    if (!isAdded) return@launch
+                    ErrorFragment.newInstance("The card type is missing. Please fill all the inputs!").show(parentFragmentManager, "error_popup")
                     return@launch
                 }
 
@@ -188,7 +195,8 @@ class RegisterFragment : Fragment() {
                     }
                 }
                 catch(_: Exception) {
-                    ErrorFragment.newInstance("Error - A problem occur when generating your keys. Try again!").show(parentFragmentManager, "error_popup")
+                    if (!isAdded) return@launch
+                    ErrorFragment.newInstance("A problem occur when generating your keys. Try again!").show(parentFragmentManager, "error_popup")
                     return@launch
                 }
 
@@ -197,12 +205,14 @@ class RegisterFragment : Fragment() {
                 try {
                     result = actionRegistration(publicEC, publicRSA, name, nick, cardNumber, cardDateValid, selectedCardType)
                     if(result.startsWith("Error")) {
+                        if (!isAdded) return@launch
                         ErrorFragment.newInstance(result).show(parentFragmentManager, "error_popup")
                         return@launch
                     }
                 }
                 catch (_: Exception) {
-                    ErrorFragment.newInstance("Error - The server was not available. Try again!").show(parentFragmentManager, "error_popup")
+                    if (!isAdded) return@launch
+                    ErrorFragment.newInstance("The server was not available. Try again!").show(parentFragmentManager, "error_popup")
                     return@launch
                 }
 
@@ -234,7 +244,8 @@ class RegisterFragment : Fragment() {
                     }
                 }
                 catch (_: Exception){
-                    ErrorFragment.newInstance("Error - A problem occur when saving the credentials. Try again!").show(parentFragmentManager, "error_popup")
+                    if (!isAdded) return@launch
+                    ErrorFragment.newInstance("A problem occur when saving the credentials. Try again!").show(parentFragmentManager, "error_popup")
                     return@launch
                 }
             }
