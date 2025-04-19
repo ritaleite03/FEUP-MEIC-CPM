@@ -169,12 +169,12 @@ private fun setUpCheckout(dialogView: View, fragment : CartFragment, spinnerType
 private fun redirectCheckout(activityType : Class<out Activity>, fragment: CartFragment, voucherId: UUID?, useDiscount: Boolean){
     val sharedPreferences = fragment.requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
     val uuid = sharedPreferences.getString("uuid", null)
-    val products: List<Pair<UUID, Short>> = listProducts.map { product ->
-        product.id to (product.euros * 100 + product.cents).toInt().toShort()
+    val products: List<Pair<UUID, Float>> = listProducts.map { product ->
+        product.id to product.price
     }
 
-    if (uuid != null && !products.isEmpty()) {
-        var encryptedTag = messageCheckout(fragment, UUID.fromString(uuid), products, voucherId, useDiscount)
+    if (uuid != null && products.isNotEmpty()) {
+        val encryptedTag = messageCheckout(fragment, UUID.fromString(uuid), products, voucherId, useDiscount)
         fragment.startActivity(Intent(fragment.requireActivity(), activityType).apply {
             putExtra("data", encryptedTag)
         })
@@ -199,10 +199,10 @@ private fun redirectCheckout(activityType : Class<out Activity>, fragment: CartF
  *
  * @return ByteArray representing the generated checkout message. Returns `null` if there is an error during generation.
  */
-private fun messageCheckout(fragment: CartFragment, userId: UUID, products: List<Pair<UUID, Short>>, voucherId: UUID?, useDiscount: Boolean): ByteArray? {
+private fun messageCheckout(fragment: CartFragment, userId: UUID, products: List<Pair<UUID, Float>>, voucherId: UUID?, useDiscount: Boolean): ByteArray? {
     try {
         val limitedProducts = products.take(10)
-        val dataLen = 16 + 1 + limitedProducts.size * (16 + 2) + 1 + 1 + if (voucherId != null) 16 else 0
+        val dataLen = 16 + 1 + limitedProducts.size * (16 + 4) + 1 + 1 + if (voucherId != null) 16 else 0
         val message = ByteArray(dataLen)
 
         ByteBuffer.wrap(message, 0, dataLen).apply {
@@ -212,7 +212,7 @@ private fun messageCheckout(fragment: CartFragment, userId: UUID, products: List
             for ((id, price) in limitedProducts) {
                 putLong(id.mostSignificantBits)
                 putLong(id.leastSignificantBits)
-                putShort(price)
+                putFloat(price)
             }
             put(if (useDiscount) 1 else 0)
             put(if (voucherId != null) 1 else 0)

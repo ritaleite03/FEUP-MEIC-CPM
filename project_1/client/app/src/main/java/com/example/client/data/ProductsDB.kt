@@ -20,16 +20,19 @@ class ProductsDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
     private val keyId = "Id"
     private val colUuid = "Uuid"
     private val colName = "Name"
-    private val colEuros = "Euros"
-    private val colCents = "Cents"
+    private val colCategory = "Category"
+    private val colSubCategory = "SubCategory"
+    private val colPrice = "Price"
 
     override fun onCreate(db: SQLiteDatabase) {
         val sqlCreateTable = "CREATE TABLE $tableProducts(" +
                 "$keyId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "$colUuid TEXT, " +
                 "$colName VARCHAR(100), " +
-                "$colEuros INTEGER, " +
-                "$colCents INTEGER)"
+                "$colCategory VARCHAR(100), " +
+                "$colSubCategory VARCHAR(100)," +
+                "$colPrice REAL)"
+
         db.execSQL(sqlCreateTable)
     }
 
@@ -46,8 +49,9 @@ class ProductsDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
             with (product) {
                 it.put(colUuid, id.toString())
                 it.put(colName, name)
-                it.put(colEuros, euros)
-                it.put(colCents, cents)
+                it.put(colCategory, category)
+                it.put(colSubCategory, subCategory)
+                it.put(colPrice, price)
             }
         }
         return writableDatabase.insert(tableProducts, null, values)
@@ -74,12 +78,13 @@ class ProductsDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
         val cursor = readableDatabase.rawQuery("SELECT * FROM  $tableProducts", null)
         listProducts.clear()
         while (cursor.moveToNext()) {
-            val product = Product(UUID.randomUUID(),"",0,0)
+            val product = Product(UUID.randomUUID(),"","","", 0f)
             with (product) {
                 id = UUID.fromString(cursor.getString(cursor.getColumnIndexOrThrow(colUuid)))
                 name = cursor.getString(cursor.getColumnIndexOrThrow(colName))
-                euros = cursor.getInt(cursor.getColumnIndexOrThrow(colEuros))
-                cents = cursor.getInt(cursor.getColumnIndexOrThrow(colCents))
+                category = cursor.getString(cursor.getColumnIndexOrThrow(colCategory))
+                subCategory = cursor.getString(cursor.getColumnIndexOrThrow(colSubCategory))
+                price = cursor.getFloat(cursor.getColumnIndexOrThrow(colPrice))
             }
             listProducts.add(product)
         }

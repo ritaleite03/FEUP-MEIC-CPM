@@ -87,7 +87,7 @@ class CartFragment : Fragment() {
      * Sum the price of all products.
      */
     private fun updateTotal(){
-        val totalValue = listProducts.sumOf{ it.euros + (it.cents / 100.0) }
+        val totalValue = listProducts.sumOf{ it.price.toDouble() }
         totalTextView.text = getString(R.string.price_format, totalValue)
     }
 
@@ -161,15 +161,24 @@ class CartFragment : Fragment() {
         val tagId = tag.int
         val id = UUID(tag.long, tag.long)
 
-        val euros = tag.short.toInt()
-        val cents = tag.get().toInt()
-
         val nameLength = tag.get().toInt()
         val nameBytes = ByteArray(nameLength)
         tag.get(nameBytes)
 
+        val categoryLength = tag.get().toInt()
+        val categoryBytes = ByteArray(categoryLength)
+        tag.get(categoryBytes)
+
+        val subCategoryLength = tag.get().toInt()
+        val subCategoryBytes = ByteArray(subCategoryLength)
+        tag.get(subCategoryBytes)
+
+        val price = tag.getFloat()
+
         val name = String(nameBytes, StandardCharsets.ISO_8859_1)
-        val newProduct = Product(id, name, euros, cents)
+        val category = String(categoryBytes, StandardCharsets.ISO_8859_1)
+        val subCategory = String(subCategoryBytes, StandardCharsets.ISO_8859_1)
+        val newProduct = Product(id, name, category, subCategory, price)
 
         productsDB.insert(newProduct)
         listProducts.add(newProduct)

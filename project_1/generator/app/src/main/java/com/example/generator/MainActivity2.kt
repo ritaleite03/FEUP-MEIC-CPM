@@ -9,6 +9,8 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.example.generator.utils.dpToPx
+import com.example.generator.utils.setInsetsPadding
 import java.nio.charset.StandardCharsets
 import java.util.Hashtable
 import kotlin.collections.set

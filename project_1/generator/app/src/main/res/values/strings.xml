@@ -2,13 +2,27 @@
     <string name="app_name">Generator</string>
     <string name="title">Generator</string>
 
-    <string name="product_name">Name</string>
-    <string name="product_price">Price</string>
-    <string name="product_euros">Euros</string>
-    <string name="product_comma">.</string>
-    <string name="product_cents">Cents</string>
-    <string name="product_coins">€</string>
-
+    <string name="add_cart_button">Add to Cart</string>
+    <string name="content_description">Grocery list</string>
     <string name="tv_qrtitle">Product Code</string>
+    <string name="grocery_image">Grocery Image</string>
+    <string name="grocery_price">€%1$s/kg</string>
+    <string name="grocery_description_arrow_down">Arrow Down</string>
+    <string name="search">Search for groceries…</string>
+
+    <string-array name="category_array">
+        <item>All</item>
+        <item>Fruit</item>
+        <item>Vegetables</item>
+        <item>Packages</item>
+        <item>Dessert</item>
+    </string-array>
+
+    <string-array name="sort_array">
+        <item>Name (A-Z)</item>
+        <item>Name (Z-A)</item>
+        <item>Price (Low to High)</item>
+        <item>Price (High to Low)</item>
+    </string-array>
 
 </resources>
