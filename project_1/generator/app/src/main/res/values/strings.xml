@@ -15,6 +15,7 @@
         <item>Fruit</item>
         <item>Vegetables</item>
         <item>Packages</item>
+        <item>Dessert</item>
     </string-array>
 
     <string-array name="sort_array">

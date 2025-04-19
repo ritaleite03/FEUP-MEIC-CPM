@@ -598,5 +598,13 @@
         "image_path": "arla_ecological_sour_cream",
         "price": 1.45,
         "description": "KRAV-labeled sour cream made from fresh cream from Swedish organic Arlagårdar. Sour cream is a real classic that has its obvious place for both everyday and weekend. It has an acidic, creamy and fresh taste with a slightly creamy consistency and is excellent as a natural accessory or as a base in cold sauces and dressings. With its fresh acid it softens the heat from spicy dishes. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n"
+    },
+    {
+        "category": "Dessert",
+        "sub_category": "Dubai Chocolate",
+        "name": "Dubai Chocolate",
+        "image_path": "dubai_chocolate",
+        "price": 104.99,
+        "description": "Dubai Chocolate is a luxurious confectionery that blends rich, premium cocoa with exotic Middle Eastern flavors."
     }
 ]

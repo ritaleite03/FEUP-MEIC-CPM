@@ -90,6 +90,8 @@ class GroceryAdapter(private val groceries: List<Grocery>, private val mainConte
             }
         }
 
+        Log.d("Path", grocery.imagePath)
+
         holder.category.text = grocery.category
         holder.image.setImageResource(resourceID)
         holder.title.text = if (grocery.name == grocery.subCategory) { grocery.name } else { "${grocery.subCategory} (${grocery.name})" }

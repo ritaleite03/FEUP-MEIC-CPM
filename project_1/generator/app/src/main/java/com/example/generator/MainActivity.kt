@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         categorySpinner.adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,
-            listOf("All", "Fruit", "Vegetables", "Packages")
+            listOf("All", "Fruit", "Vegetables", "Packages", "Dessert")
         )
 
         sortSpinner.adapter = ArrayAdapter(

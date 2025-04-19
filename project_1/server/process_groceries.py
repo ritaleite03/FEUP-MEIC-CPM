@@ -62,6 +62,15 @@ if __name__ == "__main__":
 
             groceries_info.append(grocery_info)
 
+    groceries_info.append({
+        "category": "Dessert",
+        "sub_category": "Dubai Chocolate",
+        "name": "Dubai Chocolate",
+        "image_path": "dubai_chocolate",
+        "price": 104.99,
+        "description": "Dubai Chocolate is a luxurious confectionery that blends rich, premium cocoa with exotic Middle Eastern flavors."
+    })
+
     with open(os.path.join(GROCERIES_DIR, "groceries_info.json"), 'w', encoding="UTF-8") as f:
         json.dump(groceries_info, f, ensure_ascii=False, indent=4)
 

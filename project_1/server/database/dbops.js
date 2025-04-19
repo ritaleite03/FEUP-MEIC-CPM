@@ -105,7 +105,6 @@ class DBOps {
         console.log("---- START Populating Grocery Table (db) ----");
         try {
             for (const grocery_info of groceries_data) {
-                console.log(grocery_info)
                 await this.insertGroceryIntoTable(grocery_info);
             }
         } catch(error) {
