@@ -9,15 +9,23 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <TextView
-        android:id="@+id/error"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center_horizontal"
-        android:maxWidth="300dp"
-        android:text="@string/register_error"
-        android:textColor="@color/design_default_color_error"
-        android:textStyle="bold" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
+        android:backgroundTint="@color/design_default_color_error"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/error"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:maxWidth="300dp"
+            android:text="@string/register_error"
+            android:textColor="@color/design_default_color_error"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </FrameLayout>

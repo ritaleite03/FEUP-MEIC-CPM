@@ -8,13 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity
 import com.example.client.MainActivity2
 import com.example.client.R
 import com.example.client.fragments.feedback.ErrorFragment
-import com.example.client.fragments.feedback.ProgressFragment
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,8 +35,6 @@ class LoginFragment : Fragment() {
         var button  = view.findViewById<Button>(R.id.login_button)
 
         button.setOnClickListener{
-            // show fragment showing the loading progress
-            loadFragment(ProgressFragment())
 
             // capture data entered into text fields
             var name = view.findViewById<TextInputEditText>(R.id.input_name).text.toString()
@@ -67,22 +63,8 @@ class LoginFragment : Fragment() {
 
             // if the data does not match, then show error fragment
             else {
-                loadFragment(ErrorFragment.newInstance("Error - The credentials are incorrect. Try again!"))
+                ErrorFragment.newInstance("Error - The credentials are incorrect. Try again!").show(parentFragmentManager, "error_popup")
             }
         }
-    }
-
-    /**
-     * Replaces the current fragment in the container with the given fragment.
-     * Uses childFragmentManager to manage inner fragments.
-     *
-     * @param fragment New fragment to be shown.
-     */
-    private fun loadFragment(fragment: Fragment) {
-        childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        childFragmentManager
-            .beginTransaction()
-            .replace(R.id.container_login, fragment)
-            .commit()
     }
 }

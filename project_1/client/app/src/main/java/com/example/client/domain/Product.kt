@@ -1,4 +1,4 @@
-package com.example.client.fragments
+package com.example.client.domain
 
 import android.app.Activity
 import android.content.Context
@@ -8,7 +8,10 @@ import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
 import com.example.client.R
+import com.example.client.data.ProductsDB
 import java.util.UUID
+
+lateinit var productsDB: ProductsDB
 
 /**
  * Data class representing a product.
@@ -19,38 +22,17 @@ import java.util.UUID
  * @property cents Fractional part of the product's price (0-99).
  */
 data class Product(
-    val id: UUID,
-    val name: String,
-    val category: String,
-    val subCategory: String,
-    val price: Float
+    var id: UUID,
+    var name: String,
+    var category: String,
+    var subCategory: String,
+    var price: Float
 )
 
 /**
  * List of the all the products in the cart (initially empty).
  */
 val listProducts = arrayListOf<Product>()
-
-//class CartViewModel : ViewModel() {
-//    private val _products = MutableLiveData<ArrayList<Product>>(arrayListOf())
-//    val products: LiveData<ArrayList<Product>> = _products
-//
-//    fun addProduct(product: Product) {
-//        val updatedList = _products.value ?: arrayListOf()
-//        updatedList.add(product)
-//        _products.value = updatedList
-//    }
-//
-//    fun removeProductAt(index: Int) {
-//        val updatedList = _products.value ?: return
-//        updatedList.removeAt(index)
-//        _products.value = updatedList
-//    }
-//
-//    fun getTotal(): Double {
-//        return _products.value?.sumOf { it.value } ?: 0.00
-//    }
-//}
 
 /**
  * Adapter to bind [Product] objects to an [android.widget.ListView].
@@ -76,6 +58,7 @@ class ProductAdapter(
 
             // define remove action
             row.findViewById<ImageButton>(R.id.bt_remove).setOnClickListener {
+                productsDB.delete(listProducts[pos].id)
                 listProducts.removeAt(pos)
                 notifyDataSetChanged()
                 onRemove(pos)

@@ -20,6 +20,7 @@ import java.util.UUID
 import androidx.lifecycle.lifecycleScope
 import com.example.client.actionChallengeVouchers
 import com.example.client.actionGetVouchers
+import com.example.client.domain.listProducts
 import com.example.client.fragments.feedback.ErrorFragment
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
 import kotlinx.coroutines.launch
@@ -50,7 +51,7 @@ fun openCheckout(fragment: CartFragment) {
             val result = JSONObject(actionChallengeVouchers(uuid.toString()))
             nonce = UUID.fromString(result.getString("nonce").toString())
         } catch (_ : Exception) {
-            fragment.loadFragment(ErrorFragment.newInstance("Error - The server was not available. Try again!"))
+            ErrorFragment.newInstance("Error - The server was not available. Try again!").show(fragment.parentFragmentManager, "error_popup")
             return@launch
         }
 
@@ -72,7 +73,7 @@ fun openCheckout(fragment: CartFragment) {
             vouchers = result.getJSONArray("vouchers")
 
         } catch (_ : Exception) {
-            fragment.loadFragment(ErrorFragment.newInstance("Error - The server was not available. Try again!"))
+            ErrorFragment.newInstance("Error - The server was not available. Try again!").show(fragment.parentFragmentManager, "error_popup")
             return@launch
         }
 

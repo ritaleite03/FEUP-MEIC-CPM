@@ -18,7 +18,15 @@ import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
 import java.util.UUID
 import android.util.Log
-import com.example.terminal.NFC.READER_FLAGS
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.example.terminal.utils.NFC.READER_FLAGS
+import com.example.terminal.fragments.ErrorFragment
+import com.example.terminal.fragments.SuccessFragment
+import com.example.terminal.utils.Lightness
+import com.example.terminal.utils.dpToPx
+import com.example.terminal.utils.setInsetsPadding
+import com.example.terminal.utils.setStatusBarIconColor
 
 /**
  * Main activity for handling NFC and QR code scanning.
@@ -48,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        setInsetsPadding(toolbar, top=dpToPx(-8f))
+        setInsetsPadding(toolbar, top = dpToPx(-8f))
         setStatusBarIconColor(window, Lightness.LIGHT)
 
         tvContent.setText(R.string.tv_waiting)
@@ -201,7 +209,14 @@ class MainActivity : AppCompatActivity() {
             sb.append("Discount Applied: $useDiscount\n")
             voucherId?.let { sb.append("Voucher ID: $it\n") }
             val result = pay(order)
-            sb.append(result)
+
+            Log.d("test",result)
+            if(result == "True") {
+                loadFragment(SuccessFragment())
+            }
+            else {
+                loadFragment(ErrorFragment())
+            }
 
         } catch (ex: Exception) {
             sb.append("Error in message processing: ${ex.message}")
@@ -210,4 +225,17 @@ class MainActivity : AppCompatActivity() {
         tvContent.text = sb.toString()
     }
 
+    /**
+     * Method used to load a fragment into the Activity.
+     *
+     * @param fragment fragment to display
+     */
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
 }

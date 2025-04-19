@@ -4,6 +4,9 @@
 
     <string name="welcome">Welcome</string>
     <string name="details">Please enter your details</string>
+    <string name="update">Update</string>
+    <string name="go_back">Go Back</string>
+    <string name="conclude">Conclude</string>
 
     // register fragment
     <string name="register_hint_name">Name</string>
@@ -16,7 +19,7 @@
     <string name="register_cart_date_mask">__/__/____</string>
     <string name="register_cart_type_1">Visa</string>
     <string name="register_cart_type_2">Mastercard</string>
-    <string name="register_cart_type_3">American Express	</string>
+    <string name="register_cart_type_3">Discover</string>
     // login fragment
     <string name="login_hint_name">Name</string>
     <string name="login_hint_nick">Nickname</string>

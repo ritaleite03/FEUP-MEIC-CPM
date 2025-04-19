@@ -64,8 +64,6 @@ It is crucial that the supermarket key remains unchanged after a customer has re
 
 ## Implemented Features
 
--   Of course! Here's the improved version of your text in English, structured clearly and professionally — perfect for a README:
-
 ### On the Server
 
 -   Receives the public key from the supermarket, sent by the QR code generator app.
@@ -85,16 +83,39 @@ It is crucial that the supermarket key remains unchanged after a customer has re
 
 ### On the User App
 
--   Generates RSA and EC key pairs on the device.
--   Registers the user on the server and stores credentials locally.
--   Allows the user to view recent transactions and their vouchers.
--   Add products by scanning QR codes.
--   Remove products from the cart.
--   Checkout configuration:
--   Choose payment method, NFC or QR Code.
--   Enable or disable discounts in the checkout.
--   Select a voucher (none or by ID).
--   Generate the checkout message using QR Code or NFC.
+-   **Authentication**
+
+    -   Generates RSA and EC key pairs on the device.
+    -   Registers the user on the server and securely stores credentials locally.
+    -   Supports local login if the user is already registered. - Provides user feedback during login and registration in case of errors.
+
+-   **Product and Cart Management**
+
+    -   Adds products to the cart by scanning QR codes.
+    -   Removes products from the cart.
+    -   Checkout configuration allows:
+
+        -   Choosing the payment method: NFC or QR Code;
+        -   Enabling or disabling discounts;
+        -   Selecting a voucher (or choosing none).
+
+-   **Payment**
+
+    -   Generates the checkout message via QR Code or NFC.
+    -   Executes the payment process.
+    -   Provide the option to go back and continue shopping (payment was not completed, so the product list remains unchanged).
+    -   Provide the option to confirm that the payment was completed (payment was successful, so the product list is cleared).
+
+-   **Transactions and Vouchers**
+
+    -   Displays recent transactions and available vouchers.
+    -   Requests transactions and vouchers from the server using a nonce challenge for secure authentication.
+
+-   **Data Persistence**
+
+    -   Stores the user's product list locally in a database.
+    -   Stores the user's vouchers locally in a database.
+    -   Stores the user's transactions locally in a database. // TODO
 
 ## Navigation
 

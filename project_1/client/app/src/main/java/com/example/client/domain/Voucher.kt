@@ -1,4 +1,4 @@
-package com.example.client.fragments
+package com.example.client.domain
 
 import android.app.Activity
 import android.content.Context
@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.example.client.R
+import com.example.client.data.VouchersDB
 import java.util.UUID
+
+lateinit var vouchersDB : VouchersDB
 
 /**
  * Data class representing a voucher.
@@ -16,8 +19,8 @@ import java.util.UUID
  * @property value Value of the voucher (15%).
  */
 data class Voucher(
-    val id: UUID,
-    val value: Int
+    var id: UUID,
+    var value: Int
 )
 
 /**

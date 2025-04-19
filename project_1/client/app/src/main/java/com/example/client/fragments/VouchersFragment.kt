@@ -6,13 +6,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ListView
-import androidx.fragment.app.FragmentManager
+import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity2
 import com.example.client.R
 import com.example.client.actionChallengeVouchers
 import com.example.client.actionGetVouchers
+import com.example.client.data.VouchersDB
+import com.example.client.domain.Voucher
+import com.example.client.domain.VoucherAdapter
+import com.example.client.domain.listVouchers
+import com.example.client.domain.vouchersDB
 import com.example.client.fragments.feedback.ErrorFragment
 import com.example.client.getPrivateKey
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
@@ -29,6 +35,9 @@ import javax.crypto.Cipher
 class VouchersFragment : Fragment() {
 
     private lateinit var vouchersListView: ListView
+    private lateinit var empty: TextView
+    private lateinit var buttonUpdate : Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,22 +49,44 @@ class VouchersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         vouchersListView = view.findViewById<ListView>(R.id.lv_voucher)
+        empty = view.findViewById(R.id.empty2)
+        buttonUpdate = view.findViewById<Button>(R.id.bottom_button_update)
+        vouchersDB = VouchersDB(requireActivity().applicationContext)
 
         val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences",
             Context.MODE_PRIVATE
         )
         val uuid = sharedPreferences.getString("uuid", null)
 
+        buttonUpdate.setOnClickListener {
+            if (uuid != null) {
+                updateVouchers(uuid)
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vouchersDB.getVouchers()
+        vouchersListView.run {
+            emptyView = empty
+            adapter = VoucherAdapter(requireContext(), listVouchers) {
+            }
+        }
+        registerForContextMenu(vouchersListView)
+    }
+
+    private fun updateVouchers(uuid : String){
         lifecycleScope.launch {
 
-            var nonce : UUID? = null
+            var nonce: UUID? = null
 
             // get nonce challenge
             try {
                 val result = JSONObject(actionChallengeVouchers(uuid.toString()))
                 nonce = UUID.fromString(result.getString("nonce").toString())
-            } catch (_ : Exception) {
-                loadFragment(ErrorFragment.newInstance("Error - The server was not available. Try again!"))
+            } catch (_: Exception) {
+                ErrorFragment.newInstance("Error - The server was not available. Try again!").show(parentFragmentManager, "error_popup")
                 return@launch
             }
 
@@ -71,21 +102,26 @@ class VouchersFragment : Fragment() {
                 doFinal(buffer.array())
             }
 
-            var vouchers : JSONArray? = null
+            var vouchers: JSONArray? = null
             try {
                 val result = JSONObject(actionGetVouchers(uuid.toString(), encrypted))
                 vouchers = result.getJSONArray("vouchers")
 
-            } catch (_ : Exception) {
-                loadFragment(ErrorFragment.newInstance("Error - The server was not available. Try again!"))
+            } catch (_: Exception) {
+                ErrorFragment.newInstance("Error - The server was not available. Try again!").show(parentFragmentManager, "error_popup")
                 return@launch
             }
 
-            for(i in 0 until vouchers.length()) {
+            listVouchers.clear()
+            vouchersDB.deleteAll()
+
+            for (i in 0 until vouchers.length()) {
                 val voucherObject = vouchers.getJSONObject(i)
                 val voucherUuid = UUID.fromString(voucherObject.getString("uuid"))
                 val voucherValue = 15
-                listVouchers.add(Voucher(voucherUuid, voucherValue))
+                val voucher = Voucher(voucherUuid, voucherValue)
+                vouchersDB.insert(voucher)
+                listVouchers.add(voucher)
             }
             vouchersListView.run {
                 adapter = VoucherAdapter(requireContext(), listVouchers) {
@@ -93,19 +129,5 @@ class VouchersFragment : Fragment() {
             }
             (vouchersListView.adapter as VoucherAdapter).notifyDataSetChanged()
         }
-    }
-
-    /**
-     * Replaces the current fragment in the container with the given fragment.
-     * Uses childFragmentManager to manage inner fragments.
-     *
-     * @param fragment New fragment to be shown.
-     */
-    private fun loadFragment(fragment: Fragment) {
-        childFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        childFragmentManager
-            .beginTransaction()
-            .replace(R.id.container_vouchers, fragment)
-            .commit()
     }
 }

@@ -2,9 +2,10 @@ package com.example.terminal
 
 import android.util.Base64
 import android.util.Log
-import com.example.terminal.Server.SERVER_IP
-import com.example.terminal.Server.SERVER_PAY
-import com.example.terminal.Server.SERVER_PORT
+import com.example.terminal.utils.Server.SERVER_IP
+import com.example.terminal.utils.Server.SERVER_PAY
+import com.example.terminal.utils.Server.SERVER_PORT
+import com.example.terminal.utils.readStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -48,8 +49,8 @@ suspend fun pay(message : ByteArray): String {
                 val jsonResponse = JSONObject(result)
                 val verified = jsonResponse.getBoolean("verified")
 
-                if (verified) result = "Success in the verification."
-                else result = "Failure in the verification."
+                if (verified) result = "True"
+                else result = "False"
             }
         } catch (e: Exception) {
             Log.d("error", e.toString())
