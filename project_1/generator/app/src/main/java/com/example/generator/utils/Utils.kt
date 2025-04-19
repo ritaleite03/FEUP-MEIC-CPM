@@ -1,4 +1,4 @@
-package com.example.generator
+package com.example.generator.utils
 
 import java.io.BufferedReader
 import java.io.IOException

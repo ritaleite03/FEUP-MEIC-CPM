@@ -5,7 +5,8 @@
     <string name="add_cart_button">Add to Cart</string>
     <string name="content_description">Grocery list</string>
     <string name="tv_qrtitle">Product Code</string>
-
+    <string name="grocery_image">Grocery Image</string>
     <string name="grocery_price">€%1$s/kg</string>
+    <string name="grocery_description_arrow_down">Arrow Down</string>
 
 </resources>

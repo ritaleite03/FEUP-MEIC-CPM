@@ -1,4 +1,4 @@
-package com.example.generator
+package com.example.generator.utils
 
 import android.annotation.SuppressLint
 import android.content.Context

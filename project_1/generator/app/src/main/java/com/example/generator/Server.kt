@@ -3,6 +3,7 @@ package com.example.generator
 import com.example.generator.Server.SERVER_GROCERIES
 import com.example.generator.Server.SERVER_IP
 import com.example.generator.Server.SERVER_PORT
+import com.example.generator.utils.readStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection

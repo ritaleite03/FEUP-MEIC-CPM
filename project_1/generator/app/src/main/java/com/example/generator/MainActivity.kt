@@ -14,6 +14,7 @@ import com.example.generator.Crypto.CRYPTO_ENC_ALGO
 import com.example.generator.Crypto.CRYPTO_NAME
 import com.example.generator.Crypto.CRYPTO_SIGN_ALGO
 import com.example.generator.Crypto.CRYPTO_TAG_ID
+import com.example.generator.utils.setInsetsPadding
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.nio.ByteBuffer
