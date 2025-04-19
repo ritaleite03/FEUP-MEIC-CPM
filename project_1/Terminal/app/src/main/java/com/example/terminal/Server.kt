@@ -1,6 +1,7 @@
 package com.example.terminal
 
 import android.util.Base64
+import android.util.Log
 import com.example.terminal.Server.SERVER_IP
 import com.example.terminal.Server.SERVER_PAY
 import com.example.terminal.Server.SERVER_PORT
@@ -51,6 +52,7 @@ suspend fun pay(message : ByteArray): String {
                 else result = "Failure in the verification."
             }
         } catch (e: Exception) {
+            Log.d("error", e.toString())
             result = e.toString()
         }
 

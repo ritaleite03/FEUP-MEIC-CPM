@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
-const groceries_data = require("../groceries/groceries_info.json")
+const groceries_data = require("../groceries/groceries_info.json");
 
 // path to the SQLite database
 const DB_PATH = path.resolve("database/users.db");
@@ -416,7 +416,7 @@ class DBOps {
                 `,
                 [uuid, total, user]
             );
-            console.log("Total", total)
+
             await this.db.run("COMMIT");
             console.log("Success in payment transaction 3!");
             const rows = await this.db.run(
@@ -424,7 +424,6 @@ class DBOps {
                 [user]
             );
 
-            console.log("aqui:", rows);
             return true;
         }
         catch (error) {
@@ -473,6 +472,7 @@ class DBOps {
 
             return verified;
         } catch (error) {
+            console.log("ERROR:", error);
             console.log("Error in signature verification!");
             return false;
         }

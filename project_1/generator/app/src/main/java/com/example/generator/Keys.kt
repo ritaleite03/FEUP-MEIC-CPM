@@ -143,24 +143,6 @@ fun getPrivateKey(entry: KeyStore.PrivateKeyEntry?): PrivateKey? {
 }
 
 /**
- * Defines the keys by either generating them or loading them from the keystore.
- *
- * @param generate Boolean flag indicating whether to generate new keys or load existing ones.
- * @param entry Entry containing both public and private keys.
- *
- * @return A Pair where the first element is the public key and the second element is the private key.
- */
-fun defineKeys(generate : Boolean, entry: KeyStore.PrivateKeyEntry?): Pair<PublicKey?, PrivateKey?> {
-    if (generate) {
-        generateKeys()
-    }
-    val privateKey = getPrivateKey(entry)
-    val publicKey = getPublicKey(entry)
-
-    return Pair(publicKey, privateKey)
-}
-
-/**
  * Generates a cryptographic tag from the provided data (UUID, name, euros, cents).
  * The tag is then encrypted using the private key stored in the Android Keystore.
  *

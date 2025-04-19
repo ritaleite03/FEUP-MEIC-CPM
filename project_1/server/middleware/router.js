@@ -129,7 +129,9 @@ async function actionPayment(ctx) {
 
         // verifying signature
         const verifySign = await db.verifySignature(user, sign, part);
-        if (verifySign === false) throw new Error("Invalid signature!");
+        if (verifySign === false) {
+            throw new Error("Invalid signature!")
+        };
 
         // calculating total value to pay
         let priceTotal = 0;
@@ -358,7 +360,7 @@ function readPayment(message) {
         ].join("-");
         offset += 16;
         const price = buf.readInt16BE(offset);
-        offset += 2;
+        offset += 4;
         products.push({ productId: productId, priceInCents: price });
         console.log("   - ProductId and Price -", productId, price);
     }

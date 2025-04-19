@@ -172,8 +172,8 @@ private fun redirectCheckout(activityType : Class<out Activity>, fragment: CartF
         product.id to product.price
     }
 
-    if (uuid != null && !products.isEmpty()) {
-        var encryptedTag = messageCheckout(fragment, UUID.fromString(uuid), products, voucherId, useDiscount)
+    if (uuid != null && products.isNotEmpty()) {
+        val encryptedTag = messageCheckout(fragment, UUID.fromString(uuid), products, voucherId, useDiscount)
         fragment.startActivity(Intent(fragment.requireActivity(), activityType).apply {
             putExtra("data", encryptedTag)
         })
@@ -201,7 +201,7 @@ private fun redirectCheckout(activityType : Class<out Activity>, fragment: CartF
 private fun messageCheckout(fragment: CartFragment, userId: UUID, products: List<Pair<UUID, Float>>, voucherId: UUID?, useDiscount: Boolean): ByteArray? {
     try {
         val limitedProducts = products.take(10)
-        val dataLen = 16 + 1 + limitedProducts.size * (16 + 2) + 1 + 1 + if (voucherId != null) 16 else 0
+        val dataLen = 16 + 1 + limitedProducts.size * (16 + 4) + 1 + 1 + if (voucherId != null) 16 else 0
         val message = ByteArray(dataLen)
 
         ByteBuffer.wrap(message, 0, dataLen).apply {

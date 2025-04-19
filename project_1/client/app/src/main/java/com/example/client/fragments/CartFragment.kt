@@ -2,7 +2,6 @@ package com.example.client.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -177,10 +176,6 @@ class CartFragment : Fragment() {
         val category = String(categoryBytes, StandardCharsets.ISO_8859_1)
         val subCategory = String(subCategoryBytes, StandardCharsets.ISO_8859_1)
         val newProduct = Product(id, name, category, subCategory, price)
-
-        Log.d("name", price.toString())
-        Log.d("category", category.toString())
-        Log.d("subCategory", subCategory.toString())
 
         listProducts.add(newProduct)
         (productListView.adapter as ProductAdapter).notifyDataSetChanged()

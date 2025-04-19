@@ -68,16 +68,14 @@ class MainActivity : AppCompatActivity() {
             listOf("None", "Name (A-Z)", "Name (Z-A)", "Price (Low to High)", "Price (High to Low)")
         )
 
-        Log.d("entry", entry.toString())
-
         // generate keys if they don't exist
-        val (pub, priv) = if (entry == null) { defineKeys(true, entry) }
-        else { defineKeys(false, entry) }
-        publicKey = pub
-        privateKey = priv
+        if (entry == null) {
+            generateKeys()
+        }
 
-        Log.d("pub", publicKey.toString())
-        Log.d("priv", privateKey.toString())
+        publicKey = getPublicKey(entry)
+        privateKey = getPrivateKey(entry)
+
 
         lifecycleScope.launch {
             informServer(publicKey)
