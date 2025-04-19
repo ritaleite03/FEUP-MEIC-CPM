@@ -14,8 +14,8 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.generator.Crypto.CRYPTO_ANDROID_KEYSTORE
-import com.example.generator.Crypto.CRYPTO_NAME
+import com.example.generator.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
+import com.example.generator.utils.Crypto.CRYPTO_NAME
 import com.example.generator.Grocery.Companion.parseGroceries
 import com.example.generator.utils.setInsetsPadding
 import kotlinx.coroutines.launch
@@ -86,6 +86,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Sets up the RecyclerView with the provided groceries data.
+     *
+     * @param groceries The groceries data to display in the RecyclerView.
+     */
     private fun setupRecyclerView(groceries: JSONObject) {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -95,6 +100,9 @@ class MainActivity : AppCompatActivity() {
         setupFilters()
     }
 
+    /**
+     * Sets up filtering functionality.
+     */
     private fun setupFilters() {
         val applyFilters = {
             val search = searchField.text.toString()

@@ -16,6 +16,9 @@ import com.example.generator.utils.expand
 import org.json.JSONObject
 import java.util.UUID
 
+/**
+ * Data class representing a Grocery item.
+ */
 data class Grocery (
     val name: String,
     val category: String,
@@ -25,6 +28,14 @@ data class Grocery (
     val price: Float
 ) {
     companion object {
+
+        /**
+         * Parses a JSON object containing a list of groceries.
+         *
+         * @param jsonObject The JSON object containing the groceries.
+         *
+         * @return A list of groceries.
+         */
         fun parseGroceries(jsonObject: JSONObject): List<Grocery> {
             val groceryList = mutableListOf<Grocery>()
             val groceriesArray = jsonObject.getJSONArray("groceries")
@@ -48,11 +59,20 @@ data class Grocery (
     }
 }
 
+/**
+ * RecyclerView Adapter to display and filter the list of groceries.
+ *
+ * @property groceries The full list of groceries.
+ * @property mainContext The [MainActivity] context used for resource access and navigation.
+ */
 class GroceryAdapter(private val groceries: List<Grocery>, private val mainContext: MainActivity):
     RecyclerView.Adapter<GroceryAdapter.GroceryViewHolder>() {
 
     private var filteredList: List<Grocery> = groceries
 
+    /**
+     * ViewHolder for each grocery item in the RecyclerView.
+     */
     class GroceryViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val category: TextView = view.findViewById(R.id.groceryCategory)
         val image: ImageView = view.findViewById(R.id.groceryImage)
@@ -110,6 +130,13 @@ class GroceryAdapter(private val groceries: List<Grocery>, private val mainConte
 
     override fun getItemCount() = filteredList.size
 
+    /**
+     * Applies filtering based on each filter option.
+     *
+     * @param searchText Text to search for in grocery name or subcategory
+     * @param category The selected categoty filter.
+     * @param sortOption The selected sorting criteria.
+     */
     fun applyFilter(searchText: String, category: String, sortOption: String) {
         var tempList = groceries
 

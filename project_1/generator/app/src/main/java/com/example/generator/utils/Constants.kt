@@ -1,4 +1,4 @@
-package com.example.generator
+package com.example.generator.utils
 
 /**
  * Contains server-related constants such as IP address, port, and route paths.
@@ -10,6 +10,7 @@ object Server {
     const val SERVER_PORT = "8000"
     /** Path of the informative action route on the server. */
     const val SERVER_INFORM = "/key"
+    /** Path of the groceries route on the server. */
     const val SERVER_GROCERIES = "/groceries"
 }
 

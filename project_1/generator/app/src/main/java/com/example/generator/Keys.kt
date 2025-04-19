@@ -3,21 +3,19 @@ package com.example.generator
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Log
-import androidx.lifecycle.lifecycleScope
-import com.example.generator.Crypto.CRYPTO_ANDROID_KEYSTORE
-import com.example.generator.Crypto.CRYPTO_CERT_SERIAL
-import com.example.generator.Crypto.CRYPTO_ENC_ALGO
-import com.example.generator.Crypto.CRYPTO_KEY_ALGO
-import com.example.generator.Crypto.CRYPTO_KEY_SIZE
-import com.example.generator.Crypto.CRYPTO_NAME
-import com.example.generator.Crypto.CRYPTO_SIGN_ALGO
-import com.example.generator.Crypto.CRYPTO_TAG_ID
-import com.example.generator.Server.SERVER_INFORM
-import com.example.generator.Server.SERVER_IP
-import com.example.generator.Server.SERVER_PORT
+import com.example.generator.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
+import com.example.generator.utils.Crypto.CRYPTO_CERT_SERIAL
+import com.example.generator.utils.Crypto.CRYPTO_ENC_ALGO
+import com.example.generator.utils.Crypto.CRYPTO_KEY_ALGO
+import com.example.generator.utils.Crypto.CRYPTO_KEY_SIZE
+import com.example.generator.utils.Crypto.CRYPTO_NAME
+import com.example.generator.utils.Crypto.CRYPTO_SIGN_ALGO
+import com.example.generator.utils.Crypto.CRYPTO_TAG_ID
+import com.example.generator.utils.Server.SERVER_INFORM
+import com.example.generator.utils.Server.SERVER_IP
+import com.example.generator.utils.Server.SERVER_PORT
 import com.example.generator.utils.readStream
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import java.net.HttpURLConnection
@@ -148,6 +146,9 @@ fun getPrivateKey(entry: KeyStore.PrivateKeyEntry?): PrivateKey? {
  * Defines the keys by either generating them or loading them from the keystore.
  *
  * @param generate Boolean flag indicating whether to generate new keys or load existing ones.
+ * @param entry Entry containing both public and private keys.
+ *
+ * @return A Pair where the first element is the public key and the second element is the private key.
  */
 fun defineKeys(generate : Boolean, entry: KeyStore.PrivateKeyEntry?): Pair<PublicKey?, PrivateKey?> {
     if (generate) {
@@ -163,10 +164,10 @@ fun defineKeys(generate : Boolean, entry: KeyStore.PrivateKeyEntry?): Pair<Publi
  * Generates a cryptographic tag from the provided data (UUID, name, euros, cents).
  * The tag is then encrypted using the private key stored in the Android Keystore.
  *
+ * @param entry Entry containing both public and private keys.
  * @param uuid UUID of the tag.
- * @param name Name associated with the tag.
- * @param euro Amount of euros.
- * @param cent Amount of cents.
+ * @param grocery Grocery that will be used to generate the tag.
+ *
  * @return The encrypted tag as a byte array, or null if encryption fails.
  */
 fun generateTag(entry: KeyStore.PrivateKeyEntry?, uuid: UUID, grocery: Grocery) : ByteArray? {

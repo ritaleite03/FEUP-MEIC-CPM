@@ -4,6 +4,11 @@ import android.animation.ValueAnimator
 import android.view.View
 import androidx.core.animation.doOnEnd
 
+/**
+ * Expands the given view by animating its height from 0 to its measured height.
+ *
+ * @param view The View to expand.
+ */
 fun expand(view: View) {
     view.measure(
         View.MeasureSpec.makeMeasureSpec((view.parent as View).width, View.MeasureSpec.EXACTLY),
@@ -23,6 +28,11 @@ fun expand(view: View) {
     animator.start()
 }
 
+/**
+ * Collapses the given view by animating its height from its current height to 0.
+ *
+ * @param view The View to collapse.
+ */
 fun collapse(view: View) {
     val initialHeight = view.measuredHeight
 
