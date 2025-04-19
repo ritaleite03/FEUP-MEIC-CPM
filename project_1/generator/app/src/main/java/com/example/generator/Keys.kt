@@ -2,27 +2,38 @@ package com.example.generator
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import com.example.generator.Crypto.CRYPTO_ANDROID_KEYSTORE
 import com.example.generator.Crypto.CRYPTO_CERT_SERIAL
+import com.example.generator.Crypto.CRYPTO_ENC_ALGO
 import com.example.generator.Crypto.CRYPTO_KEY_ALGO
 import com.example.generator.Crypto.CRYPTO_KEY_SIZE
 import com.example.generator.Crypto.CRYPTO_NAME
+import com.example.generator.Crypto.CRYPTO_SIGN_ALGO
+import com.example.generator.Crypto.CRYPTO_TAG_ID
 import com.example.generator.Server.SERVER_INFORM
 import com.example.generator.Server.SERVER_IP
 import com.example.generator.Server.SERVER_PORT
 import com.example.generator.utils.readStream
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import java.net.HttpURLConnection
 import java.net.URL
+import java.nio.ByteBuffer
+import java.nio.charset.StandardCharsets
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.PublicKey
+import java.security.Signature
 import java.util.Base64
 import java.util.Calendar
 import java.util.GregorianCalendar
+import java.util.UUID
+import javax.crypto.Cipher
 import javax.security.auth.x500.X500Principal
 
 /**
@@ -131,4 +142,76 @@ fun getPublicKey(entry: KeyStore.PrivateKeyEntry?): PublicKey? {
  */
 fun getPrivateKey(entry: KeyStore.PrivateKeyEntry?): PrivateKey? {
     return entry?.privateKey
+}
+
+/**
+ * Defines the keys by either generating them or loading them from the keystore.
+ *
+ * @param generate Boolean flag indicating whether to generate new keys or load existing ones.
+ */
+fun defineKeys(generate : Boolean, entry: KeyStore.PrivateKeyEntry?): Pair<PublicKey?, PrivateKey?> {
+    if (generate) {
+        generateKeys()
+    }
+    val privateKey = getPrivateKey(entry)
+    val publicKey = getPublicKey(entry)
+
+    return Pair(publicKey, privateKey)
+}
+
+/**
+ * Generates a cryptographic tag from the provided data (UUID, name, euros, cents).
+ * The tag is then encrypted using the private key stored in the Android Keystore.
+ *
+ * @param uuid UUID of the tag.
+ * @param name Name associated with the tag.
+ * @param euro Amount of euros.
+ * @param cent Amount of cents.
+ * @return The encrypted tag as a byte array, or null if encryption fails.
+ */
+fun generateTag(entry: KeyStore.PrivateKeyEntry?, uuid: UUID, grocery: Grocery) : ByteArray? {
+    val subName = if (grocery.name.length > 29) grocery.name.substring(0, 29) else grocery.name
+    val sCategory = if (grocery.category.length > 29) grocery.category.substring(0, 29) else grocery.category
+    val subSubCategory = if (grocery.subCategory.length > 29) grocery.subCategory.substring(0, 29) else grocery.subCategory
+
+    // length of (tagID, UUID, nr_bytes(name)(byte), name, nr_bytes(category)(byte), category,
+    // nr_bytes(subCategory)(byte), subCategory, price(float)
+    val len = 4 + 16 + 1 + subName.length + 1 + sCategory.length + 1 + subSubCategory.length + 4
+
+    val tag = ByteBuffer.allocate(len).apply {
+        putInt(CRYPTO_TAG_ID)
+        putLong(uuid.mostSignificantBits)
+        putLong(uuid.leastSignificantBits)
+        put(subName.length.toByte())
+        put(subName.toByteArray(StandardCharsets.ISO_8859_1))
+        put(sCategory.length.toByte())
+        put(sCategory.toByteArray(StandardCharsets.ISO_8859_1))
+        put(subSubCategory.length.toByte())
+        put(subSubCategory.toByteArray(StandardCharsets.ISO_8859_1))
+        putFloat(grocery.price)
+    }
+
+    try {
+        val encryptedTag = Cipher.getInstance(CRYPTO_ENC_ALGO).run {
+            init(Cipher.ENCRYPT_MODE, getPrivateKey(entry))
+            doFinal(tag.array())
+        }
+
+        val signature = Signature.getInstance(CRYPTO_SIGN_ALGO).run {
+            initSign(getPrivateKey(entry))
+            update(encryptedTag)
+            sign()
+        }
+
+        val combined = ByteBuffer.allocate(encryptedTag.size + signature.size).apply {
+            put(encryptedTag)
+            put(signature)
+        }.array()
+
+        return combined
+    }
+    catch (e: Exception) {
+        Log.d("exception", e.toString())
+        return null
+    }
 }

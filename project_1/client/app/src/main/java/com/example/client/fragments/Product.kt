@@ -21,8 +21,9 @@ import java.util.UUID
 data class Product(
     val id: UUID,
     val name: String,
-    val euros: Int,
-    val cents: Int
+    val category: String,
+    val subCategory: String,
+    val price: Float
 )
 
 /**
@@ -70,9 +71,8 @@ class ProductAdapter(
         // fill with the products' data
         with(listProducts[pos]) {
             row.findViewById<TextView>(R.id.tv_name).text = name
-            var value: Double = euros + (cents / 100.0)
-            row.findViewById<TextView>(R.id.tv_value).text = ctx.getString(R.string.price_format, value)
-            row.findViewById<TextView>(R.id.tv_value).text = value.toString()
+            row.findViewById<TextView>(R.id.tv_value).text = ctx.getString(R.string.price_format, price)
+            row.findViewById<TextView>(R.id.tv_value).text = price.toString()
 
             // define remove action
             row.findViewById<ImageButton>(R.id.bt_remove).setOnClickListener {

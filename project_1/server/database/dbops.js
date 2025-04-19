@@ -141,8 +141,6 @@ class DBOps {
                 `SELECT * FROM Grocery`
             );
 
-            console.log("rows", rows)
-
             if (!rows || rows.length === 0) {
                 throw new Error("Error obtaining groceries");
             }

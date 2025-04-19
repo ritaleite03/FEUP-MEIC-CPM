@@ -1,18 +1,20 @@
 package com.example.generator
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.isGone
 import com.example.generator.utils.collapse
 import com.example.generator.utils.expand
+import org.json.JSONObject
+import java.util.UUID
 
 data class Grocery (
     val name: String,
@@ -21,9 +23,32 @@ data class Grocery (
     val description: String,
     val imagePath: String,
     val price: Float
-)
+) {
+    companion object {
+        fun parseGroceries(jsonObject: JSONObject): List<Grocery> {
+            val groceryList = mutableListOf<Grocery>()
+            val groceriesArray = jsonObject.getJSONArray("groceries")
 
-class GroceryAdapter(private val groceries: List<Grocery>, private val mainContext: Activity):
+            for (i in 0 until groceriesArray.length()) {
+                val item = groceriesArray.getJSONObject(i)
+
+                val grocery = Grocery(
+                    name = item.getString("Name"),
+                    category = item.getString("Category"),
+                    subCategory = item.getString("SubCategory"),
+                    description = item.getString("Description"),
+                    price = item.getString("Price").toFloat(),
+                    imagePath = item.getString("ImagePath")
+                )
+
+                groceryList.add(grocery)
+            }
+            return groceryList
+        }
+    }
+}
+
+class GroceryAdapter(private val groceries: List<Grocery>, private val mainContext: MainActivity):
     RecyclerView.Adapter<GroceryAdapter.GroceryViewHolder>() {
 
     class GroceryViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -68,8 +93,14 @@ class GroceryAdapter(private val groceries: List<Grocery>, private val mainConte
         holder.title.text = if (grocery.name == grocery.subCategory) { grocery.name } else { "${grocery.subCategory} (${grocery.name})" }
         holder.price.text = holder.itemView.context.getString(R.string.grocery_price, grocery.price.toString())
         holder.description.text = grocery.description
+
         holder.cartButton.setOnClickListener {
-            Toast.makeText(holder.itemView.context, "Added to cart", Toast.LENGTH_SHORT).show()
+            val uuid = UUID.randomUUID()
+            val encryptedTag = generateTag(mainContext.entry, uuid, grocery)
+            Log.d("encryptedTag", encryptedTag.toString())
+            mainContext.startActivity(Intent(mainContext, MainActivity2::class.java). apply {
+                putExtra("data", encryptedTag)
+            })
         }
     }
 
