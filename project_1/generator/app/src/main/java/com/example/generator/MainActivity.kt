@@ -1,30 +1,28 @@
 package com.example.generator
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.Button
+import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.Spinner
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
-import com.example.generator.Crypto.CRYPTO_ANDROID_KEYSTORE
-import com.example.generator.Crypto.CRYPTO_ENC_ALGO
-import com.example.generator.Crypto.CRYPTO_NAME
-import com.example.generator.Crypto.CRYPTO_SIGN_ALGO
-import com.example.generator.Crypto.CRYPTO_TAG_ID
-import com.google.android.material.textfield.TextInputEditText
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.generator.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
+import com.example.generator.utils.Crypto.CRYPTO_NAME
+import com.example.generator.Grocery.Companion.parseGroceries
+import com.example.generator.utils.setInsetsPadding
 import kotlinx.coroutines.launch
-import java.nio.ByteBuffer
-import java.nio.charset.StandardCharsets
+import org.json.JSONObject
 import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.PublicKey
-import java.security.Signature
-import java.util.UUID
-import javax.crypto.Cipher
-import kotlin.text.isEmpty
 
 /**
  * Main activity responsible for generating cryptographic keys and encrypting data.
@@ -32,13 +30,16 @@ import kotlin.text.isEmpty
  */
 class MainActivity : AppCompatActivity() {
 
-    private val toolbar by lazy {findViewById<Toolbar>(R.id.toolbar)}
-    private val button by lazy {findViewById<Button>(R.id.button)}
+    private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar) }
+    private val searchField by lazy { findViewById<EditText>(R.id.searchField) }
+    private val categorySpinner by lazy { findViewById<Spinner>(R.id.categorySpinner) }
+    private val sortSpinner by lazy { findViewById<Spinner>(R.id.sortSpinner) }
+    private lateinit var adapter: GroceryAdapter
     private var privateKey: PrivateKey? = null
     private var publicKey: PublicKey? = null
 
     // lazily retrieves the PrivateKeyEntry from the Android Keystore if it exists.
-    private var entry: KeyStore.PrivateKeyEntry? = null
+    var entry: KeyStore.PrivateKeyEntry? = null
         get() {
             if (field == null)
                 field = KeyStore.getInstance(CRYPTO_ANDROID_KEYSTORE).run {
@@ -55,88 +56,76 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = 0)
 
+        categorySpinner.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            listOf("All", "Fruit", "Vegetables", "Packages", "Dessert")
+        )
+
+        sortSpinner.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            listOf("None", "Name (A-Z)", "Name (Z-A)", "Price (Low to High)", "Price (High to Low)")
+        )
+
         // generate keys if they don't exist
-        if (entry == null) defineKeys(true)
-        else defineKeys(false)
-
-        // set up button click listener to capture user input and encrypt data
-        button.setOnClickListener {
-            var uuid = UUID.randomUUID()
-            var name = findViewById<TextInputEditText>(R.id.input_name).text.toString()
-            var euro = findViewById<TextInputEditText>(R.id.input_euros).text.toString()
-            var cent = findViewById<TextInputEditText>(R.id.input_cents).text.toString()
-
-            if (!name.isEmpty() && !euro.isEmpty() && !cent.isEmpty()) {
-                var encryptedTag = generateTag(uuid, name, euro, cent)
-                startActivity(Intent(this, MainActivity2::class.java).apply {
-                    putExtra("data", encryptedTag)
-                })
-            }
-        }
-    }
-
-    /**
-     * Defines the keys by either generating them or loading them from the keystore.
-     *
-     * @param generate Boolean flag indicating whether to generate new keys or load existing ones.
-     */
-    private fun defineKeys(generate : Boolean){
-        if (generate) {
+        if (entry == null) {
             generateKeys()
         }
-        privateKey = entry?.privateKey
-        publicKey = entry?.certificate?.publicKey
+
+        publicKey = getPublicKey(entry)
+        privateKey = getPrivateKey(entry)
+
+
         lifecycleScope.launch {
             informServer(publicKey)
+            val groceries = JSONObject(getGroceries())
+            setupRecyclerView(groceries)
         }
     }
 
     /**
-     * Generates a cryptographic tag from the provided data (UUID, name, euros, cents).
-     * The tag is then encrypted using the private key stored in the Android Keystore.
+     * Sets up the RecyclerView with the provided groceries data.
      *
-     * @param uuid UUID of the tag.
-     * @param name Name associated with the tag.
-     * @param euro Amount of euros.
-     * @param cent Amount of cents.
-     * @return The encrypted tag as a byte array, or null if encryption fails.
+     * @param groceries The groceries data to display in the RecyclerView.
      */
-    private fun generateTag(uuid : UUID, name : String, euro : String, cent : String) : ByteArray? {
-        var subName = if (name.length > 29) name.substring(0, 29) else name
-        // length of (tagID, UUID, euros(short), cents(byte), nr_bytes(name)(byte), name)
-        val len = 4 + 16 + 2 + 1 + 1 + subName.length
+    private fun setupRecyclerView(groceries: JSONObject) {
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = GroceryAdapter(parseGroceries(groceries), this)
+        recyclerView.adapter = adapter
 
-        val tag = ByteBuffer.allocate(len).apply {
-            putInt(CRYPTO_TAG_ID)
-            putLong(uuid.mostSignificantBits)
-            putLong(uuid.leastSignificantBits)
-            putShort(euro.toShort())
-            put(cent.toByte())
-            put(subName.length.toByte())
-            put(subName.toByteArray(StandardCharsets.ISO_8859_1))
+        setupFilters()
+    }
+
+    /**
+     * Sets up filtering functionality.
+     */
+    private fun setupFilters() {
+        val applyFilters = {
+            val search = searchField.text.toString()
+            val category = categorySpinner.selectedItem.toString()
+            val sort = sortSpinner.selectedItem.toString()
+            adapter.applyFilter(search, category, sort)
         }
 
-        try {
-            var encryptedTag = Cipher.getInstance(CRYPTO_ENC_ALGO).run {
-                init(Cipher.ENCRYPT_MODE, getPrivateKey(entry))
-                doFinal(tag.array())
+        searchField.addTextChangedListener { applyFilters() }
+
+        categorySpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
+                applyFilters()
             }
 
-            var signature = Signature.getInstance(CRYPTO_SIGN_ALGO).run {
-                initSign(getPrivateKey(entry))
-                update(encryptedTag)
-                sign()
-            }
-
-            var combined = ByteBuffer.allocate(encryptedTag.size + signature.size).apply {
-                put(encryptedTag)
-                put(signature)
-            }.array()
-
-            return combined
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>) {}
         }
-        catch (_: Exception) {
-            return null
+
+        sortSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
+                applyFilters()
+            }
+
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>) {}
         }
     }
+
 }

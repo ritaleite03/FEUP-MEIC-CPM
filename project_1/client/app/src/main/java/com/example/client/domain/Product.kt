@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets
 import java.security.Signature
 import java.util.UUID
 import javax.crypto.Cipher
+import kotlin.collections.get
+import kotlin.text.get
 
 /**
  * Database with the products
@@ -35,8 +37,9 @@ lateinit var productsDB: ProductsDB
 data class Product(
     var id: UUID,
     var name: String,
-    var euros: Int,
-    var cents: Int
+    var category: String,
+    var subCategory: String,
+    var price: Float
 )
 
 /**
@@ -86,10 +89,10 @@ fun productsSort(type : OrderProduct) {
             listProducts.sortByDescending { it.name.lowercase() }
         }
         OrderProduct.ASCENDING_PRICE -> {
-            listProducts.sortBy { it.euros + it.cents / 100.0 }
+            listProducts.sortBy { it.price }
         }
         OrderProduct.DESCENDING_PRICE -> {
-            listProducts.sortByDescending { it.euros + it.cents / 100.0 }
+            listProducts.sortByDescending { it.price }
         }
     }
 }
@@ -129,15 +132,24 @@ fun productsDecodeMessage(message: ByteArray, key: String) : Product? {
     val tagId = tag.int
     val id = UUID(tag.long, tag.long)
 
-    val euros = tag.short.toInt()
-    val cents = tag.get().toInt()
-
     val nameLength = tag.get().toInt()
     val nameBytes = ByteArray(nameLength)
     tag.get(nameBytes)
 
+    val categoryLength = tag.get().toInt()
+    val categoryBytes = ByteArray(categoryLength)
+    tag.get(categoryBytes)
+
+    val subCategoryLength = tag.get().toInt()
+    val subCategoryBytes = ByteArray(subCategoryLength)
+    tag.get(subCategoryBytes)
+
+    val price = tag.getFloat()
+
     val name = String(nameBytes, StandardCharsets.ISO_8859_1)
-    return Product(id, name, euros, cents)
+    val category = String(categoryBytes, StandardCharsets.ISO_8859_1)
+    val subCategory = String(subCategoryBytes, StandardCharsets.ISO_8859_1)
+    return Product(id, name, category, subCategory, price)
 }
 
 /**
@@ -172,9 +184,8 @@ class ProductAdapter(
         // fill with the products' data
         with(listProducts[pos]) {
             row.findViewById<TextView>(R.id.tv_name).text = name
-            var value: Double = euros + (cents / 100.0)
-            row.findViewById<TextView>(R.id.tv_value).text = ctx.getString(R.string.price_format, value)
-            row.findViewById<TextView>(R.id.tv_value).text = value.toString()
+            row.findViewById<TextView>(R.id.tv_value).text = ctx.getString(R.string.price_format, price)
+            row.findViewById<TextView>(R.id.tv_value).text = price.toString()
 
             // define remove action
             row.findViewById<ImageButton>(R.id.bt_remove).setOnClickListener {

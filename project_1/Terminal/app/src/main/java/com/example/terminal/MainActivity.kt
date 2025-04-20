@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity() {
      * 2. 1 byte: Number of products
      * 3. For each product:
      *    - 16 bytes: Product ID (UUID - two longs)
-     *    - 2 bytes: Price (in cents, as Short)
+     *    - 4 bytes: Price (Float)
      * 4. 1 byte: Discount flag (0 or 1)
      * 5. Optional 16 bytes: Voucher ID (UUID) if present
      * 6. Remaining bytes: Signature (byte array)
@@ -173,15 +173,14 @@ class MainActivity : AppCompatActivity() {
 
             // Parse number of products
             val numberOfProducts = bb.get().toInt()
-
             // Parse each product's data
-            val products = mutableListOf<Pair<UUID, Short>>()
+            val products = mutableListOf<Pair<UUID, Float>>()
             // for (i in 0 until numberOfProducts)
             (0 until numberOfProducts).forEach { i ->
                 val productIdMostSigBits = bb.long
                 val productIdLeastSigBits = bb.long
                 val productId = UUID(productIdMostSigBits, productIdLeastSigBits) // val productId = UUID(bb.long, bb.long)
-                val price = bb.short
+                val price = bb.getFloat()
                 products.add(Pair(productId, price))
             }
 
@@ -196,16 +195,16 @@ class MainActivity : AppCompatActivity() {
             } else {
                 null
             }
-
             // Extract the remaining bytes as the digital signature
             val signature = ByteArray(bb.remaining())
+
             bb.get(signature)
 
             // Build the display message
             sb.append("User ID: $userId\n")
             sb.append("Products: \n")
             for (product in products) {
-                sb.append(" - Product ID: ${product.first}, Price: ${product.second / 100.0}€\n")
+                sb.append(" - Product ID: ${product.first}, Price: €${product.second}\n")
             }
             sb.append("Discount Applied: $useDiscount\n")
             voucherId?.let { sb.append("Voucher ID: $it\n") }

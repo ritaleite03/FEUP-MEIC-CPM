@@ -38,7 +38,6 @@ class VouchersFragment : Fragment() {
     private lateinit var empty: TextView
     private lateinit var buttonUpdate : Button
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }

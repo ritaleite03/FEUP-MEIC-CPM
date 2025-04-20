@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
+const groceries_data = require("../groceries/groceries_info.json");
 
 // path to the SQLite database
 const DB_PATH = path.resolve("database/users.db");
@@ -31,52 +32,64 @@ class DBOps {
     async createTables() {
         try {
             const tableUser = `
-            CREATE TABLE IF NOT EXISTS Users (
-            Uuid UUID PRIMARY KEY, 
-            KeyEC TEXT NOT NULL, 
-            KeyRSA TEXT NOT NULL,
-            Name TEXT NOT NULL, 
-            Nick TEXT NOT NULL, 
-            CardNumber TEXT NOT NULL, 
-            CardDate TEXT NOT NULL, 
-            SelectedCardType TEXT NOT NULL,
-            Current REAL DEFAULT 0,
-            Discount REAL DEFAULT 0
-        );
-        `;
+                CREATE TABLE IF NOT EXISTS Users (
+                Uuid UUID PRIMARY KEY, 
+                KeyEC TEXT NOT NULL, 
+                KeyRSA TEXT NOT NULL,
+                Name TEXT NOT NULL, 
+                Nick TEXT NOT NULL, 
+                CardNumber TEXT NOT NULL, 
+                CardDate TEXT NOT NULL, 
+                SelectedCardType TEXT NOT NULL,
+                Current REAL DEFAULT 0,
+                Discount REAL DEFAULT 0
+            );`;
+
             const tableVoucher = `
-            CREATE TABLE IF NOT EXISTS Vouchers (
-            Uuid UUID,
-            UserUuid UUID,
-            PRIMARY KEY (Uuid, UserUuid),
-            FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
-        );
-        `;
+                CREATE TABLE IF NOT EXISTS Vouchers (
+                Uuid UUID,
+                UserUuid UUID,
+                PRIMARY KEY (Uuid, UserUuid),
+                FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
+            );`;
 
             const tableNonce = `
-            CREATE TABLE IF NOT EXISTS Nonce (
-            Uuid UUID,
-            UserUuid UUID,
-            Timestamp INTEGER,
-            Type TEXT,
-            PRIMARY KEY (Uuid, UserUuid),
-            FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
-        );
-        `;
+                CREATE TABLE IF NOT EXISTS Nonce (
+                Uuid UUID,
+                UserUuid UUID,
+                Timestamp INTEGER,
+                Type TEXT,
+                PRIMARY KEY (Uuid, UserUuid),
+                FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
+            );`;
+
             const tableTransactions = `
-            CREATE TABLE IF NOT EXISTS Transactions(
-            Uuid UUID,
-            Price REAL,
-            Date DATETIME NOT NULL DEFAULT (strftime('%d-%m-%Y %H:%M', 'now', 'localtime')),
-            UserUuid UUID,
-            PRIMARY KEY (Uuid, UserUuid),
-            FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
-            );  
-        `;
+                CREATE TABLE IF NOT EXISTS Transactions(
+                Uuid UUID,
+                Price REAL,
+                Date DATETIME NOT NULL DEFAULT (strftime('%d-%m-%Y %H:%M', 'now', 'localtime')),
+                UserUuid UUID,
+                PRIMARY KEY (Uuid, UserUuid),
+                FOREIGN KEY (UserUuid) REFERENCES Users(Uuid) ON DELETE CASCADE
+            );`;
+
+            const tableGroceries = `
+                CREATE TABLE IF NOT EXISTS Grocery (
+                Name TEXT PRIMARY KEY,
+                Category TEXT NOT NULL,
+                SubCategory TEXT NOT NULL,
+                Description TEXT NOT NULL,
+                ImagePath TEXT NOT NULL,
+                Price REAL NOT NULL
+            );`;
+
             await this.db.run(tableUser);
             await this.db.run(tableVoucher);
             await this.db.run(tableNonce);
             await this.db.run(tableTransactions);
+            await this.db.run(tableGroceries);
+
+            await this.populateGroceries();
             console.log("Success in the database initialization!");
 
             const check = await this.db.all(
@@ -86,6 +99,58 @@ class DBOps {
         } catch (error) {
             console.log("Failure in the database initialization!", error);
         }
+    }
+
+    async populateGroceries() {
+        console.log("---- START Populating Grocery Table (db) ----");
+        try {
+            for (const grocery_info of groceries_data) {
+                await this.insertGroceryIntoTable(grocery_info);
+            }
+        } catch(error) {
+            console.log("Error populating Grocery table");
+            return null;
+        }
+        console.log("---- END Populating Grocery Table (db) ----");
+    }
+
+    async insertGroceryIntoTable(grocery_info) {
+        await this.db.run(
+            `
+            INSERT INTO Grocery (Name, Category, SubCategory, Description, ImagePath, Price)
+            VALUES (?, ?, ?, ?, ?, ?)
+            `,
+            [
+                grocery_info["name"],
+                grocery_info["category"],
+                grocery_info["sub_category"],
+                grocery_info["description"],
+                grocery_info["image_path"],
+                grocery_info["price"]
+            ]
+        );
+    }
+
+    async getGroceries() {
+        console.log("---- START Action Get Grocery (db) ----");
+
+        let result;
+        try {
+            const rows = await this.db.all(
+                `SELECT * FROM Grocery`
+            );
+
+            if (!rows || rows.length === 0) {
+                throw new Error("Error obtaining groceries");
+            }
+
+            result = [true, rows];
+        } catch (error) {
+            result = [false, error];
+        }
+
+        console.log("---- END Action Get Groceries (db) ----");
+        return result;
     }
 
     /**
@@ -351,7 +416,7 @@ class DBOps {
                 `,
                 [uuid, total, user]
             );
-            console.log("Total", total)
+
             await this.db.run("COMMIT");
             console.log("Success in payment transaction 3!");
             const rows = await this.db.run(
@@ -359,7 +424,6 @@ class DBOps {
                 [user]
             );
 
-            console.log("aqui:", rows);
             return true;
         }
         catch (error) {
@@ -408,6 +472,7 @@ class DBOps {
 
             return verified;
         } catch (error) {
+            console.log("ERROR:", error);
             console.log("Error in signature verification!");
             return false;
         }

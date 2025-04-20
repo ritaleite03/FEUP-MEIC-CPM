@@ -100,7 +100,7 @@ class CartFragment : Fragment() {
      * Sum the price of all products.
      */
     private fun updateTotal(){
-        val totalValue = listProducts.sumOf{ it.euros + (it.cents / 100.0) }
+        val totalValue = listProducts.sumOf{ it.price.toDouble() }
         totalTextView.text = getString(R.string.price_format, totalValue)
     }
 

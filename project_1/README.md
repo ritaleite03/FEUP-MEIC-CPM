@@ -64,8 +64,6 @@ It is crucial that the supermarket key remains unchanged after a customer has re
 
 ## Implemented Features
 
--   Of course! Here's the improved version of your text in English, structured clearly and professionally — perfect for a README:
-
 ### On the Server
 
 -   Receives the public key from the supermarket, sent by the QR code generator app.
