@@ -2,6 +2,7 @@ package com.example.client.domain
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -52,9 +53,8 @@ class ProductAdapter(
 
         // fill with the products' data
         with(listProducts[pos]) {
-            row.findViewById<TextView>(R.id.tv_name).text = name
+            row.findViewById<TextView>(R.id.tv_name).text = if (name == subCategory) name else "$subCategory ($name)"
             row.findViewById<TextView>(R.id.tv_value).text = ctx.getString(R.string.price_format, price)
-            row.findViewById<TextView>(R.id.tv_value).text = price.toString()
 
             // define remove action
             row.findViewById<ImageButton>(R.id.bt_remove).setOnClickListener {
