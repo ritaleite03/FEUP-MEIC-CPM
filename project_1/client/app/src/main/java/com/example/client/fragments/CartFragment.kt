@@ -19,7 +19,6 @@ import com.example.client.domain.productsDB
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
 import com.example.client.utils.Crypto.CRYPTO_RSA_KEY_SIZE
 import com.example.client.utils.Crypto.CRYPTO_RSA_SIGN_ALGO
-import com.example.client.utils.roundUpTo2Decimals
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import java.nio.ByteBuffer
