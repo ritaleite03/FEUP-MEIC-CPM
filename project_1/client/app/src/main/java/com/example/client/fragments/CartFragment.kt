@@ -9,18 +9,17 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.ListView
+import android.widget.SearchView
 import android.widget.Spinner
 import android.widget.TextView
 import com.example.client.R
 import com.example.client.data.ProductsDB
+import com.example.client.domain.CategoryProduct
 import com.example.client.domain.OrderProduct
 import com.example.client.domain.ProductAdapter
-import com.example.client.domain.currentOrderProduct
 import com.example.client.domain.listProducts
 import com.example.client.domain.productsDB
 import com.example.client.domain.productsDecodeMessage
-import com.example.client.domain.productsSort
-import com.example.client.domain.productsUpdateList
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import java.nio.charset.StandardCharsets
@@ -37,7 +36,9 @@ class CartFragment : Fragment() {
     private lateinit var empty: TextView
     private lateinit var totalTextView: TextView
 
+    private lateinit var searchView: SearchView
     private lateinit var spinnerOrder: Spinner
+    private lateinit var spinnerCategory: Spinner
     private lateinit var btQR: Button
     private lateinit var btEnd: Button
 
@@ -53,19 +54,20 @@ class CartFragment : Fragment() {
         productListView = view.findViewById<ListView>(R.id.lv_items)
         empty = view.findViewById(R.id.empty)
         totalTextView = view.findViewById(R.id.tv_total_value)
-        currentOrderProduct = OrderProduct.ASCENDING_TIME
 
         // configuration of buttons
+        searchView = view.findViewById<SearchView>(R.id.searchView)
         spinnerOrder = view.findViewById<Spinner>(R.id.order_spinner)
+        spinnerCategory = view.findViewById<Spinner>(R.id.category_spinner)
         btQR = view.findViewById<Button>(R.id.bottom_button_qr)
         btEnd = view.findViewById<Button>(R.id.bottom_button_end)
 
         configuratorProductsListView()
         configuratorBottomButtons()
-        configuratorSpinnerOrder()
+        configuratorFilter()
     }
 
-    fun configuratorProductsListView(){
+    private fun configuratorProductsListView(){
         productsDB.getProducts()
         productListView.run {
             emptyView = empty
@@ -75,29 +77,52 @@ class CartFragment : Fragment() {
         registerForContextMenu(productListView)
     }
 
-    fun configuratorBottomButtons() {
+    private fun configuratorBottomButtons() {
         btQR.setOnClickListener { scanQRCode() }
         btEnd.setOnClickListener { openCheckout(this) }
     }
 
-    fun configuratorSpinnerOrder() {
-        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item,
-            OrderProduct.entries.map { it.name.replace("_", " ").lowercase().replaceFirstChar(Char::uppercaseChar) }
+    private fun configuratorFilter() {
+
+        // set up category spinner
+        spinnerCategory.adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item,
+            CategoryProduct.entries.map { it.name.replace("_", " ").lowercase().replaceFirstChar(Char::uppercaseChar) }
         )
-        spinnerOrder.adapter = adapter
-        spinnerOrder.setSelection(0)
-        spinnerOrder.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        spinnerCategory.setSelection(0)
+        spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val orderType = OrderProduct.entries[position]
-                productsSort(orderType)
-                (productListView.adapter as ProductAdapter).notifyDataSetChanged()
+                (productListView.adapter as ProductAdapter).setCategoryProduct(CategoryProduct.entries[position])
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+
+        // set up ordering spinner
+        spinnerOrder.adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item,
+            OrderProduct.entries.map { it.name.replace("_", " ").lowercase().replaceFirstChar(Char::uppercaseChar) }
+        )
+        spinnerOrder.setSelection(0)
+        spinnerOrder.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                (productListView.adapter as ProductAdapter).setOrderProduct(OrderProduct.entries[position])
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        // set up search view
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                val query = newText?.lowercase() ?: ""
+                (productListView.adapter as ProductAdapter).setQueryProduct(query)
+                return true
+            }
+        })
     }
 
     /**
-     * Sum the price of all products.
+     * Sums the price of all products.
      */
     private fun updateTotal(){
         val totalValue = listProducts.sumOf{ it.price.toDouble() }
@@ -128,10 +153,6 @@ class CartFragment : Fragment() {
 
     /**
      * Decodes the encrypted QR Code tag and displays the new product in the list.
-     *
-     * The product is identified using a UUID ID, name and value.
-     * This data is extracted from the encrypted tag and converted back to the original format.
-     *
      * @param combined Encrypted tag obtained from the QR Code.
      */
     private fun decodeAndShow(combined: ByteArray) {
@@ -141,7 +162,7 @@ class CartFragment : Fragment() {
         if (keyString != null) {
             val product = productsDecodeMessage(combined, keyString)
             if (product != null) {
-                productsUpdateList(product, (productListView.adapter as ProductAdapter))
+                (productListView.adapter as ProductAdapter).productsUpdateList(product)
                 updateTotal()
             }
         }

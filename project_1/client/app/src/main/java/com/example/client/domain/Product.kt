@@ -18,21 +18,17 @@ import java.nio.charset.StandardCharsets
 import java.security.Signature
 import java.util.UUID
 import javax.crypto.Cipher
-import kotlin.collections.get
-import kotlin.text.get
-
-/**
- * Database with the products
- */
-lateinit var productsDB: ProductsDB
+import kotlin.collections.filter
+import kotlin.text.equals
 
 /**
  * Data class representing a product.
  *
  * @property id Unique identifier of the product.
  * @property name Name of the product.
- * @property euros Whole part of the product's price.
- * @property cents Fractional part of the product's price (0-99).
+ * @property category Category of the product.
+ * @property subCategory Sub category of the product.
+ * @property price Price of the product.
  */
 data class Product(
     var id: UUID,
@@ -43,59 +39,29 @@ data class Product(
 )
 
 /**
- * Enum class with the types of ordering
+ * Enum class with the types of ordering.
  */
-enum class OrderProduct {
-    ASCENDING_TIME,
-    DESCENDING_TIME,
-    ASCENDING_NAME,
-    DESCENDING_NAME,
-    ASCENDING_PRICE,
-    DESCENDING_PRICE
-}
+enum class OrderProduct { ASCENDING_TIME, DESCENDING_TIME, ASCENDING_NAME, DESCENDING_NAME, ASCENDING_PRICE, DESCENDING_PRICE }
+
+/**
+ * Enum class with the types of categories.
+ */
+enum class CategoryProduct { ALL, FRUIT, VEGETABLES, PACKAGES, DESSERT }
+
+/**
+ * Database with the products.
+ */
+lateinit var productsDB: ProductsDB
 
 /**
  * List of all the products in the cart (initially empty).
  */
-val listProducts = arrayListOf<Product>()
+var listProducts = arrayListOf<Product>()
+
 /**
  * List of all the products in the cart (initially empty), by date of acquisition.
  */
 val listProductsTime = arrayListOf<Product>()
-
-/**
- * Order of the products' list (initially by date of acquisition).
- */
-var currentOrderProduct = OrderProduct.ASCENDING_TIME
-
-/**
- * Sort the products in listProducts according to the order desired by the user.
- * @param type Specifies the type of order for the products
- */
-fun productsSort(type : OrderProduct) {
-    when (type) {
-        OrderProduct.ASCENDING_TIME -> {
-            listProducts.clear()
-            listProducts.addAll(listProductsTime)
-        }
-        OrderProduct.DESCENDING_TIME -> {
-            listProducts.clear()
-            listProducts.addAll(listProductsTime.reversed())
-        }
-        OrderProduct.ASCENDING_NAME -> {
-            listProducts.sortBy { it.name.lowercase() }
-        }
-        OrderProduct.DESCENDING_NAME -> {
-            listProducts.sortByDescending { it.name.lowercase() }
-        }
-        OrderProduct.ASCENDING_PRICE -> {
-            listProducts.sortBy { it.price }
-        }
-        OrderProduct.DESCENDING_PRICE -> {
-            listProducts.sortByDescending { it.price }
-        }
-    }
-}
 
 /**
  * Decodes message from the qr code
@@ -153,19 +119,6 @@ fun productsDecodeMessage(message: ByteArray, key: String) : Product? {
 }
 
 /**
- * Updates the list of products and database.
- * @param product Product to be added to the list.
- * @param adapter adapter of the Products List View.
- */
-fun productsUpdateList(product : Product, adapter: ProductAdapter) {
-    productsDB.insert(product)
-    listProductsTime.add(product)
-    listProducts.add(product)
-    productsSort(currentOrderProduct)
-    adapter.notifyDataSetChanged()
-}
-
-/**
  * Adapter to bind [Product] objects to an [android.widget.ListView].
  *
  * @param ctx context of the Fragment where the Adapter will be used.
@@ -176,8 +129,12 @@ class ProductAdapter(
     private val ctx: Context,
     private val listProducts: ArrayList<Product>,
     private val onRemove: (Int) -> Unit
-):
-    ArrayAdapter<Product>(ctx, R.layout.list_item, listProducts) {
+): ArrayAdapter<Product>(ctx, R.layout.list_item, listProducts) {
+
+    private var currentOrderProduct = OrderProduct.ASCENDING_TIME
+    private var currentCategoryProduct = CategoryProduct.ALL
+    private var currentQueryProduct = ""
+
     override fun getView(pos: Int, convertView: View?, parent: ViewGroup): View {
         val row = convertView ?: (ctx as Activity).layoutInflater.inflate(R.layout.list_item, parent, false)
 
@@ -197,5 +154,92 @@ class ProductAdapter(
             }
         }
         return row
+    }
+
+    fun setCategoryProduct(type : CategoryProduct) {
+        currentCategoryProduct = type
+        productsFilter()
+    }
+
+    fun setOrderProduct(type: OrderProduct) {
+        currentOrderProduct = type
+        productsFilter()
+    }
+    
+    fun setQueryProduct(query: String) {
+        currentQueryProduct = query
+        productsFilter()
+    }
+
+    /**
+     * Sort the products in listProducts according to the order desired by the user.
+     */
+    private fun productsSort() {
+        listProducts.clear()
+        when (currentOrderProduct) {
+            OrderProduct.ASCENDING_TIME -> {
+                listProducts.addAll(listProductsTime)
+            }
+            OrderProduct.DESCENDING_TIME -> {
+                listProducts.addAll(listProductsTime.reversed())
+            }
+            OrderProduct.ASCENDING_NAME -> {
+                listProducts.addAll(listProductsTime)
+                listProducts.sortBy { it.name.lowercase() }
+            }
+            OrderProduct.DESCENDING_NAME -> {
+                listProducts.addAll(listProductsTime)
+                listProducts.sortByDescending { it.name.lowercase() }
+            }
+            OrderProduct.ASCENDING_PRICE -> {
+                listProducts.addAll(listProductsTime)
+                listProducts.sortBy { it.price }
+            }
+            OrderProduct.DESCENDING_PRICE -> {
+                listProducts.addAll(listProductsTime)
+                listProducts.sortByDescending { it.price }
+            }
+        }
+    }
+
+    /**
+     * Filters the products in listProducts according to their category.
+     */
+    private fun productsCategory() {
+        if (currentCategoryProduct != CategoryProduct.ALL) {
+            var filteredList = (listProducts.filter {
+                it.category.equals(currentCategoryProduct.name.lowercase(), ignoreCase = true)
+            }).toCollection(ArrayList())
+            listProducts.clear()
+            listProducts.addAll(filteredList)
+        }
+    }
+    
+    private fun productsQuery() {
+        if (currentQueryProduct != "") {
+            var filteredList = listProducts.filter {
+                it.name.lowercase().contains(currentQueryProduct) || it.category.lowercase().contains(currentQueryProduct)
+            }.toCollection(ArrayList())
+            listProducts.clear()
+            listProducts.addAll(filteredList)
+        }
+    }
+
+    fun productsFilter() {
+        productsSort()
+        productsCategory()
+        productsQuery()
+        notifyDataSetChanged()
+    }
+
+    /**
+     * Updates the list of products and database.
+     * @param product Product to be added to the list.
+     */
+    fun productsUpdateList(product : Product) {
+        productsDB.insert(product)
+        listProductsTime.add(product)
+        listProducts.add(product)
+        productsFilter()
     }
 }

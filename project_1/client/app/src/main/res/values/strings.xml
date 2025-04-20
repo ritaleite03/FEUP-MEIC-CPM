@@ -36,7 +36,6 @@
     <string name="bottom_button_qr">Scan QR</string>
     <string name="bottom_button_bar">Scan Bar</string>
     <string name="bottom_button_end">End</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="product_name">Product Name</string>
@@ -48,7 +47,8 @@
     <string name="price_format">%.2f €</string>
 
     <string name="spinner_order">Order by </string>
-
+    <string name="spinner_filter">Filter by </string>
+    <string name="search">Search for a specific product...</string>
     <string name="tv_nfc_send">Tap to send</string>
     <string name="tv_nfc_msg">Tap to send</string>
 
