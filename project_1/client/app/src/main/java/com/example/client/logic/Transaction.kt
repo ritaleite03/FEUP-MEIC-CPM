@@ -28,7 +28,7 @@ class TransactionAdapter(
 
                 with(listTransactions[pos]) {
                     row.findViewById<TextView>(R.id.tv_date).text = date
-                    row.findViewById<TextView>(R.id.tv_price).text = price.toString()
+                    row.findViewById<TextView>(R.id.tv_price).text = ctx.getString(R.string.product_price, price)
                 }
 
                 return row

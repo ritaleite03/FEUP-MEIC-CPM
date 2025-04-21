@@ -26,7 +26,7 @@
                     android:id="@+id/tv_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="0.85"
                     android:paddingStart="4dp"
                     android:paddingEnd="4dp"
                     android:text="@string/product_name"
@@ -35,9 +35,10 @@
 
                 <TextView
                     android:id="@+id/tv_price"
-                    android:layout_width="48dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:background="@android:color/transparent"
+                    android:gravity="center"
                     android:paddingStart="4dp"
                     android:paddingEnd="4dp"
                     android:text="@string/product_price"

@@ -131,7 +131,7 @@ async function actionPayment(ctx) {
         let priceTotal = 0;
         let usedDiscount = 0;
         for (const prod of prods) {
-            priceTotal += prod.priceInCents;
+            priceTotal += prod.price;
         }
 
         // apply discount if needed
@@ -357,7 +357,7 @@ function readPayment(message) {
         offset += 16;
         const price = parseFloat(buf.readFloatBE(offset).toFixed(2));
         offset += 4;
-        products.push({ productId: productId, priceInCents: price });
+        products.push({ productId: productId, price: price });
         console.log("   - ProductId and Price -", productId, price);
     }
 

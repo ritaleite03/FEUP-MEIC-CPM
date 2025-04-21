@@ -410,7 +410,6 @@ class DBOps {
             }
             await this.db.run("COMMIT");
             console.log("Success in payment transaction 2!");
-            console.log("---- END Payment Transaction (db) ----");
         } catch (error) {
             await this.db.run("ROLLBACK");
             console.log("Failure in payment transaction 2!", error);
@@ -431,10 +430,6 @@ class DBOps {
 
             await this.db.run("COMMIT");
             console.log("Success in payment transaction 3!");
-            const rows = await this.db.run(
-                `SELECT * FROM Transactions WHERE UserUuid = ?`,
-                [user]
-            );
 
             return true;
         } catch (error) {
