@@ -12,7 +12,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.example.client.domain.productsDB
+import com.example.client.logic.productsDB
 import com.example.client.utils.Card
 import com.example.client.utils.NFC.NFC_ACTION_CARD_DONE
 

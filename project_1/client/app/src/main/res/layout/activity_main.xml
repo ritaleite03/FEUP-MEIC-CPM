@@ -30,7 +30,6 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/container_main"
-            android:name="com.example.client.fragments.feedback.ProgressFragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10sp"

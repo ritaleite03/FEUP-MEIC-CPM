@@ -12,25 +12,14 @@ import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity2
 import com.example.client.R
-import com.example.client.actionChallengeVouchers
-import com.example.client.actionGetVouchers
 import com.example.client.data.DiscountDB
 import com.example.client.data.VouchersDB
-import com.example.client.domain.Voucher
-import com.example.client.domain.VoucherAdapter
-import com.example.client.domain.discountDB
-import com.example.client.domain.listProducts
-import com.example.client.domain.listVouchers
-import com.example.client.domain.vouchersDB
-import com.example.client.fragments.feedback.ErrorFragment
-import com.example.client.getPrivateKey
-import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
+import com.example.client.logic.VoucherAdapter
+import com.example.client.logic.discountDB
+import com.example.client.logic.listVouchers
+import com.example.client.logic.vouchersDB
+import com.example.client.dialog.ErrorDialogFragment
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONObject
-import java.nio.ByteBuffer
-import java.util.UUID
-import javax.crypto.Cipher
 
 /**
  * Fragment used to show the user's vouchers.
@@ -53,38 +42,29 @@ class VouchersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        // Initialize the views
         discountText = view.findViewById<TextView>(R.id.valueDiscount)
         vouchersText = view.findViewById<TextView>(R.id.valueVouchers)
         vouchersListView = view.findViewById<ListView>(R.id.lv_voucher)
         empty = view.findViewById(R.id.empty2)
         buttonUpdate = view.findViewById<Button>(R.id.bottom_button_update)
 
-        // database
+        // Initialize the database
         vouchersDB = VouchersDB(requireActivity().applicationContext)
         discountDB = DiscountDB(requireActivity().applicationContext)
 
-        val sharedPreferences = requireContext().getSharedPreferences(
-            "MyAppPreferences",
-            Context.MODE_PRIVATE
-        )
+        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
         val uuid = sharedPreferences.getString("uuid", null)
+        val activity = requireActivity() as MainActivity2
 
         buttonUpdate.setOnClickListener {
             if (uuid != null) {
                 lifecycleScope.launch {
-
-                    // update vouchers
-                    if ((vouchersListView.adapter as VoucherAdapter).updateVouchers(
-                            requireActivity() as MainActivity2,
-                            uuid
-                        ) == false
-                    ) {
+                    if (!(vouchersListView.adapter as VoucherAdapter).updateVouchers(activity, uuid)) {
                         if (!isAdded) return@launch
-                        ErrorFragment.newInstance("The server was not available. Try again!")
-                            .show(parentFragmentManager, "error_popup")
+                        ErrorDialogFragment.newInstance("The server was not available. Try again!").show(parentFragmentManager, "error_popup")
                         return@launch
                     }
-
                     updateTotalVouchers()
                     updateTotalDiscount()
                 }

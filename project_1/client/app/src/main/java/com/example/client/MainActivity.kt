@@ -2,19 +2,16 @@ package com.example.client
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.example.client.fragments.authentication.LoginFragment
-import com.example.client.fragments.authentication.RegisterFragment
+import com.example.client.fragments.LoginFragment
+import com.example.client.fragments.RegisterFragment
 import com.example.client.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
 import com.example.client.utils.Crypto.CRYPTO_EC_NAME
 import com.example.client.utils.Crypto.CRYPTO_RSA_NAME
-import com.example.client.utils.setInsetsPadding
 import java.security.KeyStore
 import java.security.KeyStore.PrivateKeyEntry
 

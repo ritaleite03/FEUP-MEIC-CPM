@@ -1,4 +1,4 @@
-package com.example.client.domain
+package com.example.client.logic
 
 import android.app.Activity
 import android.content.Context
@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
 import com.example.client.R
-import com.example.client.base64ToPublicKey
 import com.example.client.data.ProductsDB
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
 import com.example.client.utils.Crypto.CRYPTO_RSA_KEY_SIZE

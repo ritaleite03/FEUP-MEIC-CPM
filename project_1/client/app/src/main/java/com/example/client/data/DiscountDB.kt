@@ -21,7 +21,6 @@ class DiscountDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
         val sqlCreateTable = "CREATE TABLE $tableDiscount(" +
                 "$keyId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "$colValue REAL)"
-
         db.execSQL(sqlCreateTable)
     }
 

@@ -1,4 +1,4 @@
-package com.example.client.fragments.transactions
+package com.example.client.logic
 
 import android.app.Activity
 import android.content.Context

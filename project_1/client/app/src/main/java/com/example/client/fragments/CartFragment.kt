@@ -14,12 +14,13 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.example.client.R
 import com.example.client.data.ProductsDB
-import com.example.client.domain.CategoryProduct
-import com.example.client.domain.OrderProduct
-import com.example.client.domain.ProductAdapter
-import com.example.client.domain.listProducts
-import com.example.client.domain.productsDB
-import com.example.client.domain.productsDecodeMessage
+import com.example.client.dialog.CheckoutDialogFragment
+import com.example.client.logic.CategoryProduct
+import com.example.client.logic.OrderProduct
+import com.example.client.logic.ProductAdapter
+import com.example.client.logic.listProducts
+import com.example.client.logic.productsDB
+import com.example.client.logic.productsDecodeMessage
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import java.nio.charset.StandardCharsets
@@ -48,13 +49,13 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // configuration of the ListView to display the products
+        // Configuration of the ListView to display the products
         productsDB = ProductsDB(requireActivity().applicationContext)
         productListView = view.findViewById<ListView>(R.id.lv_items)
         empty = view.findViewById(R.id.empty)
         totalTextView = view.findViewById(R.id.tv_total_value)
 
-        // configuration of buttons
+        // Configuration of buttons
         searchView = view.findViewById<SearchView>(R.id.searchView)
         spinnerOrder = view.findViewById<Spinner>(R.id.order_spinner)
         spinnerCategory = view.findViewById<Spinner>(R.id.category_spinner)
@@ -77,8 +78,13 @@ class CartFragment : Fragment() {
     }
 
     private fun configuratorBottomButtons() {
-        btQR.setOnClickListener { scanQRCode() }
-        btEnd.setOnClickListener { openCheckout(this) }
+        btQR.setOnClickListener {
+            scanQRCode()
+        }
+        btEnd.setOnClickListener {
+            val checkoutDialog = CheckoutDialogFragment()
+            checkoutDialog.show(parentFragmentManager, "checkout_dialog")
+        }
     }
 
     private fun configuratorFilter() {
@@ -95,7 +101,7 @@ class CartFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // set up ordering spinner
+        // Set up ordering spinner
         spinnerOrder.adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item,
             OrderProduct.entries.map { it.name.replace("_", " ").lowercase().replaceFirstChar(Char::uppercaseChar) }
         )
@@ -107,7 +113,7 @@ class CartFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // set up search view
+        // Set up search view
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false

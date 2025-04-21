@@ -1,4 +1,4 @@
-package com.example.client
+package com.example.client.logic
 
 import android.annotation.SuppressLint
 import android.util.Log

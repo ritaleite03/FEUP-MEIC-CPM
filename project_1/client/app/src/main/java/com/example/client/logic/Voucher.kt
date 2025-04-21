@@ -1,4 +1,4 @@
-package com.example.client.domain
+package com.example.client.logic
 
 import android.app.Activity
 import android.content.Context
@@ -8,11 +8,8 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.example.client.MainActivity2
 import com.example.client.R
-import com.example.client.actionChallengeVouchers
-import com.example.client.actionGetVouchers
 import com.example.client.data.DiscountDB
 import com.example.client.data.VouchersDB
-import com.example.client.getPrivateKey
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
 import org.json.JSONArray
 import org.json.JSONObject

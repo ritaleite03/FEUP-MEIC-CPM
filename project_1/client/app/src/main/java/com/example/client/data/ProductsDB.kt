@@ -4,9 +4,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.client.domain.Product
-import com.example.client.domain.listProducts
-import com.example.client.domain.listProductsTime
+import com.example.client.logic.Product
+import com.example.client.logic.listProducts
+import com.example.client.logic.listProductsTime
 import java.util.UUID
 
 private const val DB_NAME = "products.db"

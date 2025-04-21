@@ -1,4 +1,4 @@
-package com.example.client.fragments.feedback
+package com.example.client.dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,14 +11,14 @@ import com.example.client.R
 /**
  * Fragment to display negative feedback, such as an error message.
  */
-class ErrorFragment : DialogFragment() {
+class ErrorDialogFragment : DialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_error, container, false)
+        return inflater.inflate(R.layout.dialog_fragment_error, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -30,8 +30,8 @@ class ErrorFragment : DialogFragment() {
     }
 
     companion object {
-        fun newInstance(message: String): ErrorFragment {
-            val fragment = ErrorFragment()
+        fun newInstance(message: String): ErrorDialogFragment {
+            val fragment = ErrorDialogFragment()
             val args = Bundle()
             args.putString("error_message", message)
             fragment.arguments = args

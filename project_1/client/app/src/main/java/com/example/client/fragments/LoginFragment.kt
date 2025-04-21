@@ -1,4 +1,4 @@
-package com.example.client.fragments.authentication
+package com.example.client.fragments
 
 import android.content.Context
 import android.content.Intent
@@ -12,7 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity
 import com.example.client.MainActivity2
 import com.example.client.R
-import com.example.client.fragments.feedback.ErrorFragment
+import com.example.client.dialog.ErrorDialogFragment
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,12 +35,12 @@ class LoginFragment : Fragment() {
 
         button.setOnClickListener{
 
-            // capture data entered into text fields
+            // Capture data entered into text fields
             var name = view.findViewById<TextInputEditText>(R.id.input_name).text.toString()
             var nick = view.findViewById<TextInputEditText>(R.id.input_nick).text.toString()
             var pass = view.findViewById<TextInputEditText>(R.id.input_pass).text.toString()
 
-            // access data saved in SharedPreferences
+            // Access data saved in SharedPreferences
             val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences",
                 Context.MODE_PRIVATE
             )
@@ -48,7 +48,7 @@ class LoginFragment : Fragment() {
             val realNick = sharedPreferences.getString("nick", null)
             val realPass = sharedPreferences.getString("pass", null)
 
-            // if data entered is equal to data saved, then redirect to the next activity and close actual
+            // If data entered is equal to data saved, then redirect to the next activity and close actual
             if(name == realName && nick == realNick && pass == realPass) {
                 val activity = requireActivity() as MainActivity
                 lifecycleScope.launch {
@@ -60,9 +60,9 @@ class LoginFragment : Fragment() {
                 }
             }
 
-            // if the data does not match, then show error fragment
+            // If the data does not match, then show error fragment
             else {
-                ErrorFragment.newInstance("The credentials are incorrect. Try again!").show(parentFragmentManager, "error_popup")
+                ErrorDialogFragment.Companion.newInstance("The credentials are incorrect. Try again!").show(parentFragmentManager, "error_popup")
             }
         }
     }

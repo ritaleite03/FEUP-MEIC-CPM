@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.client.fragments.CartFragment
 import com.example.client.fragments.VouchersFragment
-import com.example.client.fragments.transactions.TransactionsFragment
+import com.example.client.fragments.TransactionsFragment
 import com.example.client.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
 import com.example.client.utils.Crypto.CRYPTO_EC_NAME
 import com.example.client.utils.Crypto.CRYPTO_RSA_NAME

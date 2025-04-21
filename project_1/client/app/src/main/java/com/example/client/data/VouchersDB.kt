@@ -4,8 +4,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.client.domain.Voucher
-import com.example.client.domain.listVouchers
+import com.example.client.logic.Voucher
+import com.example.client.logic.listVouchers
 import java.util.UUID
 
 private const val DB_NAME = "vouchers.db"

@@ -1,4 +1,4 @@
-package com.example.client.fragments.transactions
+package com.example.client.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -8,15 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity2
 import com.example.client.R
-import com.example.client.actionChallengeTransactions
-import com.example.client.actionGetTransactions
-import com.example.client.fragments.feedback.ErrorFragment
-import com.example.client.getPrivateKey
-import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
+import com.example.client.logic.actionChallengeTransactions
+import com.example.client.logic.actionGetTransactions
+import com.example.client.dialog.ErrorDialogFragment
+import com.example.client.logic.Transaction
+import com.example.client.logic.TransactionAdapter
+import com.example.client.logic.getPrivateKey
+import com.example.client.logic.listTransactions
+import com.example.client.utils.Crypto
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
@@ -50,7 +52,7 @@ class TransactionsFragment: Fragment() {
                 nonce = UUID.fromString(result.getString("nonce").toString())
             } catch (_: Exception) {
                 if (!isAdded) return@launch
-                ErrorFragment.newInstance("The server was not available. Try again!").show(parentFragmentManager, "error_popup")
+                ErrorDialogFragment.Companion.newInstance("The server was not available. Try again!").show(parentFragmentManager, "error_popup")
                 return@launch
             }
 
@@ -62,7 +64,7 @@ class TransactionsFragment: Fragment() {
                 putLong(nonce.leastSignificantBits)
             }
 
-            val encrypted = Cipher.getInstance(CRYPTO_RSA_ENC_ALGO).run {
+            val encrypted = Cipher.getInstance(Crypto.CRYPTO_RSA_ENC_ALGO).run {
                 init(Cipher.ENCRYPT_MODE, getPrivateKey(entry))
                 doFinal(buffer.array())
             }
@@ -75,7 +77,7 @@ class TransactionsFragment: Fragment() {
                 Log.d("transactions", transactions.toString())
             } catch (_: Exception) {
                 if (!isAdded) return@launch
-                ErrorFragment.newInstance("The server was not available. Try again!").show(parentFragmentManager, "error_popup")
+                ErrorDialogFragment.Companion.newInstance("The server was not available. Try again!").show(parentFragmentManager, "error_popup")
                 return@launch
             }
 
@@ -84,7 +86,13 @@ class TransactionsFragment: Fragment() {
                 val transactionUuid = UUID.fromString(transactionObject.getString("uuid"))
                 val transactionPrice = transactionObject.getString("price").toDouble()
                 val transactionDate = transactionObject.getString("date")
-                listTransactions.add(Transaction(transactionUuid, transactionPrice, transactionDate))
+                listTransactions.add(
+                    Transaction(
+                        transactionUuid,
+                        transactionPrice,
+                        transactionDate
+                    )
+                )
             }
 
             transactionsListView.run {

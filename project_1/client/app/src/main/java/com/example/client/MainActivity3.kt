@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets
 import java.util.Hashtable
 import kotlin.collections.set
 import androidx.core.graphics.createBitmap
-import com.example.client.domain.productsDB
+import com.example.client.logic.productsDB
 
 /**
  * Activity that handles the QR code scanning.

@@ -1,4 +1,4 @@
-package com.example.client
+package com.example.client.logic
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
