@@ -73,16 +73,12 @@ async function actionRegistration(ctx) {
     const {
         keyEC,
         keyRSA,
-        name,
-        nick,
         cardNumber,
         cardDate,
         selectedCardType,
     } = ctx.request.body;
 
     console.log("The user information is:");
-    console.log("  - Name", name);
-    console.log("  - Nick", nick);
     console.log("  - Card Number", cardNumber);
     console.log("  - Card Date", cardDate);
     console.log("  - Selected Card Type", selectedCardType);
@@ -94,8 +90,6 @@ async function actionRegistration(ctx) {
     const [uuid, result] = await db.actionRegistration(
         encodeKeyBase64(ec_public_key),
         encodeKeyBase64(rsa_public_key),
-        name,
-        nick,
         cardNumber,
         cardDate,
         selectedCardType

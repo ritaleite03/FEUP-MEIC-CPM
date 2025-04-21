@@ -36,8 +36,6 @@ class DBOps {
                 Uuid UUID PRIMARY KEY, 
                 KeyEC TEXT NOT NULL, 
                 KeyRSA TEXT NOT NULL,
-                Name TEXT NOT NULL, 
-                Nick TEXT NOT NULL, 
                 CardNumber TEXT NOT NULL, 
                 CardDate TEXT NOT NULL, 
                 SelectedCardType TEXT NOT NULL,
@@ -310,8 +308,6 @@ class DBOps {
     async actionRegistration(
         keyEC,
         keyRSA,
-        name,
-        nick,
         cardNumber,
         cardDate,
         selectedCardType
@@ -323,15 +319,13 @@ class DBOps {
             uuid = uuidv4();
             result = await this.db.run(
                 `
-                INSERT OR IGNORE INTO Users (Uuid, KeyEC, KeyRSA, Name, Nick, CardNumber, CardDate, SelectedCardType)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT OR IGNORE INTO Users (Uuid, KeyEC, KeyRSA, CardNumber, CardDate, SelectedCardType)
+                VALUES (?, ?, ?, ?, ?, ?)
             `,
                 [
                     uuid,
                     keyEC,
                     keyRSA,
-                    name,
-                    nick,
                     cardNumber,
                     cardDate,
                     selectedCardType,

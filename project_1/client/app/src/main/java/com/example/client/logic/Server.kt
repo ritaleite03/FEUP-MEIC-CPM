@@ -101,13 +101,13 @@ suspend fun actionGetTransactions(uuid: String, message: ByteArray): String {
  * @return String containing the server response or an error message.
  */
 @SuppressLint("SimpleDateFormat")
-suspend fun actionRegistration(publicEC: PublicKey?, publicRSA: PublicKey?, name : String, nick : String, cardNumber : String, cardDate : String, selectedCardType : String): String {
+suspend fun actionRegistration(publicEC: PublicKey?, publicRSA: PublicKey?, cardNumber : String, cardDate : String, selectedCardType : String): String {
     try {
         val publicStringEC = publicKeyToBase64(publicEC)
         val publicStringRSA = publicKeyToBase64(publicRSA)
 
         val url = "http://${SERVER_IP}:${SERVER_PORT}${SERVER_REGISTER}"
-        val payload = "{\"keyEC\": \"$publicStringEC\", \"keyRSA\": \"$publicStringRSA\", \"name\": \"$name\", \"nick\": \"$nick\", \"cardNumber\": \"$cardNumber\", \"cardDate\": \"$cardDate\", \"selectedCardType\": \"$selectedCardType\"}"
+        val payload = "{\"keyEC\": \"$publicStringEC\", \"keyRSA\": \"$publicStringRSA\", \"cardNumber\": \"$cardNumber\", \"cardDate\": \"$cardDate\", \"selectedCardType\": \"$selectedCardType\"}"
         val result = sendMessageServer(url, payload)
         return result
     }

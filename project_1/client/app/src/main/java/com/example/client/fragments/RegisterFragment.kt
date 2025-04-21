@@ -207,8 +207,6 @@ class RegisterFragment : Fragment() {
                     result = actionRegistration(
                         publicEC,
                         publicRSA,
-                        name,
-                        nick,
                         cardNumber,
                         cardDateValid,
                         selectedCardType
