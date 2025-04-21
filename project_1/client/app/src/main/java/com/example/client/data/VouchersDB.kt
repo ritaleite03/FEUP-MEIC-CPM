@@ -12,7 +12,7 @@ private const val DB_NAME = "vouchers.db"
 private const val DB_VERSION = 1
 
 /**
- * Database to keep the information of the shopping list
+ * Database to keep the information of the vouchers.
  */
 class VouchersDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION) {
 
@@ -35,7 +35,7 @@ class VouchersDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
     }
 
     /**
-     * Inserts the new voucher in the database
+     * Inserts the new voucher in the database.
      */
     fun insert(voucher: Voucher): Long {
         val values = ContentValues().also {
@@ -48,14 +48,14 @@ class VouchersDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
     }
 
     /**
-     * Deletes all vouchers from the database
+     * Deletes all vouchers from the database.
      */
     fun deleteAll() {
         writableDatabase.delete(tableVouchers, null, null)
     }
 
     /**
-     * Gets all the vouchers from the database
+     * Gets all the vouchers from the database.
      */
     fun getVouchers() {
         val cursor = readableDatabase.rawQuery("SELECT * FROM  $tableVouchers", null)

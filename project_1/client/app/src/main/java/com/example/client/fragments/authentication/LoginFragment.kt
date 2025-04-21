@@ -20,7 +20,6 @@ import kotlinx.coroutines.withContext
 
 /**
  * Fragment responsible to deal with the login authentication of the user.
- *
  * Validates credentials provided against data saved in SharedPreferences, and if valid, redirects the user to the next Activity.
  * Also handles visual feedback to the user, showing snippets of progress or error.
  */

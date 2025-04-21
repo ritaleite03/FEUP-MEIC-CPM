@@ -130,8 +130,8 @@ async function actionPayment(ctx) {
         // verifying signature
         const verifySign = await db.verifySignature(user, sign, part);
         if (verifySign === false) {
-            throw new Error("Invalid signature!")
-        };
+            throw new Error("Invalid signature!");
+        }
 
         // calculating total value to pay
         let priceTotal = 0;
@@ -223,16 +223,14 @@ async function actionChallengeTransaction(ctx) {
     console.log("\n---- START Action Challenge Transaction (router) ----");
 
     try {
-
         let { user } = ctx.request.body;
         let [success, result] = await db.actionGetUser(user);
 
         if (success === true) {
             [success, result] = await db.actionAddNonce(user, "TRANSACTION");
-            if (success === true) ctx.body = {nonce: result};
+            if (success === true) ctx.body = { nonce: result };
             else throw new Error(result);
-        }
-        else {
+        } else {
             throw new Error(result);
         }
     } catch (error) {
@@ -258,9 +256,16 @@ async function actionGetVouchers(ctx) {
         if (success === false) {
             ctx.body = { error: result };
         } else {
-            ctx.body = {
-                vouchers: result,
-            };
+            const [success1, result1] = await db.getUserDiscount(user);
+            if (success1 === false) {
+                ctx.body = { error: result1 };
+            } else {
+                console.log(result1);
+                ctx.body = {
+                    vouchers: result,
+                    discount: parseFloat(parseFloat(result1).toFixed(2)),
+                };
+            }
         }
     } catch (error) {
         console.log("Get Vouchers - ", error);
@@ -278,11 +283,10 @@ async function actionGetGroceries(ctx) {
         const [success, result] = await db.getGroceries();
         if (success === false) {
             ctx.body = { error: result };
-        }
-        else {
+        } else {
             ctx.body = {
-                groceries: result
-            }
+                groceries: result,
+            };
         }
     } catch (error) {
         ctx.status = 400;
@@ -294,24 +298,22 @@ async function actionGetGroceries(ctx) {
 
 async function actionGetTransactions(ctx) {
     console.log("\n---- START Action Get Transactions (router) ----");
-    
+
     try {
         let { user, message } = ctx.request.body;
         const [success, result] = await db.actionGetTransactions(user, message);
 
         if (success === false) {
             ctx.body = { error: result };
-        }
-        else {
+        } else {
             ctx.body = {
-                transactions : result
+                transactions: result,
             };
         }
-    }
-    catch (error) {
+    } catch (error) {
         console.log("Get Transactions - ", error);
         ctx.status = 400;
-        ctx.body = { error: error};
+        ctx.body = { error: error };
     }
 
     console.log("---- END Action Get Transactions (router) ----\n");
@@ -359,7 +361,7 @@ function readPayment(message) {
                 .padStart(16, "0"),
         ].join("-");
         offset += 16;
-        const price = buf.readInt16BE(offset);
+        const price = parseFloat(buf.readFloatBE(offset).toFixed(2));
         offset += 4;
         products.push({ productId: productId, priceInCents: price });
         console.log("   - ProductId and Price -", productId, price);

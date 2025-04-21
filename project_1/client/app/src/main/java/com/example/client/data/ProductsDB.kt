@@ -13,7 +13,7 @@ private const val DB_NAME = "products.db"
 private const val DB_VERSION = 1
 
 /**
- * Database to keep the information of the shopping list
+ * Database to keep the information of the shopping list.
  */
 class ProductsDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION) {
 
@@ -43,7 +43,7 @@ class ProductsDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
     }
 
     /**
-     * Inserts the new product in the database
+     * Inserts the new product in the database.
      */
     fun insert(product: Product): Long {
         val values = ContentValues().also {
@@ -59,21 +59,21 @@ class ProductsDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION)
     }
 
     /**
-     * Deletes an existing product from the database
+     * Deletes an existing product from the database.
      */
     fun delete(uuid: UUID) {
         writableDatabase.delete(tableProducts, "$colUuid = ?", arrayOf(uuid.toString()))
     }
 
     /**
-     * Deletes all products from the database
+     * Deletes all products from the database.
      */
     fun deleteAll() {
         writableDatabase.delete(tableProducts, null, null)
     }
 
     /**
-     * Gets all the products from the database
+     * Gets all the products from the database.
      */
     fun getProducts() {
         val cursor = readableDatabase.rawQuery("SELECT * FROM  $tableProducts", null)

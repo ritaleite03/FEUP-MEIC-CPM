@@ -2,7 +2,6 @@ package com.example.client.domain
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -24,7 +23,6 @@ import kotlin.text.equals
 
 /**
  * Data class representing a product.
- *
  * @property id Unique identifier of the product.
  * @property name Name of the product.
  * @property category Category of the product.
@@ -39,35 +37,23 @@ data class Product(
     var price: Float
 )
 
-/**
- * Enum class with the types of ordering.
- */
+/** Enum class with the types of ordering. */
 enum class OrderProduct { ASCENDING_TIME, DESCENDING_TIME, ASCENDING_NAME, DESCENDING_NAME, ASCENDING_PRICE, DESCENDING_PRICE }
-
-/**
- * Enum class with the types of categories.
- */
+/** Enum class with the types of categories. */
 enum class CategoryProduct { ALL, FRUIT, VEGETABLES, PACKAGES, DESSERT }
 
-/**
- * Database with the products.
- */
+/** Database with the products. */
 lateinit var productsDB: ProductsDB
 
-/**
- * List of all the products in the cart (initially empty).
- */
+/** List of all the products in the cart (initially empty). */
 var listProducts = arrayListOf<Product>()
-
-/**
- * List of all the products in the cart (initially empty), by date of acquisition.
- */
+/** List of all the products in the cart (initially empty), by date of acquisition. */
 val listProductsTime = arrayListOf<Product>()
 
 /**
- * Decodes message from the qr code
- * @param message Message retrieved from the qr code
- * @param key Key (in string format) of the market
+ * Decodes message from the qr code.
+ * @param message Message retrieved from the qr code.
+ * @param key Key (in string format) of the market.
  */
 fun productsDecodeMessage(message: ByteArray, key: String) : Product? {
     var clearTextTag = ByteArray(0)
@@ -121,7 +107,6 @@ fun productsDecodeMessage(message: ByteArray, key: String) : Product? {
 
 /**
  * Adapter to bind [Product] objects to an [android.widget.ListView].
- *
  * @param ctx context of the Fragment where the Adapter will be used.
  * @param listProducts list of the products that is going to be displayed and manipulated.
  * @param onRemove callback function to update total value.
@@ -214,7 +199,10 @@ class ProductAdapter(
             listProducts.addAll(filteredList)
         }
     }
-    
+
+    /**
+     * Filters the products in listProducts according to their name.
+     */
     private fun productsQuery() {
         if (currentQueryProduct != "") {
             var filteredList = listProducts.filter {
@@ -225,6 +213,9 @@ class ProductAdapter(
         }
     }
 
+    /**
+     * Perform all filters and sorting.
+     */
     fun productsFilter() {
         productsSort()
         productsCategory()

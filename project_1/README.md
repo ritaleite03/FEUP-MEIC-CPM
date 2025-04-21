@@ -93,6 +93,9 @@ It is crucial that the supermarket key remains unchanged after a customer has re
 
     -   Adds products to the cart by scanning QR codes.
     -   Removes products from the cart.
+    -   Sort products by selection date, name or price.
+    -   Filter products by their category.
+    -   Filter products by their name.
     -   Checkout configuration allows:
 
         -   Choosing the payment method: NFC or QR Code;
@@ -106,15 +109,16 @@ It is crucial that the supermarket key remains unchanged after a customer has re
     -   Provide the option to go back and continue shopping (payment was not completed, so the product list remains unchanged).
     -   Provide the option to confirm that the payment was completed (payment was successful, so the product list is cleared).
 
--   **Transactions and Vouchers**
+-   **Transactions, Vouchers and Discount**
 
-    -   Displays recent transactions and available vouchers.
-    -   Requests transactions and vouchers from the server using a nonce challenge for secure authentication.
+    -   Displays recent transactions, available vouchers and discount.
+    -   Requests transactions, vouchers and discount from the server using a nonce challenge for secure authentication.
 
 -   **Data Persistence**
 
     -   Stores the user's product list locally in a database.
     -   Stores the user's vouchers locally in a database.
+    -   Stores the user's discount locally in a database.
     -   Stores the user's transactions locally in a database. // TODO
 
 ## Navigation

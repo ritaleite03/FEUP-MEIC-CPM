@@ -107,7 +107,7 @@ class DBOps {
             for (const grocery_info of groceries_data) {
                 await this.insertGroceryIntoTable(grocery_info);
             }
-        } catch(error) {
+        } catch (error) {
             console.log("Error populating Grocery table");
             return null;
         }
@@ -126,7 +126,7 @@ class DBOps {
                 grocery_info["sub_category"],
                 grocery_info["description"],
                 grocery_info["image_path"],
-                grocery_info["price"]
+                grocery_info["price"],
             ]
         );
     }
@@ -136,9 +136,7 @@ class DBOps {
 
         let result;
         try {
-            const rows = await this.db.all(
-                `SELECT * FROM Grocery`
-            );
+            const rows = await this.db.all(`SELECT * FROM Grocery`);
 
             if (!rows || rows.length === 0) {
                 throw new Error("Error obtaining groceries");
@@ -228,6 +226,23 @@ class DBOps {
         }
     }
 
+    async getUserDiscount(user) {
+        try {
+            const row = await this.db.get(
+                `SELECT Discount FROM Users WHERE Uuid = ?`,
+                [user]
+            );
+
+            if (!row) {
+                return [true, 0];
+            }
+            return [true, row.Discount];
+        } catch (error) {
+            console.log("Error in discount fetch!", error);
+            return [false, error];
+        }
+    }
+
     async actionGetTransactions(user, message) {
         try {
             const [success, result] = await this.verifyNonce(
@@ -251,11 +266,14 @@ class DBOps {
 
             let transactions = [];
             for (const row of rows) {
-                transactions.push({ uuid: row.Uuid, price: row.Price, date: row.Date });
+                transactions.push({
+                    uuid: row.Uuid,
+                    price: row.Price,
+                    date: row.Date,
+                });
             }
             return [true, transactions];
-        }
-        catch (error) {
+        } catch (error) {
             console.log("Error in transaction fecth!", error);
             return [false, error];
         }
@@ -376,7 +394,7 @@ class DBOps {
             if (!row) throw new Error("User not found!");
 
             const current = row.Current / 100;
-            const numberVouchers = Math.floor(current / 100);
+            const numberVouchers = Math.floor(current);
 
             if (numberVouchers > 0) {
                 console.log("Add new voucher.");
@@ -425,13 +443,11 @@ class DBOps {
             );
 
             return true;
-        }
-        catch (error) {
+        } catch (error) {
             await this.db.run("ROLLBACK");
             console.log("Failure in payment transaction 3!", error);
             return false;
-        }
-        finally {
+        } finally {
             console.log("---- END Payment Transaction (db) ----");
         }
     }

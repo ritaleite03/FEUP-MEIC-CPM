@@ -33,7 +33,6 @@ import javax.crypto.Cipher
  *      - The use of discount;
  *      - The use of vouchers;
  *      - The payment method (QR-Code or NFC)
- *
  * @param fragment Fragment of the cart list.
  */
 fun openCheckout(fragment: CartFragment) {
@@ -101,7 +100,6 @@ fun openCheckout(fragment: CartFragment) {
 
 /**
  * Sets up the spinner with its options.
- *
  * @param fragment Fragment of the cart list.
  * @param options Options available in the spinner.
  * @param spinner Spinner widget.
@@ -114,7 +112,6 @@ private fun setUpSpinner(fragment: CartFragment, options: List<String>, spinner:
 
 /**
  * Sets up the close button.
- *
  * @param dialogView
  * @param dialog
  */
@@ -127,7 +124,6 @@ private fun setUpClose(dialogView : View, dialog : AlertDialog) {
 
 /**
  * Sets up the checkout button.
- *
  * @param dialogView
  * @param fragment Fragment of the cart list.
  * @param spinnerTypePay Spinner with the options of payment.
@@ -162,7 +158,6 @@ private fun setUpCheckout(dialogView: View, fragment : CartFragment, spinnerType
 
 /**
  * Change the activity according with the payment method
- *
  * @param activityType Activity type to change to.
  * @param fragment Fragment of the cart list.
  * @param voucherId Id of the voucher selected (can be null).
@@ -185,7 +180,6 @@ private fun redirectCheckout(activityType : Class<out Activity>, fragment: CartF
 
 /**
  * Generates a checkout message encoded as a ByteArray for payment processing.
- *
  * The generated message includes the following:
  *      - User ID (UUID)
  *      - A list of products, each with an ID (UUID) and price (Short in cents)

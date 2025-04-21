@@ -26,7 +26,6 @@ import java.nio.charset.StandardCharsets
 
 /**
  * Fragment to display the shopping cart, allowing viewing and adding products from a QR Code.
- *
  * The cart displays a list of products and has the ability to scan a QR Code to add a new product to the cart.
  * The QR Code contains encrypted information about the product that will be decoded and added to the list.
  */

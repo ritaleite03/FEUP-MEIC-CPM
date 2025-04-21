@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.example.client.fragments.CartFragment
 import com.example.client.fragments.VouchersFragment
 import com.example.client.fragments.transactions.TransactionsFragment
 import com.example.client.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
@@ -61,7 +62,6 @@ class MainActivity2 : AppCompatActivity() {
         setContentView(R.layout.activity_main2)
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = 0)
-        toolbar.overflowIcon?.setTint(resources.getColor(R.color.white, theme))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -71,6 +71,10 @@ class MainActivity2 : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_cart -> {
+                loadFragment(CartFragment())
+                true
+            }
             R.id.action_profile -> {
                 Toast.makeText(this, "action_profile", Toast.LENGTH_SHORT).show()
                 true
@@ -97,7 +101,6 @@ class MainActivity2 : AppCompatActivity() {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.container_shopping, fragment)
-            //.addToBackStack(null)
             .commit()
     }
 
