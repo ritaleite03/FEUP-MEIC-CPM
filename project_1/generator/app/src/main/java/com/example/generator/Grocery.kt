@@ -120,6 +120,7 @@ class GroceryAdapter(private val groceries: List<Grocery>, private val mainConte
 
         holder.cartButton.setOnClickListener {
             val uuid = UUID.randomUUID()
+            Log.d("UUID", uuid.toString())
             val encryptedTag = generateTag(mainContext.entry, uuid, grocery)
             Log.d("encryptedTag", encryptedTag.toString())
             mainContext.startActivity(Intent(mainContext, MainActivity2::class.java). apply {

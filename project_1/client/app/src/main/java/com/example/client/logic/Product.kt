@@ -2,6 +2,7 @@ package com.example.client.logic
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -82,6 +83,7 @@ fun productsDecodeMessage(message: ByteArray, key: String) : Product? {
 
     val tag = ByteBuffer.wrap(clearTextTag)
     val tagId = tag.int
+    Log.d("tagID", tagId.toString())
     val id = UUID(tag.long, tag.long)
 
     val nameLength = tag.get().toInt()
@@ -127,12 +129,12 @@ class ProductAdapter(
         with(listProducts[pos]) {
             row.findViewById<TextView>(R.id.tv_name).text = if (name == subCategory) name else "$subCategory ($name)"
             row.findViewById<TextView>(R.id.tv_value).text = ctx.getString(R.string.price_format, price)
-
+            Log.d("ID", id.toString())
             // define remove action
             row.findViewById<ImageButton>(R.id.bt_remove).setOnClickListener {
                 productsDB.delete(listProducts[pos].id)
+                listProductsTime.removeIf { it.id == listProducts[pos].id }
                 listProducts.removeAt(pos)
-                listProductsTime.removeIf { it.id ==  listProducts[pos].id}
                 notifyDataSetChanged()
                 onRemove(pos)
             }
