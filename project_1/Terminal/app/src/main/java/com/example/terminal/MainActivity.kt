@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.terminal.utils.NFC.READER_FLAGS
 import com.example.terminal.fragments.ErrorFragment
+import com.example.terminal.fragments.NeutralFragment
 import com.example.terminal.fragments.SuccessFragment
 import com.example.terminal.utils.Lightness
 import com.example.terminal.utils.dpToPx
@@ -60,7 +61,10 @@ class MainActivity : AppCompatActivity() {
         setStatusBarIconColor(window, Lightness.LIGHT)
 
         tvContent.setText(R.string.tv_waiting)
-        btClear.setOnClickListener { tvContent.setText(R.string.tv_waiting) }
+        btClear.setOnClickListener {
+            tvContent.setText(R.string.tv_waiting)
+            loadFragment(NeutralFragment())
+        }
     }
 
 //    override fun onResume() {
