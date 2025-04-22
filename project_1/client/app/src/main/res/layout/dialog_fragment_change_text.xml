@@ -32,21 +32,19 @@
         <EditText
             android:id="@+id/changeTextInput"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginHorizontal="5sp"
             android:layout_marginVertical="5sp"
             android:ems="10"
             android:inputType="text"
             android:text="@string/changeTextDefault"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/changeTextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#4CAF50"
-            android:text="@string/changeConfirm"
-            android:textStyle="bold" />
+            android:text="@string/changeConfirm" />
     </LinearLayout>
 </FrameLayout>

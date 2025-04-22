@@ -2,6 +2,7 @@ package com.example.client.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import com.example.client.R
+import com.example.client.dialog.ChangePassDialogFragment
 import com.example.client.dialog.ChangeTextDialogFragment
 import com.example.client.logic.userDB
 
@@ -27,11 +29,15 @@ class ProfileFragment : Fragment() {
 
         val textName = view.findViewById<TextView>(R.id.textName)
         val textNick = view.findViewById<TextView>(R.id.textNick)
+        val textPass = view.findViewById<TextView>(R.id.textPass)
+
         val editNameButton = view.findViewById<ImageButton>(R.id.editNameButton)
         val editNickButton = view.findViewById<ImageButton>(R.id.editNickButton)
+        val editPassButton = view.findViewById<ImageButton>(R.id.editPassButton)
 
         textName.text = userDB.getColumnValue("Name")
         textNick.text = userDB.getColumnValue("Nick")
+        textPass.text = userDB.getColumnValue("Pass")
 
         editNameButton.setOnClickListener {
             var dialog = ChangeTextDialogFragment.newInstance("Name")
@@ -49,6 +55,15 @@ class ProfileFragment : Fragment() {
                 textNick.text = newText
             }
             dialog.show(parentFragmentManager, "change_text_dialog")
+        }
+
+        editPassButton.setOnClickListener {
+            var dialog = ChangePassDialogFragment()
+            dialog.onPassChanged = { newPass ->
+                userDB.updateColumn("Pass", newPass)
+                textPass.text = newPass
+            }
+            dialog.show(parentFragmentManager, "change_pass_dialog")
         }
     }
 }

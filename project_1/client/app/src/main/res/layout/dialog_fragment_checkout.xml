@@ -60,8 +60,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:backgroundTint="#4CAF50"
-            android:text="@string/checkout_confirm"
-            android:textStyle="bold" />
+            android:text="@string/checkout_confirm" />
 
     </LinearLayout>
 
