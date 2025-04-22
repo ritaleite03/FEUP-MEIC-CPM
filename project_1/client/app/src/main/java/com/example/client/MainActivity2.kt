@@ -17,6 +17,8 @@ import com.example.client.fragments.TransactionsFragment
 import com.example.client.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
 import com.example.client.utils.Crypto.CRYPTO_EC_NAME
 import com.example.client.utils.Crypto.CRYPTO_RSA_NAME
+import com.example.client.utils.configuratorMenu
+import com.example.client.utils.configuratorToolbarTitle
 import com.example.client.utils.setInsetsPadding
 import java.security.KeyStore
 import java.security.KeyStore.PrivateKeyEntry
@@ -62,10 +64,14 @@ class MainActivity2 : AppCompatActivity() {
         setContentView(R.layout.activity_main2)
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = 0)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        configuratorToolbarTitle(this, toolbar)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        configuratorMenu(this, menu)
         return true
     }
 

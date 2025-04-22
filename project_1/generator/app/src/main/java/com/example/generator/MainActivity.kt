@@ -2,7 +2,6 @@ package com.example.generator
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
@@ -17,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.generator.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
 import com.example.generator.utils.Crypto.CRYPTO_NAME
 import com.example.generator.Grocery.Companion.parseGroceries
+import com.example.generator.utils.configuratorToolbarTitle
 import com.example.generator.utils.setInsetsPadding
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = 0)
+
+        configuratorToolbarTitle(this, toolbar)
 
         categorySpinner.adapter = ArrayAdapter(
             this,

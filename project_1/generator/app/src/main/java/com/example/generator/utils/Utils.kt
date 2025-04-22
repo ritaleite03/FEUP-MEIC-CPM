@@ -1,9 +1,26 @@
 package com.example.generator.utils
 
+import android.content.res.Configuration
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import com.example.generator.R
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+
+/**
+ * Configuration of the title in the toolbar to be black if dark mode is on.
+ * @param activity Activity where the toolbar is defined.
+ * @param toolbar Toolbar.
+ */
+fun configuratorToolbarTitle(activity : AppCompatActivity, toolbar: Toolbar){
+    val darkModeFlags = activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    if(darkModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+        toolbar.setTitleTextColor(ContextCompat.getColor(activity, R.color.black));
+    }
+}
 
 /**
  * Reads the contents of an InputStream and returns it as a string.
