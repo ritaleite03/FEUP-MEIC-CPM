@@ -1,9 +1,44 @@
 package com.example.terminal.utils
 
+import android.content.res.Configuration
+import android.util.Log
+import android.view.Menu
+import android.view.Window
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import com.example.terminal.R
+import androidx.core.view.size
+import androidx.core.view.get
+
+/**
+ * Configuration of the title in the toolbar to be black if dark mode is on.
+ * @param activity Activity where the toolbar is defined.
+ * @param toolbar Toolbar.
+ */
+fun configuratorToolbarTitle(activity : AppCompatActivity, toolbar: Toolbar){
+    val darkModeFlags = activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    if(darkModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+        toolbar.setTitleTextColor(ContextCompat.getColor(activity, R.color.black));
+    }
+}
+
+/**
+ * Configuration of the menu in the toolbar to be black if dark mode is on.
+ * @param activity Activity where the toolbar is defined.
+ * @param menu Menu.
+ */
+fun configuratorMenu(activity: AppCompatActivity, menu: Menu) {
+    val iconColor = ContextCompat.getColor(activity, R.color.black)
+    for (i in 0 until menu.size) {
+        menu[i].icon?.mutate()?.setTint(iconColor)
+    }
+}
 
 /**
  * Converts a byte array to a hexadecimal representation.

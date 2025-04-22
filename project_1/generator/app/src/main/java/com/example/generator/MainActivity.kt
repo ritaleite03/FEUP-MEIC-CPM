@@ -17,6 +17,7 @@ import com.example.generator.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
 import com.example.generator.utils.Crypto.CRYPTO_NAME
 import com.example.generator.Grocery.Companion.parseGroceries
 import com.example.generator.utils.configuratorToolbarTitle
+import com.example.generator.utils.dpToPx
 import com.example.generator.utils.setInsetsPadding
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        setInsetsPadding(toolbar, top = 0)
+        setInsetsPadding(toolbar, top = dpToPx(-8f))
 
         configuratorToolbarTitle(this, toolbar)
 

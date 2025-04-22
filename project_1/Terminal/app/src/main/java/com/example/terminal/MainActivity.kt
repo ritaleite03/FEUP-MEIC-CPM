@@ -25,10 +25,11 @@ import com.example.terminal.fragments.ErrorFragment
 import com.example.terminal.fragments.NeutralFragment
 import com.example.terminal.fragments.SuccessFragment
 import com.example.terminal.utils.Lightness
+import com.example.terminal.utils.configuratorMenu
 import com.example.terminal.utils.dpToPx
 import com.example.terminal.utils.setInsetsPadding
 import com.example.terminal.utils.setStatusBarIconColor
-
+import com.example.terminal.utils.configuratorToolbarTitle
 /**
  * Main activity for handling NFC and QR code scanning.
  */
@@ -59,6 +60,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = dpToPx(-8f))
         setStatusBarIconColor(window, Lightness.LIGHT)
+
+        configuratorToolbarTitle(this, toolbar)
 
         tvContent.setText(R.string.tv_waiting)
         btClear.setOnClickListener {
@@ -98,10 +101,15 @@ class MainActivity : AppCompatActivity() {
         else Log.d("NFC", "The device does not have NFC (nothing to deactivate).")
     }
 
+
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_main, menu)
+        configuratorMenu(this, menu)
         return true
     }
+
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

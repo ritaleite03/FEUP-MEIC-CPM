@@ -19,6 +19,7 @@ import com.example.client.utils.Crypto.CRYPTO_EC_NAME
 import com.example.client.utils.Crypto.CRYPTO_RSA_NAME
 import com.example.client.utils.configuratorMenu
 import com.example.client.utils.configuratorToolbarTitle
+import com.example.client.utils.dpToPx
 import com.example.client.utils.setInsetsPadding
 import java.security.KeyStore
 import java.security.KeyStore.PrivateKeyEntry
@@ -63,9 +64,8 @@ class MainActivity2 : AppCompatActivity() {
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main2)
         setSupportActionBar(toolbar)
-        setInsetsPadding(toolbar, top = 0)
+        setInsetsPadding(toolbar, top = dpToPx(-8f))
         supportActionBar?.setDisplayShowTitleEnabled(false)
-
         configuratorToolbarTitle(this, toolbar)
     }
 
