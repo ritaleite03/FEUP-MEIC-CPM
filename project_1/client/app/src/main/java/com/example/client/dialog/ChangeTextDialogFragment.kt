@@ -1,6 +1,5 @@
 package com.example.client.dialog
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +7,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.content.edit
 import androidx.fragment.app.DialogFragment
 import com.example.client.R
+import com.example.client.logic.userDB
 
 class ChangeTextDialogFragment : DialogFragment() {
 
@@ -36,20 +35,14 @@ class ChangeTextDialogFragment : DialogFragment() {
         var changeTextInput = view.findViewById<EditText>(R.id.changeTextInput)
         var changeTextButton = view.findViewById<Button>(R.id.changeTextButton)
 
-        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-        val parameter: String? = sharedPreferences.getString(param1, null)
-
+        val parameter: String? = userDB.getColumnValue(param1.toString())
         if (param1 != null) {
             changeTextParameter.text = param1!!.uppercase()
             changeTextInput.setText(parameter)
-
         }
 
         changeTextButton.setOnClickListener {
             val newValue = changeTextInput.text.toString()
-            sharedPreferences.edit {
-                putString(param1, newValue)
-            }
             onTextChanged?.invoke(newValue)
             dismiss()
         }

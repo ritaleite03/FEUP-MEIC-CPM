@@ -1,6 +1,5 @@
 package com.example.client.fragments
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -21,6 +20,7 @@ import com.example.client.logic.ProductAdapter
 import com.example.client.logic.listProducts
 import com.example.client.logic.productsDB
 import com.example.client.logic.productsDecodeMessage
+import com.example.client.logic.userDB
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import java.nio.charset.StandardCharsets
@@ -161,8 +161,7 @@ class CartFragment : Fragment() {
      * @param combined Encrypted tag obtained from the QR Code.
      */
     private fun decodeAndShow(combined: ByteArray) {
-        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-        val keyString: String? = sharedPreferences.getString("key", null)
+        val keyString: String? = userDB.getColumnValue("Key")
 
         if (keyString != null) {
             val product = productsDecodeMessage(combined, keyString)

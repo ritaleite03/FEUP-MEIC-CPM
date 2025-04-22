@@ -1,6 +1,5 @@
 package com.example.client.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,6 +17,7 @@ import com.example.client.logic.Transaction
 import com.example.client.logic.TransactionAdapter
 import com.example.client.logic.getPrivateKey
 import com.example.client.logic.listTransactions
+import com.example.client.logic.userDB
 import com.example.client.utils.Crypto
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -40,9 +40,7 @@ class TransactionsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         transactionsListView = view.findViewById<ListView>(R.id.lv_transaction)
-
-        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-        val uuid = sharedPreferences.getString("uuid", null)
+        val uuid = userDB.getColumnValue("Uuid")
 
         lifecycleScope.launch {
             var nonce: UUID?

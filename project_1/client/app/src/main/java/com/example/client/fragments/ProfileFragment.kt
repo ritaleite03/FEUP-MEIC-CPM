@@ -10,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import com.example.client.R
 import com.example.client.dialog.ChangeTextDialogFragment
+import com.example.client.logic.userDB
 
 class ProfileFragment : Fragment() {
 
@@ -24,30 +25,27 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-        val name: String? = sharedPreferences.getString("name", null)
-        val nick: String? = sharedPreferences.getString("nick", null)
-
         val textName = view.findViewById<TextView>(R.id.textName)
         val textNick = view.findViewById<TextView>(R.id.textNick)
         val editNameButton = view.findViewById<ImageButton>(R.id.editNameButton)
         val editNickButton = view.findViewById<ImageButton>(R.id.editNickButton)
 
-        textName.text = name
-        textNick.text = nick
+        textName.text = userDB.getColumnValue("Name")
+        textNick.text = userDB.getColumnValue("Nick")
 
         editNameButton.setOnClickListener {
-            var dialog = ChangeTextDialogFragment.newInstance("name")
+            var dialog = ChangeTextDialogFragment.newInstance("Name")
             dialog.onTextChanged = { newText ->
+                userDB.updateColumn("Name", newText)
                 textName.text = newText
             }
             dialog.show(parentFragmentManager, "change_text_dialog")
         }
 
         editNickButton.setOnClickListener {
-            var dialog = ChangeTextDialogFragment.newInstance("nick")
+            var dialog = ChangeTextDialogFragment.newInstance("Nick")
             dialog.onTextChanged = { newText ->
+                userDB.updateColumn("Nick", newText)
                 textNick.text = newText
             }
             dialog.show(parentFragmentManager, "change_text_dialog")

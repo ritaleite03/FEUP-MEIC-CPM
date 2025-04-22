@@ -2,13 +2,16 @@ package com.example.client
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.example.client.data.UserDB
 import com.example.client.fragments.LoginFragment
 import com.example.client.fragments.RegisterFragment
+import com.example.client.logic.userDB
 import com.example.client.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
 import com.example.client.utils.Crypto.CRYPTO_EC_NAME
 import com.example.client.utils.Crypto.CRYPTO_RSA_NAME
@@ -53,15 +56,11 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main)
 
-        // check if the username is already saved in the shared preferences (SharedPreferences)
-        val sharedPreferences = getSharedPreferences("MyAppPreferences", MODE_PRIVATE)
-        val name = sharedPreferences.getString("name", null)
-
+        userDB = UserDB(applicationContext)
         // if the name is empty, it displays the register fragment
-        if (name.isNullOrEmpty()) {
+        if (userDB.isDatabaseEmpty()) {
             loadFragment(RegisterFragment())
         }
-
         // if the name is present, it displays the login fragment
         else{
             loadFragment(LoginFragment())
