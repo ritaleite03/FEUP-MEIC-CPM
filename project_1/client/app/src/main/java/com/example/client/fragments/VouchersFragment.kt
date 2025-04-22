@@ -41,6 +41,7 @@ class VouchersFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        (this.requireActivity() as MainActivity2).toolbar.title = "Discounts & Vouchers"
 
         // Initialize the views
         discountText = view.findViewById<TextView>(R.id.valueDiscount)

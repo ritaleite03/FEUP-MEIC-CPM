@@ -39,6 +39,8 @@ class TransactionsFragment: Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        (this.requireActivity() as MainActivity2).toolbar.title = "Past Transactions"
+
         transactionsListView = view.findViewById<ListView>(R.id.lv_transaction)
         val uuid = userDB.getColumnValue("Uuid")
 

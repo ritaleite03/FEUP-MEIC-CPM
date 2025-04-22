@@ -2,15 +2,18 @@
     <string name="app_name">Client</string>
     <string name="title_main2">Shopping Cart</string>
 
-    // change text
+    // change profile
+    <string name="profileTitleUser">User\'s Information</string>
+    <string name="profileTitleCard">Card\'s Information</string>
     <string name="changeTextDefault">Editing</string>
     <string name="changeTextParameter">Default</string>
-
     <string name="changePassParameter">Password</string>
     <string name="changePassOld">Write your old password:</string>
     <string name="changePassNew">Write your new password:</string>
     <string name="changePassNewConfirm">Write your new password again:</string>
-
+    <string name="changeTypeParameter">Type</string>
+    <string name="changeNumberParameter">Number</string>
+    <string name="changeDateParameter">Expiration Date</string>
     <string name="changeConfirm">Confirm</string>
 
     // content descriptor

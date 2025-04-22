@@ -43,6 +43,9 @@ class UserDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION) {
         onCreate(db)
     }
 
+    /**
+     * Saves user information after registration.
+     */
     fun saveUser(uuid: String, name: String, nick: String, pass: String, cardNumber: String, cardDate: String, selectedCardType: String, key: String) : Long {
         val values = ContentValues().apply {
             put(keyId, 1)
@@ -58,6 +61,11 @@ class UserDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION) {
         return writableDatabase.insertWithOnConflict(tableUser, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
 
+    /**
+     * Updates specific parameter of the user.
+     * @param columnName Name of the column to be changed.
+     * @param newValue New value for the column.
+     */
     fun updateColumn(columnName: String, newValue: String): Int {
         val values = ContentValues().apply {
             put(columnName, newValue)
@@ -65,6 +73,10 @@ class UserDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION) {
         return writableDatabase.update(tableUser, values, "$keyId = ?", arrayOf("1"))
     }
 
+    /**
+     * Gets value from specific column.
+     * @param columnName Name of the column where the value is.
+     */
     fun getColumnValue(columnName: String): String? {
         val cursor = readableDatabase.query(
             tableUser,
@@ -81,6 +93,9 @@ class UserDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSION) {
         return null
     }
 
+    /**
+     * Checks if the database is empty or not (use to check if registration is needed).
+     */
     fun isDatabaseEmpty(): Boolean {
         val cursor = readableDatabase.query(
             tableUser,

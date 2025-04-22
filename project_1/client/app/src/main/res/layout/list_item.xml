@@ -27,8 +27,7 @@
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
                 android:text="@string/product_name"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/tv_value"
@@ -43,8 +42,7 @@
                 android:paddingEnd="4dp"
                 android:text="@string/product_value"
                 android:textColor="#888888"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="16sp" />
 
             <ImageButton
                 android:id="@+id/bt_remove"

@@ -11,6 +11,7 @@ import android.widget.ListView
 import android.widget.SearchView
 import android.widget.Spinner
 import android.widget.TextView
+import com.example.client.MainActivity2
 import com.example.client.R
 import com.example.client.data.ProductsDB
 import com.example.client.dialog.CheckoutDialogFragment
@@ -48,6 +49,8 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (this.requireActivity() as MainActivity2).toolbar.title = "Cart"
+
 
         // Configuration of the ListView to display the products
         productsDB = ProductsDB(requireActivity().applicationContext)

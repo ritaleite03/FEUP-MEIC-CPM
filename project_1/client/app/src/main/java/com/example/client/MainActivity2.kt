@@ -4,11 +4,11 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.client.fragments.CartFragment
@@ -19,7 +19,6 @@ import com.example.client.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
 import com.example.client.utils.Crypto.CRYPTO_EC_NAME
 import com.example.client.utils.Crypto.CRYPTO_RSA_NAME
 import com.example.client.utils.configuratorMenu
-import com.example.client.utils.configuratorToolbarTitle
 import com.example.client.utils.dpToPx
 import com.example.client.utils.setInsetsPadding
 import java.security.KeyStore
@@ -34,7 +33,7 @@ import java.security.KeyStore.PrivateKeyEntry
  */
 class MainActivity2 : AppCompatActivity() {
 
-    private val toolbar by lazy {findViewById<Toolbar>(R.id.toolbar2)}
+    val toolbar by lazy {findViewById<Toolbar>(R.id.toolbar2)}
 
     // Android Keystore EC Key
     private var entryEC: PrivateKeyEntry? = null // getting a keystore entry (with KeyName) lazily
@@ -66,8 +65,11 @@ class MainActivity2 : AppCompatActivity() {
         setContentView(R.layout.activity_main2)
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = dpToPx(-8f))
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        configuratorToolbarTitle(this, toolbar)
+
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.foreground))
+        (toolbar.navigationIcon)?.setTint(ContextCompat.getColor(this, R.color.foreground))
+        toolbar.overflowIcon?.setTint(ContextCompat.getColor(this, R.color.foreground))
+        // configuratorToolbarTitle(this, toolbar)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

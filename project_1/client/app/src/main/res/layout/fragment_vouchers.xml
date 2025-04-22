@@ -29,8 +29,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="10dp"
                 android:text="@string/text_discount"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/valueDiscount"
@@ -63,8 +62,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="10dp"
                 android:text="@string/text_vouchers"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/valueVouchers"
