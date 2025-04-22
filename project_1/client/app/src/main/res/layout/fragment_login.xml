@@ -30,7 +30,8 @@
                     android:layout_height="wrap_content"
                     android:width="300dp"
                     android:hint="@string/login_hint_name"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:textStyle="bold" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -45,7 +46,8 @@
                     android:layout_height="wrap_content"
                     android:width="300dp"
                     android:hint="@string/login_hint_nick"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:textStyle="bold" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -60,7 +62,8 @@
                     android:layout_height="wrap_content"
                     android:width="300dp"
                     android:hint="@string/login_hint_pass"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    android:textStyle="bold" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
@@ -70,7 +73,8 @@
                 android:layout_marginHorizontal="5sp"
                 android:layout_marginVertical="5sp"
                 android:width="300dp"
-                android:text="@string/login_button" />
+                android:text="@string/login_button"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

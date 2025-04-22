@@ -106,5 +106,4 @@ class TransactionsFragment: Fragment() {
         super.onDestroyView()
         listTransactions.clear()
     }
-
 }

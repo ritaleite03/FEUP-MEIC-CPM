@@ -43,7 +43,8 @@
                     android:paddingEnd="4dp"
                     android:text="@string/product_price"
                     android:textColor="#888888"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

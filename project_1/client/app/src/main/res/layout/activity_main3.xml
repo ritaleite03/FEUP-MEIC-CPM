@@ -27,6 +27,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
+                android:contentDescription="@string/image_qrcode_checkout"
                 app:srcCompat="@android:drawable/dark_header" />
 
             <TextView
@@ -53,7 +54,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/go_back" />
+                    android:text="@string/go_back"
+                    android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/btn_conclude"
@@ -61,7 +63,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/conclude" />
+                    android:text="@string/conclude"
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </com.google.android.material.bottomnavigation.BottomNavigationView>

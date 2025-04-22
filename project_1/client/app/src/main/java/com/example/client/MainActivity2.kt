@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.client.fragments.CartFragment
+import com.example.client.fragments.ProfileFragment
 import com.example.client.fragments.VouchersFragment
 import com.example.client.fragments.TransactionsFragment
 import com.example.client.utils.Crypto.CRYPTO_ANDROID_KEYSTORE
@@ -82,7 +83,7 @@ class MainActivity2 : AppCompatActivity() {
                 true
             }
             R.id.action_profile -> {
-                Toast.makeText(this, "action_profile", Toast.LENGTH_SHORT).show()
+                loadFragment(ProfileFragment())
                 true
             }
             R.id.action_transactions -> {

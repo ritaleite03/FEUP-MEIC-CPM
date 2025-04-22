@@ -2,6 +2,21 @@
     <string name="app_name">Client</string>
     <string name="title_main2">Shopping Cart</string>
 
+    // change text
+    <string name="changeTextDefault">Editing</string>
+    <string name="changeTextParameter">Default</string>
+
+    <string name="changeConfirm">Confirm</string>
+
+    // content descriptor
+    <string name="image_qrcode_checkout">QR-Code Checkout Message</string>
+    <string name="image_error_image">Error Icon</string>
+    <string name="image_eliminate_product">Product Elimination Icon</string>
+
+    // hint
+    <string name="hint_product_value">Product Value</string>
+    <string name="hint_voucher_value">Voucher Value</string>
+
     <string name="welcome">Welcome</string>
     <string name="details">Please enter your details</string>
     <string name="update">Update</string>
