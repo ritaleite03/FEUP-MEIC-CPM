@@ -1,7 +1,6 @@
 package com.example.client.dialog
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,6 +19,7 @@ import com.example.client.logic.actionChallengeVouchers
 import com.example.client.logic.actionGetVouchers
 import com.example.client.logic.listProducts
 import com.example.client.logic.getPrivateKey
+import com.example.client.logic.userDB
 import com.example.client.utils.Crypto
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -50,8 +50,7 @@ class CheckoutDialogFragment : DialogFragment() {
         spinnerVoucher = view.findViewById(R.id.spinner_voucher)
         btnCheckout = view.findViewById(R.id.bt_checkout)
 
-        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-        val uuid = sharedPreferences.getString("uuid", null)
+        val uuid = userDB.getColumnValue("Uuid")
         activity = requireActivity() as MainActivity2
 
         lifecycleScope.launch {
@@ -146,8 +145,8 @@ class CheckoutDialogFragment : DialogFragment() {
      * @param useDiscount Boolean that corresponds to the use of discount.
      */
     private fun redirectCheckout(activityType: Class<out Activity>, voucherId: UUID?, useDiscount: Boolean) {
-        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-        val uuid = sharedPreferences.getString("uuid", null)
+
+        val uuid = userDB.getColumnValue("Uuid")
         val products: List<Pair<UUID, Float>> = listProducts.map { product ->
             product.id to product.price
         }

@@ -22,6 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:backgroundTint="@color/design_default_color_error"
+            android:contentDescription="@string/image_error_image"
             android:minWidth="48dp"
             android:minHeight="48dp"
             android:src="@android:drawable/stat_notify_error" />

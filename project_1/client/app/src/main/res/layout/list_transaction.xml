@@ -30,8 +30,7 @@
                     android:paddingStart="4dp"
                     android:paddingEnd="4dp"
                     android:text="@string/product_name"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tv_price"

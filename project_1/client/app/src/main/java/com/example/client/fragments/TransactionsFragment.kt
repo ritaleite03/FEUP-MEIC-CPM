@@ -1,6 +1,5 @@
 package com.example.client.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +16,7 @@ import com.example.client.dialog.ErrorDialogFragment
 import com.example.client.logic.TransactionAdapter
 import com.example.client.logic.listTransactions
 import com.example.client.logic.transactionDB
+import com.example.client.logic.userDB
 import kotlinx.coroutines.launch
 
 class TransactionsFragment: Fragment() {
@@ -30,16 +30,17 @@ class TransactionsFragment: Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         transactionDB = TransactionDB(requireActivity().applicationContext)
         buttonUpdate = view.findViewById(R.id.bottom_button_update)
 
         transactionsListView = view.findViewById(R.id.lv_transaction)
         empty = view.findViewById(R.id.empty2)
 
-        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-        val uuid = sharedPreferences.getString("uuid", null)
         val activity = requireActivity() as MainActivity2
+        activity.toolbar.title = "Past Transactions"
+
+        transactionsListView = view.findViewById(R.id.lv_transaction)
+        val uuid = userDB.getColumnValue("Uuid")
 
         buttonUpdate.setOnClickListener {
             if (uuid != null) {
@@ -68,5 +69,4 @@ class TransactionsFragment: Fragment() {
         super.onDestroyView()
         listTransactions.clear()
     }
-
 }

@@ -121,6 +121,11 @@ It is crucial that the supermarket key remains unchanged after a customer has re
     -   Stores the user's discount locally in a database.
     -   Stores the user's transactions locally in a database. // TODO
 
+-   **Profile**
+
+    -   View user information obtained during registration.
+    -   Make changes to user information.
+
 ## Navigation
 
 ## Security

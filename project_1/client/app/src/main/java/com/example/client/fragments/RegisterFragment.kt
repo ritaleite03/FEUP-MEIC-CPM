@@ -1,7 +1,6 @@
 package com.example.client.fragments
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -13,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
-import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity
@@ -24,6 +22,7 @@ import com.example.client.dialog.ErrorDialogFragment
 import com.example.client.logic.generateEC
 import com.example.client.logic.generateRSA
 import com.example.client.logic.getPublicKey
+import com.example.client.logic.userDB
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -230,17 +229,7 @@ class RegisterFragment : Fragment() {
 
                     if (uuid != null && key != null) {
 
-                        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-                        sharedPreferences.edit {
-                            putString("name", name)
-                            putString("nick", nick)
-                            putString("pass", pass)
-                            putString("cardNumber", cardNumber)
-                            putString("cardDate", cardDateValid)
-                            putString("selectedCardType", selectedCardType)
-                            putString("uuid", uuid)
-                            putString("key", key)
-                        }
+                        userDB.saveUser(uuid, name, nick, pass, cardNumber, cardDateValid, selectedCardType, key)
 
                         // redirect to the next activity and close actual
                         withContext(Dispatchers.Main) {

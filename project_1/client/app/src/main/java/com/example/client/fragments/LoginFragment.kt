@@ -1,6 +1,5 @@
 package com.example.client.fragments
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +12,7 @@ import com.example.client.MainActivity
 import com.example.client.MainActivity2
 import com.example.client.R
 import com.example.client.dialog.ErrorDialogFragment
+import com.example.client.logic.userDB
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * Fragment responsible to deal with the login authentication of the user.
- * Validates credentials provided against data saved in SharedPreferences, and if valid, redirects the user to the next Activity.
+ * Validates credentials provided against data saved, and if valid, redirects the user to the next Activity.
  * Also handles visual feedback to the user, showing snippets of progress or error.
  */
 class LoginFragment : Fragment() {
@@ -40,13 +40,10 @@ class LoginFragment : Fragment() {
             var nick = view.findViewById<TextInputEditText>(R.id.input_nick).text.toString()
             var pass = view.findViewById<TextInputEditText>(R.id.input_pass).text.toString()
 
-            // Access data saved in SharedPreferences
-            val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences",
-                Context.MODE_PRIVATE
-            )
-            val realName = sharedPreferences.getString("name", null)
-            val realNick = sharedPreferences.getString("nick", null)
-            val realPass = sharedPreferences.getString("pass", null)
+            // Access data saved
+            val realName = userDB.getColumnValue("Name")
+            val realNick = userDB.getColumnValue("Nick")
+            val realPass = userDB.getColumnValue("Pass")
 
             // If data entered is equal to data saved, then redirect to the next activity and close actual
             if(name == realName && nick == realNick && pass == realPass) {

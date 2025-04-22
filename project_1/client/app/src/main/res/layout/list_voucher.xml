@@ -30,14 +30,15 @@
                     android:paddingStart="4dp"
                     android:paddingEnd="4dp"
                     android:text="@string/product_name"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textSize="16sp" />
 
                 <EditText
                     android:id="@+id/tv_value"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="@android:color/transparent"
+                    android:hint="@string/hint_voucher_value"
+                    android:importantForAutofill="no"
                     android:inputType="numberDecimal"
                     android:paddingStart="4dp"
                     android:paddingEnd="4dp"

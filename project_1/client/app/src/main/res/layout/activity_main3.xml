@@ -27,6 +27,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
+                android:contentDescription="@string/image_qrcode_checkout"
                 app:srcCompat="@android:drawable/dark_header" />
 
             <TextView

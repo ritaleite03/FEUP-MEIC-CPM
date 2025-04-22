@@ -1,6 +1,5 @@
 package com.example.client.fragments
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +18,7 @@ import com.example.client.logic.discountDB
 import com.example.client.logic.listVouchers
 import com.example.client.logic.vouchersDB
 import com.example.client.dialog.ErrorDialogFragment
+import com.example.client.logic.userDB
 import kotlinx.coroutines.launch
 
 /**
@@ -41,6 +41,7 @@ class VouchersFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        (this.requireActivity() as MainActivity2).toolbar.title = "Discounts & Vouchers"
 
         // Initialize the views
         discountText = view.findViewById<TextView>(R.id.valueDiscount)
@@ -53,8 +54,7 @@ class VouchersFragment : Fragment() {
         vouchersDB = VouchersDB(requireActivity().applicationContext)
         discountDB = DiscountDB(requireActivity().applicationContext)
 
-        val sharedPreferences = requireContext().getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
-        val uuid = sharedPreferences.getString("uuid", null)
+        val uuid = userDB.getColumnValue("Uuid")
         val activity = requireActivity() as MainActivity2
 
         buttonUpdate.setOnClickListener {
