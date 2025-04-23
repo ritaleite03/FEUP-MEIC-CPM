@@ -1,14 +1,20 @@
 package com.example.generator
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Menu
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.Switch
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,12 +24,15 @@ import com.example.generator.utils.Crypto.CRYPTO_NAME
 import com.example.generator.Grocery.Companion.parseGroceries
 import com.example.generator.utils.configuratorToolbarTitle
 import com.example.generator.utils.dpToPx
+import com.example.generator.utils.isDarkThemeOn
 import com.example.generator.utils.setInsetsPadding
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.PublicKey
+
+var useDarkTheme = false
 
 /**
  * Main activity responsible for generating cryptographic keys and encrypting data.
@@ -35,11 +44,12 @@ class MainActivity : AppCompatActivity() {
     private val searchField by lazy { findViewById<EditText>(R.id.searchField) }
     private val categorySpinner by lazy { findViewById<Spinner>(R.id.categorySpinner) }
     private val sortSpinner by lazy { findViewById<Spinner>(R.id.sortSpinner) }
+
     private lateinit var adapter: GroceryAdapter
+
     private var privateKey: PrivateKey? = null
     private var publicKey: PublicKey? = null
 
-    // lazily retrieves the PrivateKeyEntry from the Android Keystore if it exists.
     var entry: KeyStore.PrivateKeyEntry? = null
         get() {
             if (field == null)
@@ -56,7 +66,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setInsetsPadding(toolbar, top = dpToPx(-8f))
-
         configuratorToolbarTitle(this, toolbar)
 
         categorySpinner.adapter = ArrayAdapter(
@@ -64,27 +73,40 @@ class MainActivity : AppCompatActivity() {
             android.R.layout.simple_spinner_dropdown_item,
             listOf("All", "Fruit", "Vegetables", "Packages", "Dessert")
         )
-
         sortSpinner.adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,
             listOf("None", "Name (A-Z)", "Name (Z-A)", "Price (Low to High)", "Price (High to Low)")
         )
 
-        // generate keys if they don't exist
-        if (entry == null) {
-            generateKeys()
-        }
-
+        if (entry == null) generateKeys()
         publicKey = getPublicKey(entry)
         privateKey = getPrivateKey(entry)
-
 
         lifecycleScope.launch {
             informServer(publicKey)
             val groceries = JSONObject(getGroceries())
             setupRecyclerView(groceries)
         }
+    }
+
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+
+        val item = menu?.findItem(R.id.item_switch)
+        val actionView = item?.actionView
+        if (actionView != null) {
+            var switch = actionView.findViewById<Switch>(R.id.itemSwitch)
+            switch.isChecked = isDarkThemeOn()
+            useDarkTheme = switch.isChecked
+            setThemeMode(switch)
+            switch.setOnClickListener {
+                useDarkTheme = switch.isChecked
+                setThemeMode(switch)
+            }
+        }
+        return true
     }
 
     /**
@@ -131,4 +153,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun setThemeMode(@SuppressLint("UseSwitchCompatOrMaterialCode") switch: Switch) {
+        // define color and theme
+        val switchColor = if (useDarkTheme) R.color.black else R.color.white
+        val nightMode = if (useDarkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        // apply
+        val thumb = AppCompatResources.getDrawable(this, R.drawable.baseline_dark_mode_24)
+        thumb?.setTint(ContextCompat.getColor(this, switchColor))
+        switch.thumbDrawable = thumb
+        AppCompatDelegate.setDefaultNightMode(nightMode)
+    }
 }

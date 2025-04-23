@@ -15,7 +15,8 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="My Grocery App" />
+        app:menu="@menu/menu"
+        app:title="Grocery App" />
 
     <EditText
         android:id="@+id/searchField"

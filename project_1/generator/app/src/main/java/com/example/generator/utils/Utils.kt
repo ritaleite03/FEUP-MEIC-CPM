@@ -1,5 +1,6 @@
 package com.example.generator.utils
 
+import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -10,6 +11,11 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
+fun Context.isDarkThemeOn(): Boolean {
+    val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    return nightModeFlags == Configuration.UI_MODE_NIGHT_YES
+}
+
 /**
  * Configuration of the title in the toolbar to be black if dark mode is on.
  * @param activity Activity where the toolbar is defined.
@@ -17,9 +23,10 @@ import java.io.InputStreamReader
  */
 fun configuratorToolbarTitle(activity : AppCompatActivity, toolbar: Toolbar){
     val darkModeFlags = activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-    if(darkModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-        toolbar.setTitleTextColor(ContextCompat.getColor(activity, R.color.black));
-    }
+    var color = if(darkModeFlags == Configuration.UI_MODE_NIGHT_YES) R.color.black else R.color.white
+    toolbar.setTitleTextColor(ContextCompat.getColor(activity,color))
+    (toolbar.navigationIcon)?.setTint(ContextCompat.getColor(activity,color))
+    toolbar.overflowIcon?.setTint(ContextCompat.getColor(activity,color))
 }
 
 /**

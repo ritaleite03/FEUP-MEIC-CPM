@@ -16,17 +16,21 @@ By Group 5:
 4. [Data Schemas](#data-schemas)
 5. [Implemented Features](#implemented-features)
 
-    5.1. [On the Server](#on-the-server)
+    5.1. [Features on the Server](#features-on-the-server)
 
-    5.2. [On the QR Code Generator App](#on-the-qr-code-generator-app)
+    5.2. [Features on the QR Code Generator App](#features-on-the-qr-code-generator-app)
 
-    5.3. [On the Terminal App](#on-the-terminal-app)
+    5.3. [Features on the Terminal App](#features-on-the-terminal-app)
 
-    5.4. [On the User App](#on-the-user-app)
+    5.4. [Features on the User App](#features-on-the-user-app)
 
 6. [Navigation](#navigation)
 7. [Security](#security)
 8. [Performed Tests](#performed-tests)
+
+    8.1. [Tests on the Server](#tests-on-the-server)
+
+    8.2. [Tests on the User App](#tests-on-the-user-app)
 
 ## Overview
 
@@ -64,24 +68,27 @@ It is crucial that the supermarket key remains unchanged after a customer has re
 
 ## Implemented Features
 
-### On the Server
+### Features on the Server
 
 -   Receives the public key from the supermarket, sent by the QR code generator app.
 -   Registers users, providing them with their UUID and with the public key of the supermarket.
+-   Makes the necessary changes to the database when receiving a payment message.
 
-### On the QR Code Generator App
+### Features on the QR Code Generator App
 
+-   Change between light and dark mode.
 -   Generates an RSA key pair.
 -   Sends the public key to the server.
+-   Receives products list from the server.
 -   Creates QR codes for products, including their UUID, name and price.
 
-### On the Terminal App
+### Features on the Terminal App
 
 -   Reads checkout messages via QR Code or NFC.
 -   Sends the checkout request to the server.
 -   Displays the server's response to the user.
 
-### On the User App
+### Features on the User App
 
 -   **Authentication**
 
@@ -119,7 +126,7 @@ It is crucial that the supermarket key remains unchanged after a customer has re
     -   Stores the user's product list locally in a database.
     -   Stores the user's vouchers locally in a database.
     -   Stores the user's discount locally in a database.
-    -   Stores the user's transactions locally in a database. // TODO
+    -   Stores the user's transactions locally in a database.
 
 -   **Profile**
 
@@ -131,3 +138,15 @@ It is crucial that the supermarket key remains unchanged after a customer has re
 ## Security
 
 ## Performed Tests
+
+### Tests on the Server
+
+-   The payment message is composed of the purchase information message and the client’s digital signature of that same message. On the server side, we altered the original message to test whether the signature verification would fail. The test was successful.
+
+### Tests on the User App
+
+-   We tested whether the application would crash if the server was down by attempting to use as many features as possible, expecting instead to receive a small error message indicating the server’s unavailability. The test passed.
+
+-   We tested whether the client application handled having the wrong supermarket key gracefully. Specifically, after scanning the QR code, it did not crash but simply returned to the shopping list without making any changes to it. The test passed.
+
+-   We tested whether the application correctly handled invalid dates for the credit card expiration field, expecting an error message to indicate the invalidity. The test passed.
