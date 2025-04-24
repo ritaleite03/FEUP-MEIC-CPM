@@ -64,9 +64,31 @@ It is crucial that the supermarket key remains unchanged after a customer has re
 
 ## Architecture
 
+In the figure below we can see a representation of the Client Application architecture diagram.
+
+![UML](images/arquitecture.jpg)
+
 ## Data Schemas
 
+The UML diagram below represents the database schema on the server side. It consists of a total of 5 tables.
+
+The **User** table represents the store's users, storing information such as their cryptographic keys and bank card details. The primary key is the Uuid attribute.
+
+The **Voucher** table represents vouchers associated with users. The primary key is the pair (Uuid, UuidUser), which uniquely identifies the voucher and the user who owns it, respectively.
+
+The **Transactions** table represents transactions made by users. The primary key is the pair (Uuid, UuidUser), which identifies the transaction and the user who performed it.
+
+The **Nonce** table represents nonces sent to users after they request information about their vouchers or transactions. The primary key is the pair (Uuid, UuidUser), representing the value of the nonce and the recipient user.
+
+The **Groceries** table represents the store’s products, storing information such as name, category, and price. The primary key is the Name attribute.
+
+![UML](images/uml.jpg)
+
+On the User Application side, there is also a local database to persistently store user information - meaning that if the user exits the application, their data is not lost. Because of this, the User Application's database has a structure identical to the one on the server side, with the exception of the Groceries and Nonce tables, which are not included.
+
 ## Implemented Features
+
+Below is the list of implemented features, separated according to the applications where they were implemented. The applications are the Server, the QR Code Generator Application, the Payment Application (Terminal) and the Client Application.
 
 ### Features on the Server
 
