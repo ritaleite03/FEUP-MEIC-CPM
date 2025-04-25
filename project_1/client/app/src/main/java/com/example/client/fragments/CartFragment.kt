@@ -106,7 +106,17 @@ class CartFragment : Fragment() {
 
         // Set up ordering spinner
         spinnerOrder.adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item,
-            OrderProduct.entries.map { it.name.replace("_", " ").lowercase().replaceFirstChar(Char::uppercaseChar) }
+            OrderProduct.entries.map {
+                when (it.name) {
+                    "ASCENDING_NAME" -> "Name (A-Z)"
+                    "DESCENDING_NAME" -> "Name (Z-A)"
+                    "ASCENDING_PRICE" -> "Price (Low to High)"
+                    "DESCENDING_PRICE" -> "Price (High to Low)"
+                    "ASCENDING_TIME" -> "Time (First to Last)"
+                    "DESCENDING_TIME" -> "Time (Last to First)"
+                    else -> ""
+                }
+            }
         )
         spinnerOrder.setSelection(0)
         spinnerOrder.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
