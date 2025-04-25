@@ -31,9 +31,10 @@
 
             <EditText
                 android:id="@+id/tv_value"
-                android:layout_width="wrap_content"
+                android:layout_width="78dp"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
+                android:gravity="center"
                 android:hint="@string/hint_product_value"
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal"
@@ -41,8 +42,7 @@
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
                 android:text="@string/product_value"
-                android:textColor="#888888"
-                android:textSize="16sp" />
+                android:textColor="#888888" />
 
             <ImageButton
                 android:id="@+id/bt_remove"
