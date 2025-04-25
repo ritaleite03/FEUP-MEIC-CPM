@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity
@@ -48,8 +49,8 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val cardDate = view.findViewById<TextInputEditText>(R.id.input_card_date)
-        cardDate.setSelection(0)
 
+        cardDate.setSelection(0)
         cardDate.addTextChangedListener(object: TextWatcher {
 
             var isEditing = false
@@ -62,17 +63,17 @@ class RegisterFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 if (isEditing || s == null) return
 
-                isDeleting = s.split("").count { it == "/" } != 2
+                isDeleting = s.split("").count { it == "/" } != 1
                 isEditing = true
 
                 val digits = s.replace(Regex("\\D"), "")
-                val formatted = StringBuilder("__/__/____")
+                val formatted = StringBuilder("__/__")
 
                 var lastDigitPos = 0
 
                 for (i in digits.indices) {
-                    if (i < 8) {
-                        val pos = if (i < 2) i else if (i < 4) i+1 else i+2
+                    if (i < 4) {
+                        val pos = if (i < 2) i else i+1
 
                         if (isDeleting) {
                             lastDigitPos = pos
@@ -143,7 +144,7 @@ class RegisterFragment : Fragment() {
                     return@launch
                 }
 
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+                val dateFormat = SimpleDateFormat("MM/yy")
                 dateFormat.isLenient = false
 
                 var cardDateValid : String? = null
