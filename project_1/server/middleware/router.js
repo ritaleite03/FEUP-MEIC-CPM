@@ -136,8 +136,10 @@ async function actionPayment(ctx) {
 
         // apply discount if needed
         if (disc === true) {
-            const discount = await db.getUserDiscount(user);
-            if (discount === null) throw new Error("Invalid discount!");
+            const discountRow = await db.getUserDiscount(user);
+            if (discountRow === null) throw new Error("Invalid discount!");
+
+            const discount = discountRow[1];
 
             // update price according with the discount
             if (priceTotal > discount) {
