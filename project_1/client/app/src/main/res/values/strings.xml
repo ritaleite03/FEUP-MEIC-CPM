@@ -59,13 +59,13 @@
     <string name="menu_vouchers">Discount &amp; Vouchers</string>
 
     // bottom bar shopping
-    <string name="bottom_button_qr">Scan QR</string>
+    <string name="bottom_button_qr">Scan Product QR Code</string>
     <string name="bottom_button_bar">Scan Bar</string>
-    <string name="bottom_button_end">End</string>
+    <string name="bottom_button_end">Checkout</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="product_name">Product Name</string>
-    <string name="product_value">Value</string>
+    <string name="product_value">%d%%</string>
     <string name="product_price">€%.2f</string>
     <string name="total_value_label">Total Value:</string>
     <string name="total_value_default">€0,00</string>

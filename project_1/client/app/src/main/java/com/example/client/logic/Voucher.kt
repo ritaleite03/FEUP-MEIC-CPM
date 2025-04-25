@@ -50,7 +50,7 @@ class VoucherAdapter(
 
         with(listVouchers[pos]) {
             row.findViewById<TextView>(R.id.tv_name).text = id.toString()
-            row.findViewById<TextView>(R.id.tv_value).text = value.toString()
+            row.findViewById<TextView>(R.id.tv_value).text = ctx.getString(R.string.product_value, value)
         }
         return row
     }
