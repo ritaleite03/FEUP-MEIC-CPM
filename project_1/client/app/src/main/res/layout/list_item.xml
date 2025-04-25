@@ -31,10 +31,10 @@
 
             <EditText
                 android:id="@+id/tv_value"
-                android:layout_width="78dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:gravity="center"
+                android:gravity="end|center_vertical"
                 android:hint="@string/hint_product_value"
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal"
