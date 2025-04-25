@@ -53,7 +53,7 @@
         "name": "Kaiser",
         "image_path": "kaiser",
         "description": "The Kaiser Pear is drip-shaped with matte, medium-thick, flaming yellow-brown or brownish shell. The yellowish white pulp is crispy, juicy and sweet, with some fresh acid. Kaiser pears match very well with dessert cheeses and wine, but it is also good to cook, as it retains its shape well.\n",
-        "price": 4.27
+        "price": 0.0
     },
     {
         "category": "Fruit",
@@ -61,7 +61,7 @@
         "name": "Avocado",
         "image_path": "avocado",
         "description": "Avocado is a fruit with a clear core in the middle. The pulp is light yellow and the peel may vary from light green to dark green, almost black. Avocado fits for starters, salads and as an ingredient in Guacamole.\n",
-        "price": 0.91
+        "price": 1.36
     },
     {
         "category": "Fruit",
@@ -124,7 +124,7 @@
         "sub_category": "Mango",
         "name": "Mango",
         "image_path": "mango",
-        "price": 2.27,
+        "price": 2.09,
         "description": "Mango has a fresh, powerful and sweet taste, but a special exotic shade. Inside there is a large, oval kernel in which the pulp is grown in. This makes the best way to cut mango is with the shell on. Divide the fruit by cutting along on both sides of the core. Mango can be eaten naturally or in desserts, entrees and main courses.\n"
     },
     {
@@ -156,7 +156,7 @@
         "sub_category": "Satsumas",
         "name": "Satsumas",
         "image_path": "satsumas",
-        "price": 3.64,
+        "price": 3.91,
         "description": "Satsumas is a sweet and small type of citrus fruit. The fruit is popular as a snack.\n"
     },
     {
@@ -196,7 +196,7 @@
         "sub_category": "Melon",
         "name": "Galia-Melon",
         "image_path": "galia_melon",
-        "price": 5.18,
+        "price": 5.46,
         "description": "Galia melon is a small round sugar melon with a yellowish green, orange, or light brown mesh patterned shell. The pulp is firm and juicy, with a cream white to yellowish green color and a sweet, rich flavor.\n"
     },
     {
@@ -245,7 +245,7 @@
         "name": "Sweet-Potato",
         "image_path": "sweet_potato",
         "description": "Sweet potatoes are oblong, irregularly shaped tubers, often slightly larger than regular potatoes. The peel is light brown or red. There are two varieties, one with light pulp and one with yellow orange pulp. Sweet potatoes are used like regular potatoes, but the taste is very different. The sweet potato is very sweet and a bit softer than regular potatoes. It can also be used in desserts, pies and cakes.\n",
-        "price": 3.18
+        "price": 4.55
     },
     {
         "category": "Vegetables",
@@ -293,7 +293,7 @@
         "name": "Zucchini",
         "image_path": "zucchini",
         "description": "Zucchini can be eaten raw, but is usually used in soups, pots, stews, etc.\n",
-        "price": 1.36
+        "price": 0.73
     },
     {
         "category": "Vegetables",
@@ -308,7 +308,7 @@
         "sub_category": "Pepper",
         "name": "Yellow-Bell-Pepper",
         "image_path": "yellow_bell_pepper",
-        "price": 5.73,
+        "price": 5.0,
         "description": "The yellow pepper is much sweeter than the green. It also contains more vitamins and antioxidants than the green. Peppers are good to eat raw in salads and as garnish, but are also good to fry, stew or gratinate, for example with filling. Paprika also fits well in pots, gratins and pies.\n"
     },
     {
@@ -316,7 +316,7 @@
         "sub_category": "Pepper",
         "name": "Red-Bell-Pepper",
         "image_path": "red_bell_pepper",
-        "price": 6.09,
+        "price": 5.0,
         "description": "The red peppers are much sweeter than the green ones. It also contains more vitamins and antioxidants than the green. Peppers are good to eat raw in salads and as garnish, but are also good to fry, stew or gratinate, for example. with filling. Paprika also fits well in pots, gratins and pies.\n"
     },
     {
@@ -332,7 +332,7 @@
         "sub_category": "Aubergine",
         "name": "Aubergine",
         "image_path": "aubergine",
-        "price": 1.45,
+        "price": 0.73,
         "description": "Aubergine, or eggplant as it is also called, is usually dark violet. It has a shiny peel and is 15-20 cm long. The pulp is white. Aubergine is always eaten cooked. In addition to Moussaka, Aubergine fits well in pots and gratins.\n\n"
     },
     {
@@ -341,7 +341,7 @@
         "name": "Vine-Tomato",
         "image_path": "vine_tomato",
         "description": "Round tomatoes with vines in the package. Rinse and have in the salad or on the sandwich.\n",
-        "price": 4.27
+        "price": 3.64
     },
     {
         "category": "Vegetables",
@@ -349,7 +349,7 @@
         "name": "Beef-Tomato",
         "image_path": "beef_tomato",
         "description": "An extra large tomato suitable for well for hamburgers and on the grill or in the oven.\n",
-        "price": 6.64
+        "price": 4.82
     },
     {
         "category": "Vegetables",
@@ -370,234 +370,162 @@
     {
         "category": "Packages",
         "sub_category": "Yoghurt",
-        "name": "Yoggi-Vanilla-Yoghurt",
-        "image_path": "yoggi_vanilla_yoghurt",
-        "price": 2.63,
-        "description": "Creamy yoghurt made of natural ingredients with mild and tender taste of real vanilla from Madagascar. The yoghurt, estimated by both small and large, can be enjoyed at breakfast time, as a quick snack or a simple dessert. It belongs to the Yoggi original family, which is Sweden's most purchased fruit yoghurt. The symbol of the blueish yellow milk can guarantees 100 percent Swedish milk.\n"
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Yoghurt",
-        "name": "Yoggi-Strawberry-Yoghurt",
-        "image_path": "yoggi_strawberry_yoghurt",
-        "description": "Lovely creamy yoghurt rich in fruit. It is made of natural ingredients with a mild, round taste of strawberries and vanilla. Yoggi original is a pleasure that saturates and gives energy whenever you want. The taste is completely natural and it is the fruit that gives the yoghurt the fine color. The yoghurt suits the whole family and can be enjoyed at breakfast time, as a quick snack or a simple dessert. The symbol of the blueish yellow milk can guarantees 100 percent Swedish milk.\n",
-        "price": 2.63
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Yoghurt",
-        "name": "Arla-Natural-Mild-Low-Fat-Yoghurt",
-        "image_path": "arla_natural_mild_low_fat_yoghurt",
-        "price": 2.0,
-        "description": "Keyhole-labeled light yoghurt with creamy texture and natural taste. With its low fat content, the yoghurt is an excellent choice if you want to eat healthy without having to sacrifice the good taste. The yoghurt fits well for both breakfast and snacks. Eat it as it is or with muesli, flakes, fruit and berries. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n"
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Yoghurt",
-        "name": "Arla-Mild-Vanilla-Yoghurt",
-        "image_path": "arla_mild_vanilla_yoghurt",
-        "price": 2.32,
-        "description": "Mild and smooth vanilla yoghurt made of Swedish milk from Arlagårdar. The texture is creamy and tender, the taste soft and round. The yoghurt fits well for breakfast and snacks for the whole family. Eat it as it is or with muesli, flakes, fruit and berries. Vanilla yoghurt is also a perfect base for smoothies. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n"
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Yoghurt",
-        "name": "Arla-Natural-Yoghurt",
-        "image_path": "arla_natural_yoghurt",
+        "name": "Arla-Natural",
+        "image_path": "arla_natural",
         "price": 2.73,
         "description": "Creamy, slightly more acidic yoghurt with a clear yoghurt character. Acidic with selected bacterial strains giving extra clear yoghurt aroma. The yoghurt tastes as good for breakfast as snack and fits well with nuts, honey and fresh berries. With its creamy texture and clear acid, it is also great for kebab sauce, baking bread and yoghurt drinks. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n"
     },
     {
         "category": "Packages",
         "sub_category": "Yoghurt",
-        "name": "Valio-Vanilla-Yoghurt",
-        "image_path": "valio_vanilla_yoghurt",
+        "name": "Yoggi-Strawberry",
+        "image_path": "yoggi_strawberry",
+        "description": "Lovely creamy yoghurt rich in fruit. It is made of natural ingredients with a mild, round taste of strawberries and vanilla. Yoggi original is a pleasure that saturates and gives energy whenever you want. The taste is completely natural and it is the fruit that gives the yoghurt the fine color. The yoghurt suits the whole family and can be enjoyed at breakfast time, as a quick snack or a simple dessert. The symbol of the blueish yellow milk can guarantees 100 percent Swedish milk.\n",
+        "price": 2.63
+    },
+    {
+        "category": "Packages",
+        "sub_category": "Yoghurt",
+        "name": "Valio-Vanilla",
+        "image_path": "valio_vanilla",
         "description": "The original! Valio's creamy vanilla yoghurt original. The yogurt is carefully sugared with 30 percent less added sugar than regular flavored yogurt. Great for both breakfast and snacks.\n",
         "price": 2.68
     },
     {
         "category": "Packages",
+        "sub_category": "Yoghurt",
+        "name": "Yoggi-Vanilla",
+        "image_path": "yoggi_vanilla",
+        "price": 2.63,
+        "description": "Creamy yoghurt made of natural ingredients with mild and tender taste of real vanilla from Madagascar. The yoghurt, estimated by both small and large, can be enjoyed at breakfast time, as a quick snack or a simple dessert. It belongs to the Yoggi original family, which is Sweden's most purchased fruit yoghurt. The symbol of the blueish yellow milk can guarantees 100 percent Swedish milk.\n"
+    },
+    {
+        "category": "Packages",
+        "sub_category": "Yoghurt",
+        "name": "Arla-Mild-Vanilla",
+        "image_path": "arla_mild_vanilla",
+        "price": 2.32,
+        "description": "Mild and smooth vanilla yoghurt made of Swedish milk from Arlagårdar. The texture is creamy and tender, the taste soft and round. The yoghurt fits well for breakfast and snacks for the whole family. Eat it as it is or with muesli, flakes, fruit and berries. Vanilla yoghurt is also a perfect base for smoothies. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n"
+    },
+    {
+        "category": "Packages",
         "sub_category": "Sour-Milk",
-        "name": "Arla-Sour-Milk",
-        "image_path": "arla_sour_milk",
+        "name": "Arla",
+        "image_path": "arla",
         "price": 1.68,
         "description": "Classic sour milk made from Swedish milk from Arlagårdar. The flavor is slightly acidic with characteristically sour milk aroma and light creaminess. The texture is a bit thicker and the sour milk can be eaten with muesli, cereal, fruit or berries. Sour milk has a long history in Sweden - already in the Viking era you have had sour milk-like products. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n"
     },
     {
         "category": "Packages",
         "sub_category": "Soy-Milk",
-        "name": "Alpro-Fresh-Soy-Milk",
-        "image_path": "alpro_fresh_soy_milk",
+        "name": "Alpro-Fresh",
+        "image_path": "alpro_fresh",
         "price": 2.0,
         "description": "Fresh soy based drink, enriched with calcium and vitamins.\n"
     },
     {
         "category": "Packages",
         "sub_category": "Soy-Milk",
-        "name": "Alpro-Shelf-Soy-Milk",
-        "image_path": "alpro_shelf_soy_milk",
+        "name": "Alpro-Shelf",
+        "image_path": "alpro_shelf",
         "price": 2.0,
         "description": "Soy based drink, enriched with calcium and vitamins. Can be stored in room temperature.\n"
     },
     {
         "category": "Packages",
         "sub_category": "Milk",
-        "name": "Garant-Ecological-Medium-Fat-Milk",
-        "image_path": "garant_ecological_medium_fat_milk",
-        "description": "Organic skimmed milk from our Swedish KRAV farms. 1.5 percent fat. Garant's organic labeling tells us that a product is organic and sometimes even KRAV-labeled. Our assortment is constantly filled with more EKO products.\n",
-        "price": 1.45
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Milk",
-        "name": "Arla-Ecological-Medium-Fat-Milk",
-        "image_path": "arla_ecological_medium_fat_milk",
-        "price": 1.59,
-        "description": "Fresh skimmed Milk made from Swedish Milk from organic Arlagårdar. Skimmed milk has a delicious full flavor and is a popular choice for breakfast cereals, porridge or as a drink for the meal. Milk is a natural source of, for example, protein, calcium and vitamin B12. Protein contributes to muscle building and calcium is needed to maintain a normal bone structure. The brand Arla Ko guarantees that the product is made of 100% Swedish milk. The new brown carton has 24 percent lower climate impact compared to the previous white carton.\n"
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Milk",
-        "name": "Arla-Medium-Fat-Milk",
-        "image_path": "arla_medium_fat_milk",
-        "description": "Fresh skimmed milk made from Swedish milk from Arlagårdar. Skimmed milk has a delicious full-bodied milk flavor and is a popular choice for breakfast cereals, porridge or as a drink for the meal. Milk is a natural source of, for example, protein, calcium and vitamin B12. Protein contributes to muscle building and calcium is needed to maintain a normal bone structure. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n",
-        "price": 1.5
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Milk",
-        "name": "Arla-Standard-Milk",
-        "image_path": "arla_standard_milk",
+        "name": "Arla-Standard",
+        "image_path": "arla_standard",
         "price": 1.54,
         "description": "Fresh standard milk made from Swedish milk from Arlagårdar. The taste is round and full of clear flavors of cream. This makes it extra good for coffee, tea and chocolate. Standard milk can also be used for cooking, berries and porridge. Milk is a natural source of, for example, protein, calcium and vitamin B12. Protein contributes to muscle building and calcium is needed to maintain a normal bone structure. The brand Arla Ko guarantees that the product is made of 100 percent Swedish milk.\n"
     },
     {
         "category": "Packages",
         "sub_category": "Milk",
-        "name": "Garant-Ecological-Standard-Milk",
-        "image_path": "garant_ecological_standard_milk",
+        "name": "Arla-Medium-Fat",
+        "image_path": "arla_medium_fat",
+        "description": "Fresh skimmed milk made from Swedish milk from Arlagårdar. Skimmed milk has a delicious full-bodied milk flavor and is a popular choice for breakfast cereals, porridge or as a drink for the meal. Milk is a natural source of, for example, protein, calcium and vitamin B12. Protein contributes to muscle building and calcium is needed to maintain a normal bone structure. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n",
+        "price": 1.5
+    },
+    {
+        "category": "Packages",
+        "sub_category": "Milk",
+        "name": "Garant-Ecological",
+        "image_path": "garant_ecological",
         "description": "Ecological milk from Swedish KRAV-labeled farms.\n",
         "price": 1.5
     },
     {
         "category": "Packages",
         "sub_category": "Milk",
-        "name": "Arla-Lactose-Medium-Fat-Milk",
-        "image_path": "arla_lactose_medium_fat_milk",
+        "name": "Arla-Lactose",
+        "image_path": "arla_lactose",
         "description": "Lactose-free skimmed milk made from Swedish milk from Arlagårdar. The product is designed for adults and children with lactose intolerance and is therefore free from lactose. The skimmed milk has a delicious full-bodied milk flavor and is a popular choice for breakfast cereals, porridge or as a drink for the meal. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n",
         "price": 1.72
     },
     {
         "category": "Packages",
         "sub_category": "Oatghurt",
-        "name": "Oatly-Natural-Oatghurt",
-        "image_path": "oatly_natural_oatghurt",
+        "name": "Oatly-Natural",
+        "image_path": "oatly_natural",
         "price": 3.18,
         "description": "Whole vegetable ghurt, used as yoghurt. Can also be used for cold sauces.\n"
     },
     {
         "category": "Packages",
         "sub_category": "Oat-Milk",
-        "name": "Oatly-Oat-Milk",
-        "image_path": "oatly_oat_milk",
+        "name": "Oatly",
+        "image_path": "oatly",
         "price": 1.54,
         "description": "A natural oat drink, enriched with calcium and vitamins. Has long shelf life and can be stored at room temperature.\n"
     },
     {
         "category": "Packages",
         "sub_category": "Juice",
-        "name": "Bravo-Orange-Juice",
-        "image_path": "bravo_orange_juice",
-        "description": "Ready to drink orange juice from concentrate. Fresh and sour taste. Fits the breakfast table, as quencher and meal drink. Without pulp.\n",
-        "price": 3.27
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Juice",
-        "name": "God-Morgon-Red-Grapefruit-Juice",
-        "image_path": "god_morgon_red_grapefruit_juice",
-        "price": 3.18,
-        "description": "God Morning Red Grapefruit is a real vitamin kick - mellow, rich in taste and as refreshing as only red grapefruit can be.\n"
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Juice",
-        "name": "Tropicana-Mandarin-Morning",
-        "image_path": "tropicana_mandarin_morning",
-        "price": 2.54,
-        "description": "Tropicana Mandarin Morning is a ready to drink juice without pulp pressed on orange, mandarin and grapes. Not from concentrate. Mildly pasteurized.\n"
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Juice",
-        "name": "God-Morgon-Apple-Juice",
-        "image_path": "god_morgon_apple_juice",
-        "price": 2.54,
-        "description": "God Morning Apple is unfiltered, which gives a richer, more delicious juice with real apple flavor.\n"
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Juice",
-        "name": "God-Morgon-Orange-Juice",
-        "image_path": "god_morgon_orange_juice",
-        "description": "God Morgon Orange is pressed by sun-dried, hand-picked oranges. The package contains juice from 2 kilograms of oranges!\n",
-        "price": 3.27
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Juice",
-        "name": "Bravo-Apple-Juice",
-        "image_path": "bravo_apple_juice",
+        "name": "Bravo-Apple",
+        "image_path": "bravo_apple",
         "price": 4.36,
         "description": "Ready to drink apple juice from concentrate. Fresh and sour taste. Fits the breakfast table, as quencher and meal drink.\n"
     },
     {
         "category": "Packages",
         "sub_category": "Juice",
-        "name": "God-Morgon-Orange-Red-Grapefruit-Juice",
-        "image_path": "god_morgon_orange_red_grapefruit_juice",
-        "description": "God Morning Orange / Red Grapefruit is a fresh blend of sweet orange juice and tasty fresh red grapefruit.\n",
-        "price": 3.18
+        "name": "Bravo-Orange",
+        "image_path": "bravo_orange",
+        "description": "Ready to drink orange juice from concentrate. Fresh and sour taste. Fits the breakfast table, as quencher and meal drink. Without pulp.\n",
+        "price": 3.27
     },
     {
         "category": "Packages",
         "sub_category": "Juice",
-        "name": "Tropicana-Juice-Smooth",
-        "image_path": "tropicana_juice_smooth",
-        "price": 2.5,
-        "description": "Tropicana Smooth Style is a ready to drink juice without pulp pressed on sun-dried oranges. Not from concentrate. Mildly pasteurized.\n"
+        "name": "God-Morgon-Apple",
+        "image_path": "god_morgon_apple",
+        "price": 2.54,
+        "description": "God Morning Apple is unfiltered, which gives a richer, more delicious juice with real apple flavor.\n"
+    },
+    {
+        "category": "Packages",
+        "sub_category": "Juice",
+        "name": "God-Morgon-Orange",
+        "image_path": "god_morgon_orange",
+        "description": "God Morgon Orange is pressed by sun-dried, hand-picked oranges. The package contains juice from 2 kilograms of oranges!\n",
+        "price": 3.27
     },
     {
         "category": "Packages",
         "sub_category": "Soyghurt",
-        "name": "Alpro-Blueberry-Soyghurt",
-        "image_path": "alpro_blueberry_soyghurt",
-        "description": "Soy based ghurt, used as yoghurt, with mild blueberry taste and creamy texture.\n",
-        "price": 2.73
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Soyghurt",
-        "name": "Alpro-Vanilla-Soyghurt",
-        "image_path": "alpro_vanilla_soyghurt",
+        "name": "Alpro-Vanilla",
+        "image_path": "alpro_vanilla",
         "price": 3.14,
         "description": "Soy based ghurt, used as yoghurt, with mild vanilla taste and and creamy texture.\n"
     },
     {
         "category": "Packages",
-        "sub_category": "Sour-Cream",
-        "name": "Arla-Sour-Cream",
-        "image_path": "arla_sour_cream",
-        "price": 0.91,
-        "description": "Sour cream made from fresh cream from Swedish Arlagårdar. Sour cream is a real classic that has its obvious place for both weekday and weekend. It has an acidic, creamy and fresh taste with a slightly creamy texture. The product is excellent as a natural accessory or as a base in cold sauces and dressings. With its fresh acid it softens the heat from spicy dishes. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n"
-    },
-    {
-        "category": "Packages",
-        "sub_category": "Sour-Cream",
-        "name": "Arla-Ecological-Sour-Cream",
-        "image_path": "arla_ecological_sour_cream",
-        "price": 1.45,
-        "description": "KRAV-labeled sour cream made from fresh cream from Swedish organic Arlagårdar. Sour cream is a real classic that has its obvious place for both everyday and weekend. It has an acidic, creamy and fresh taste with a slightly creamy consistency and is excellent as a natural accessory or as a base in cold sauces and dressings. With its fresh acid it softens the heat from spicy dishes. The brand Arla Ko guarantees that the product is made of 100% Swedish milk.\n"
+        "sub_category": "Soyghurt",
+        "name": "Alpro-Blueberry",
+        "image_path": "alpro_blueberry",
+        "description": "Soy based ghurt, used as yoghurt, with mild blueberry taste and creamy texture.\n",
+        "price": 2.73
     },
     {
         "category": "Dessert",

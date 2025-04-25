@@ -107,6 +107,7 @@ class DBOps {
             }
         } catch (error) {
             console.log("Error populating Grocery table");
+            console.log(error)
             return null;
         }
         console.log("---- END Populating Grocery Table (db) ----");

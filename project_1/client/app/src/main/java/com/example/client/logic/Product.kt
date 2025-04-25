@@ -90,9 +90,13 @@ fun productsDecodeMessage(message: ByteArray, key: String) : Product? {
     val nameBytes = ByteArray(nameLength)
     tag.get(nameBytes)
 
-    val categoryLength = tag.get().toInt()
-    val categoryBytes = ByteArray(categoryLength)
-    tag.get(categoryBytes)
+    val category = when (tag.get().toInt()) {
+        1 -> "Fruit"
+        2 -> "Vegetables"
+        3 -> "Packages"
+        4 -> "Dessert"
+        else -> "Other"
+    }
 
     val subCategoryLength = tag.get().toInt()
     val subCategoryBytes = ByteArray(subCategoryLength)
@@ -100,9 +104,9 @@ fun productsDecodeMessage(message: ByteArray, key: String) : Product? {
 
     val price = tag.getFloat()
 
-    val name = String(nameBytes, StandardCharsets.ISO_8859_1)
-    val category = String(categoryBytes, StandardCharsets.ISO_8859_1)
     val subCategory = String(subCategoryBytes, StandardCharsets.ISO_8859_1)
+    val name = if (String(nameBytes, StandardCharsets.ISO_8859_1) == "") { subCategory }
+                else { String(nameBytes, StandardCharsets.ISO_8859_1) }
     return Product(id, name, category, subCategory, price)
 }
 

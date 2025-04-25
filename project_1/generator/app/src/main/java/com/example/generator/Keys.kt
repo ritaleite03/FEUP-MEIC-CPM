@@ -153,13 +153,23 @@ fun getPrivateKey(entry: KeyStore.PrivateKeyEntry?): PrivateKey? {
  * @return The encrypted tag as a byte array, or null if encryption fails.
  */
 fun generateTag(entry: KeyStore.PrivateKeyEntry?, uuid: UUID, grocery: Grocery) : ByteArray? {
-    val subName = if (grocery.name.length > 29) grocery.name.substring(0, 29) else grocery.name
-    val sCategory = if (grocery.category.length > 29) grocery.category.substring(0, 29) else grocery.category
+    var subName = if (grocery.name.length > 29) grocery.name.substring(0, 29) else grocery.name
+    val sCategory: Byte = when (grocery.category) {
+        "Fruit" -> 1
+        "Vegetables" -> 2
+        "Packages" -> 3
+        "Dessert" -> 4
+        else -> 5
+    }
     val subSubCategory = if (grocery.subCategory.length > 29) grocery.subCategory.substring(0, 29) else grocery.subCategory
 
-    // length of (tagID, UUID, nr_bytes(name)(byte), name, nr_bytes(category)(byte), category,
+    if (grocery.name == grocery.subCategory) {
+        subName = ""
+    }
+
+    // length of (tagID, UUID, nr_bytes(name)(byte), name, nr_bytes(category)(byte),
     // nr_bytes(subCategory)(byte), subCategory, price(float)
-    val len = 4 + 16 + 1 + subName.length + 1 + sCategory.length + 1 + subSubCategory.length + 4
+    val len = 4 + 16 + 1 + subName.length + 1 + 1 + subSubCategory.length + 4
 
     val tag = ByteBuffer.allocate(len).apply {
         putInt(CRYPTO_TAG_ID)
@@ -167,8 +177,7 @@ fun generateTag(entry: KeyStore.PrivateKeyEntry?, uuid: UUID, grocery: Grocery) 
         putLong(uuid.leastSignificantBits)
         put(subName.length.toByte())
         put(subName.toByteArray(StandardCharsets.ISO_8859_1))
-        put(sCategory.length.toByte())
-        put(sCategory.toByteArray(StandardCharsets.ISO_8859_1))
+        put(sCategory)
         put(subSubCategory.length.toByte())
         put(subSubCategory.toByteArray(StandardCharsets.ISO_8859_1))
         putFloat(grocery.price)
