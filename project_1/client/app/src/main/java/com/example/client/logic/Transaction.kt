@@ -90,6 +90,8 @@ class TransactionAdapter(
             listTransactions.add(transaction)
         }
 
+        listTransactions.reverse()
+
         notifyDataSetChanged()
         return true
     }

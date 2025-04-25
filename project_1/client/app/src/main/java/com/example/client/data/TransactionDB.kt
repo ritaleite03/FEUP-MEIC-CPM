@@ -60,6 +60,7 @@ class TransactionDB(ctx: Context): SQLiteOpenHelper(ctx, DB_NAME, null, DB_VERSI
             )
             listTransactions.add(transaction)
         }
+        listTransactions.reverse()
         cursor.close()
     }
 }
