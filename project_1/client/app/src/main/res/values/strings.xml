@@ -38,7 +38,7 @@
     <string name="register_hint_pass">Password</string>
     <string name="register_button">Register</string>
     <string name="register_error">Error</string>
-    <string name="register_cart_number">Cart Number</string>
+    <string name="register_cart_number">Card Number</string>
     <string name="register_cart_date">Expiration Date</string>
     <string name="register_cart_date_mask">__/__/____</string>
     <string name="register_cart_type_1">Visa</string>
