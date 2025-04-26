@@ -22,10 +22,8 @@
             android:rotation="-45"
             android:translationX="-30dp"
             android:translationY="20dp"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:background="@android:color/holo_orange_light"
-            android:textColor="@android:color/black" />
+            android:background="@color/blue"
+            android:textColor="@color/foreground" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,7 +59,7 @@
                     android:id="@+id/toggleArrow"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/icon_down_button"
+                    android:src="@drawable/baseline_arrow_circle_down_24"
                     android:contentDescription="@string/grocery_description_arrow_down"
                     android:padding="4dp" />
             </LinearLayout>
@@ -88,8 +86,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/add_cart_button"
                 android:layout_marginTop="12dp"
-                android:backgroundTint="@android:color/holo_red_dark"
-                android:textColor="@android:color/white"/>
+                android:backgroundTint="@color/blue"
+                android:textColor="@color/foreground"/>
         </LinearLayout>
 
     </FrameLayout>

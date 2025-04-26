@@ -15,6 +15,7 @@
         android:text="@string/tv_neutral"
         android:textAlignment="center"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/black"/>
 
 </FrameLayout>

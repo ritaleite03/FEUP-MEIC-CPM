@@ -1,5 +1,6 @@
 package com.example.terminal
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.nfc.NfcAdapter
 import android.os.Bundle
@@ -18,6 +19,10 @@ import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
 import java.util.UUID
 import android.util.Log
+import android.widget.Switch
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.terminal.utils.NFC.READER_FLAGS
@@ -30,10 +35,14 @@ import com.example.terminal.utils.dpToPx
 import com.example.terminal.utils.setInsetsPadding
 import com.example.terminal.utils.setStatusBarIconColor
 import com.example.terminal.utils.configuratorToolbarTitle
+import com.example.terminal.utils.isDarkThemeOn
+
 /**
  * Main activity for handling NFC and QR code scanning.
  */
 class MainActivity : AppCompatActivity() {
+
+    private var useDarkTheme = false
 
     // UI elements
     private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar) }
@@ -103,9 +112,11 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_main, menu)
+        menuInflater.inflate(R.menu.menu, menu)
         configuratorMenu(this, menu)
+        setupDarkThemeSwitch(menu)
         return true
     }
 
@@ -249,5 +260,34 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.container, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    fun setupDarkThemeSwitch(menu: Menu) {
+        val item = menu.findItem(R.id.item_switch)
+        val actionView = item?.actionView
+        if (actionView != null) {
+            val switch = actionView.findViewById<Switch>(R.id.itemSwitch)
+            switch.isChecked = isDarkThemeOn()
+            useDarkTheme = switch.isChecked
+            setThemeMode(switch)
+            switch.setOnClickListener {
+                useDarkTheme = switch.isChecked
+                setThemeMode(switch)
+            }
+        }
+    }
+
+    fun setThemeMode(@SuppressLint("UseSwitchCompatOrMaterialCode") switch: Switch) {
+        // define color and theme
+        val drawableRes = if (useDarkTheme) R.drawable.baseline_dark_mode_24 else R.drawable.baseline_light_mode_24
+        val nightMode = if (useDarkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        // apply
+        val thumb = AppCompatResources.getDrawable(this, drawableRes)
+        val tintColor = if (useDarkTheme) R.color.white else R.color.black
+
+        thumb?.setTint(ContextCompat.getColor(this, tintColor))
+        switch.thumbDrawable = thumb
+        AppCompatDelegate.setDefaultNightMode(nightMode)
     }
 }

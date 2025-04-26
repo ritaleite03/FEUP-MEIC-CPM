@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -41,7 +42,7 @@ var useDarkTheme = false
 class MainActivity : AppCompatActivity() {
 
     private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar) }
-    private val searchField by lazy { findViewById<EditText>(R.id.searchField) }
+    private val searchField by lazy { findViewById<SearchView>(R.id.searchField) }
     private val categorySpinner by lazy { findViewById<Spinner>(R.id.categorySpinner) }
     private val sortSpinner by lazy { findViewById<Spinner>(R.id.sortSpinner) }
 
@@ -128,13 +129,24 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupFilters() {
         val applyFilters = {
-            val search = searchField.text.toString()
+            val search = searchField.query.toString()
             val category = categorySpinner.selectedItem.toString()
             val sort = sortSpinner.selectedItem.toString()
             adapter.applyFilter(search, category, sort)
         }
 
-        searchField.addTextChangedListener { applyFilters() }
+        searchField.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                applyFilters()
+                return true
+            }
+        })
+
 
         categorySpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
@@ -155,11 +167,13 @@ class MainActivity : AppCompatActivity() {
 
     fun setThemeMode(@SuppressLint("UseSwitchCompatOrMaterialCode") switch: Switch) {
         // define color and theme
-        val switchColor = if (useDarkTheme) R.color.black else R.color.white
+        val drawableRes = if (useDarkTheme) R.drawable.baseline_dark_mode_24 else R.drawable.baseline_light_mode_24
         val nightMode = if (useDarkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         // apply
-        val thumb = AppCompatResources.getDrawable(this, R.drawable.baseline_dark_mode_24)
-        thumb?.setTint(ContextCompat.getColor(this, switchColor))
+        val thumb = AppCompatResources.getDrawable(this, drawableRes)
+        val tintColor = if (useDarkTheme) R.color.white else R.color.black
+
+        thumb?.setTint(ContextCompat.getColor(this, tintColor))
         switch.thumbDrawable = thumb
         AppCompatDelegate.setDefaultNightMode(nightMode)
     }

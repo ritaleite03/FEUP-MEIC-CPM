@@ -9,10 +9,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.isGone
 import com.example.generator.utils.collapse
 import com.example.generator.utils.expand
+import com.example.generator.utils.isDarkThemeOn
 import org.json.JSONObject
 import java.util.UUID
 
@@ -98,6 +100,14 @@ class GroceryAdapter(private val groceries: List<Grocery>, private val mainConte
             "drawable",
             mainContext.packageName
         )
+
+        val arrowColor = if (mainContext.isDarkThemeOn()) {
+            ContextCompat.getColor(mainContext, R.color.white)
+        } else {
+            ContextCompat.getColor(mainContext, R.color.black)
+        }
+
+        holder.arrow.setColorFilter(arrowColor)
 
         holder.arrow.setOnClickListener {
             if (holder.description.isGone) {

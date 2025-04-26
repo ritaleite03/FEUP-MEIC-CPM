@@ -44,7 +44,8 @@
             android:id="@+id/changeTextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#4CAF50"
+            android:backgroundTint="@color/blue"
+            android:textColor="@color/foreground"
             android:text="@string/changeConfirm" />
     </LinearLayout>
 </FrameLayout>

@@ -11,6 +11,7 @@
     <string name="search">Search for groceries…</string>
     <string name="spinner_filter">Filter By</string>
     <string name="spinner_order">Order By</string>
+    <string name="menu_mode">Mode</string>
 
     <string-array name="category_array">
         <item>All</item>

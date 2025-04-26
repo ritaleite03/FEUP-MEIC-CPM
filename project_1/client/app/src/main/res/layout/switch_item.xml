@@ -9,6 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:shadowColor="#FFFFFF"
         android:thumb="@drawable/baseline_dark_mode_24"
         android:trackTint="@color/foreground"
         tools:ignore="UseSwitchCompatOrMaterialXml" />

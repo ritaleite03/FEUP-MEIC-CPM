@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/item_switch"
-        android:title="Mode"
+        android:title="@string/menu_mode"
         app:actionLayout="@layout/switch_item"
         app:showAsAction="always" />
 </menu>

@@ -1,5 +1,6 @@
 package com.example.terminal.utils
 
+import android.content.Context
 import android.content.res.Configuration
 import android.util.Log
 import android.view.Menu
@@ -91,4 +92,9 @@ fun readStream(input: InputStream): String {
     }
     reader?.close()
     return response.toString()
+}
+
+fun Context.isDarkThemeOn(): Boolean {
+    val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    return nightModeFlags == Configuration.UI_MODE_NIGHT_YES
 }

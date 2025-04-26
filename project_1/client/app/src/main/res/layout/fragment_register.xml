@@ -139,7 +139,8 @@
                 android:layout_marginHorizontal="5sp"
                 android:layout_marginVertical="5sp"
                 android:width="300dp"
-                android:text="@string/register_button" />
+                android:text="@string/register_button"
+                android:textColor="@color/foreground"/>
 
         </LinearLayout>
 

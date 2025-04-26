@@ -99,4 +99,5 @@
     <string name="text_vouchers">Total Vouchers:</string>
     <string name="total_discount_default">€0,00</string>
     <string name="total_vouchers_default">0</string>
+    <string name="theme">Theme</string>
 </resources>

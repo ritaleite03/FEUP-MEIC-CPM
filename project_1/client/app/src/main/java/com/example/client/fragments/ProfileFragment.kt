@@ -1,20 +1,31 @@
 package com.example.client.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import com.example.client.MainActivity2
 import com.example.client.R
 import com.example.client.dialog.ChangePassDialogFragment
 import com.example.client.dialog.ChangeRadioDialogFragment
 import com.example.client.dialog.ChangeTextDialogFragment
 import com.example.client.logic.userDB
+import com.example.client.utils.isDarkThemeOn
+
+
 
 class ProfileFragment : Fragment() {
+
+    private var useDarkMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +35,12 @@ class ProfileFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (this.requireActivity() as MainActivity2).toolbar.title = "Profile"
+
+        val switch = view.findViewById<Switch>(R.id.itemSwitch)
 
         val textName = view.findViewById<TextView>(R.id.textName)
         val textNick = view.findViewById<TextView>(R.id.textNick)
@@ -48,6 +62,15 @@ class ProfileFragment : Fragment() {
         textType.text = userDB.getColumnValue("SelectedCardType")
         textNumber.text = userDB.getColumnValue("CardNumber")
         textDate.text = userDB.getColumnValue("CardDate")
+
+        Log.d("switch", switch.toString())
+        switch.isChecked = requireContext().isDarkThemeOn()
+        useDarkMode = switch.isChecked
+        setThemeMode(switch)
+        switch.setOnClickListener {
+            useDarkMode = switch.isChecked
+            setThemeMode(switch)
+        }
 
         editNameButton.setOnClickListener {
             var dialog = ChangeTextDialogFragment.newInstance("Name", "text")
@@ -103,5 +126,20 @@ class ProfileFragment : Fragment() {
             }
             dialog.show(parentFragmentManager, "change_text_dialog")
         }
+    }
+
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    private fun setThemeMode(switch: Switch) {
+        val drawableRes = if (useDarkMode) R.drawable.baseline_dark_mode_24 else R.drawable.baseline_light_mode_24
+        val nightMode = if (useDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+
+        val thumb = AppCompatResources.getDrawable(requireContext(), drawableRes)
+
+        // Set tint color based on mode
+        val tintColor = if (useDarkMode) R.color.white else R.color.black
+        thumb?.setTint(ContextCompat.getColor(requireContext(), tintColor))
+
+        switch.thumbDrawable = thumb
+        AppCompatDelegate.setDefaultNightMode(nightMode)
     }
 }
