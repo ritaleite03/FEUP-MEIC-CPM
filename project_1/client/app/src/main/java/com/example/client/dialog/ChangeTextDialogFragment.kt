@@ -64,16 +64,16 @@ class ChangeTextDialogFragment : DialogFragment() {
 
                 override fun afterTextChanged(s: Editable?) {
                     if (isEditing || s == null) return
-                    isDeleting = s.split("").count { it == "/" } != 2
+                    isDeleting = s.split("").count { it == "/" } != 1
                     isEditing = true
 
                     val digits = s.replace(Regex("\\D"), "")
-                    val formatted = StringBuilder("__/__/____")
+                    val formatted = StringBuilder("__/__")
                     var lastDigitPos = 0
 
                     for (i in digits.indices) {
-                        if (i < 8) {
-                            val pos = if (i < 2) i else if (i < 4) i+1 else i+2
+                        if (i < 4) {
+                            val pos = if (i < 2) i else i+1
                             if (isDeleting) lastDigitPos = pos
                             formatted.setCharAt(pos, digits[i])
                         }
@@ -100,7 +100,7 @@ class ChangeTextDialogFragment : DialogFragment() {
             }
             else {
                 if (param2 == "date") {
-                    val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+                    val dateFormat = SimpleDateFormat("MM/yy")
                     dateFormat.isLenient = false
                     var newValueValid : String? = null
                     try {
