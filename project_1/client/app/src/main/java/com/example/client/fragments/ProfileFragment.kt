@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
@@ -20,7 +21,7 @@ import com.example.client.dialog.ChangeRadioDialogFragment
 import com.example.client.dialog.ChangeTextDialogFragment
 import com.example.client.logic.userDB
 import com.example.client.utils.isDarkThemeOn
-
+import androidx.core.content.edit
 
 
 class ProfileFragment : Fragment() {
@@ -69,6 +70,7 @@ class ProfileFragment : Fragment() {
         setThemeMode(switch)
         switch.setOnClickListener {
             useDarkMode = switch.isChecked
+            saveThemePreference(useDarkMode)
             setThemeMode(switch)
         }
 
@@ -141,5 +143,10 @@ class ProfileFragment : Fragment() {
 
         switch.thumbDrawable = thumb
         AppCompatDelegate.setDefaultNightMode(nightMode)
+    }
+
+    private fun saveThemePreference(isDarkMode: Boolean) {
+        val prefs = requireContext().getSharedPreferences("prefs", AppCompatActivity.MODE_PRIVATE)
+        prefs.edit { putBoolean("darkMode", isDarkMode) }
     }
 }

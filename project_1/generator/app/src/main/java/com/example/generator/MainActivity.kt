@@ -16,6 +16,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,6 +63,14 @@ class MainActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
+        val isDarkMode = prefs.getBoolean("darkMode", false)
+
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main)
@@ -104,6 +113,7 @@ class MainActivity : AppCompatActivity() {
             setThemeMode(switch)
             switch.setOnClickListener {
                 useDarkTheme = switch.isChecked
+                saveThemePreference(useDarkTheme)
                 setThemeMode(switch)
             }
         }
@@ -165,7 +175,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setThemeMode(@SuppressLint("UseSwitchCompatOrMaterialCode") switch: Switch) {
+    private fun setThemeMode(@SuppressLint("UseSwitchCompatOrMaterialCode") switch: Switch) {
         // define color and theme
         val drawableRes = if (useDarkTheme) R.drawable.baseline_dark_mode_24 else R.drawable.baseline_light_mode_24
         val nightMode = if (useDarkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
@@ -176,5 +186,10 @@ class MainActivity : AppCompatActivity() {
         thumb?.setTint(ContextCompat.getColor(this, tintColor))
         switch.thumbDrawable = thumb
         AppCompatDelegate.setDefaultNightMode(nightMode)
+    }
+
+    private fun saveThemePreference(isDarkMode: Boolean) {
+        val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
+        prefs.edit { putBoolean("darkMode", isDarkMode) }
     }
 }

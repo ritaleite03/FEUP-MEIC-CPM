@@ -1,6 +1,7 @@
 package com.example.terminal
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.nfc.NfcAdapter
 import android.os.Bundle
@@ -36,6 +37,7 @@ import com.example.terminal.utils.setInsetsPadding
 import com.example.terminal.utils.setStatusBarIconColor
 import com.example.terminal.utils.configuratorToolbarTitle
 import com.example.terminal.utils.isDarkThemeOn
+import androidx.core.content.edit
 
 /**
  * Main activity for handling NFC and QR code scanning.
@@ -63,6 +65,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
+        val isDarkMode = prefs.getBoolean("darkMode", false)
+
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main)
@@ -273,6 +283,7 @@ class MainActivity : AppCompatActivity() {
             setThemeMode(switch)
             switch.setOnClickListener {
                 useDarkTheme = switch.isChecked
+                saveThemePreference(useDarkTheme)
                 setThemeMode(switch)
             }
         }
@@ -289,5 +300,10 @@ class MainActivity : AppCompatActivity() {
         thumb?.setTint(ContextCompat.getColor(this, tintColor))
         switch.thumbDrawable = thumb
         AppCompatDelegate.setDefaultNightMode(nightMode)
+    }
+
+    private fun saveThemePreference(isDarkMode: Boolean) {
+        val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
+        prefs.edit { putBoolean("darkMode", isDarkMode) }
     }
 }
