@@ -13,6 +13,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.example.client.MainActivity2
 import com.example.client.R
+import com.example.client.data.DiscountDB
 import com.example.client.data.ProductsDB
 import com.example.client.dialog.CheckoutDialogFragment
 import com.example.client.logic.CategoryProduct
@@ -85,7 +86,7 @@ class CartFragment : Fragment() {
             scanQRCode()
         }
         btEnd.setOnClickListener {
-            val checkoutDialog = CheckoutDialogFragment()
+            val checkoutDialog = CheckoutDialogFragment(listProducts.sumOf{ it.price.toDouble() })
             checkoutDialog.show(parentFragmentManager, "checkout_dialog")
         }
     }

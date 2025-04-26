@@ -71,6 +71,7 @@
     <string name="total_value_default">€0,00</string>
     <string name="lv_empty_message">Empty list</string>
     <string name="price_format">€%.2f</string>
+    <string name="discount_format">- €%.2f</string>
 
     <string name="spinner_order">Order by </string>
     <string name="spinner_filter">Filter by </string>
@@ -100,4 +101,8 @@
     <string name="total_discount_default">€0,00</string>
     <string name="total_vouchers_default">0</string>
     <string name="theme">Theme</string>
+    <string name="checkout_total">Total:</string>
+    <string name="checkout_discount">Discount:</string>
+    <string name="checkout_new_total">New total:</string>
+    <string name="discount_gained">Discount gained (15%):</string>
 </resources>

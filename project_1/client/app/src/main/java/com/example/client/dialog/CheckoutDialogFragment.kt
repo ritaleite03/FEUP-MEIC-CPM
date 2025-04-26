@@ -2,19 +2,24 @@ package com.example.client.dialog
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.example.client.MainActivity2
 import com.example.client.MainActivity3
 import com.example.client.MainActivity4
 import com.example.client.R
+import com.example.client.data.DiscountDB
 import com.example.client.logic.actionChallengeVouchers
 import com.example.client.logic.actionGetVouchers
 import com.example.client.logic.listProducts
@@ -24,17 +29,26 @@ import com.example.client.utils.Crypto
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import org.w3c.dom.Text
 import java.nio.ByteBuffer
 import java.security.Signature
 import java.util.UUID
 import javax.crypto.Cipher
 
-class CheckoutDialogFragment : DialogFragment() {
+class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
 
     private lateinit var activity: MainActivity2
     private lateinit var spinnerTypePay: Spinner
     private lateinit var spinnerDiscount: Spinner
     private lateinit var spinnerVoucher: Spinner
+    private lateinit var checkoutTotalText: TextView
+    private lateinit var checkoutTotal: TextView
+    private lateinit var checkoutDiscountRow: LinearLayout
+    private lateinit var checkoutDiscount: TextView
+    private lateinit var checkoutVoucherRow: LinearLayout
+    private lateinit var checkoutVoucher: TextView
+    private lateinit var checkoutNewTotalRow: LinearLayout
+    private lateinit var checkoutNewTotal: TextView
     private lateinit var btnCheckout: Button
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -48,10 +62,70 @@ class CheckoutDialogFragment : DialogFragment() {
         spinnerTypePay = view.findViewById(R.id.spinner_type_pay)
         spinnerDiscount = view.findViewById(R.id.spinner_discount)
         spinnerVoucher = view.findViewById(R.id.spinner_voucher)
+        checkoutTotalText = view.findViewById(R.id.checkout_total_text)
+        checkoutTotal = view.findViewById(R.id.checkout_total)
+        checkoutDiscountRow = view.findViewById(R.id.checkout_discount_row)
+        checkoutDiscount = view.findViewById(R.id.checkout_discount)
+        checkoutVoucherRow = view.findViewById(R.id.checkout_voucher_row)
+        checkoutVoucher = view.findViewById(R.id.checkout_voucher)
+        checkoutNewTotalRow = view.findViewById(R.id.checkout_new_total_row)
+        checkoutNewTotal = view.findViewById(R.id.checkout_new_total)
         btnCheckout = view.findViewById(R.id.bt_checkout)
+
+        checkoutTotal.text = getString(R.string.price_format, total)
+
+        val discountDB = DiscountDB(requireContext())
+        val discount = discountDB.getDiscount()
+        checkoutDiscount.text = getString(R.string.discount_format, discount)
+
+        checkoutNewTotal.text = getString(R.string.price_format, (total - discount))
 
         val uuid = userDB.getColumnValue("Uuid")
         activity = requireActivity() as MainActivity2
+
+        spinnerDiscount.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selected = parent.getItemAtPosition(position).toString()
+                if (selected == "Yes") {
+                    checkoutTotalText.setTypeface(null, Typeface.NORMAL)
+                    checkoutTotalText.textSize = 16f
+                    checkoutTotal.setTypeface(null, Typeface.NORMAL)
+                    checkoutTotal.textSize = 16f
+                    checkoutDiscountRow.visibility = View.VISIBLE
+                    checkoutNewTotalRow.visibility = View.VISIBLE
+                    checkoutVoucher.text = getString(R.string.price_format, ((total - discount) * 0.15))
+                } else {
+                    checkoutTotalText.setTypeface(null, Typeface.BOLD)
+                    checkoutTotalText.textSize = 18f
+                    checkoutTotal.setTypeface(null, Typeface.BOLD)
+                    checkoutTotal.textSize = 18f
+                    checkoutDiscountRow.visibility = View.GONE
+                    checkoutNewTotalRow.visibility = View.GONE
+                    checkoutVoucher.text = getString(R.string.price_format, (total * 0.15))
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        spinnerVoucher.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selected = parent.getItemAtPosition(position).toString()
+                if (selected == "None") {
+                    checkoutVoucherRow.visibility = View.GONE
+                } else {
+                    checkoutVoucherRow.visibility = View.VISIBLE
+                    if (spinnerDiscount.selectedItem.toString() == "Yes") {
+                        checkoutVoucher.text = getString(R.string.price_format, ((total - discount) * 0.15))
+                    }
+                    else {
+                        checkoutVoucher.text = getString(R.string.price_format, (total * 0.15))
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
 
         lifecycleScope.launch {
 
@@ -99,7 +173,7 @@ class CheckoutDialogFragment : DialogFragment() {
             }
 
             setUpSpinner(listOf("QR-Code", "NFC"), spinnerTypePay)
-            setUpSpinner(listOf("Yes", "No"), spinnerDiscount)
+            setUpSpinner(listOf("No", "Yes"), spinnerDiscount)
             setUpSpinner(optionsVoucher, spinnerVoucher)
             setUpCheckout()
         }
