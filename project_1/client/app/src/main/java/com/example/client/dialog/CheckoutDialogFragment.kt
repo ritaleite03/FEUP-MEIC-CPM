@@ -70,8 +70,6 @@ class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
         checkoutNewTotal = view.findViewById(R.id.checkout_new_total)
         btnCheckout = view.findViewById(R.id.bt_checkout)
 
-        checkoutTotal.text = getString(R.string.price_format, total)
-
         val uuid = userDB.getColumnValue("Uuid")
         activity = requireActivity() as MainActivity2
 
@@ -122,8 +120,19 @@ class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
                 optionsVoucher.add(voucher.getString("uuid"))
             }
 
-            checkoutDiscount.text = getString(R.string.discount_format, discount)
-            checkoutNewTotal.text = getString(R.string.price_format, (total - discount))
+            var uiDiscount = discount
+            var uiNewTotal = total
+
+            if (total > discount) {
+                uiNewTotal -= uiDiscount
+            } else {
+                uiDiscount = total
+                uiNewTotal = 0.0
+            }
+
+            checkoutTotal.text = getString(R.string.price_format, total)
+            checkoutDiscount.text = getString(R.string.discount_format, uiDiscount)
+            checkoutNewTotal.text = getString(R.string.price_format, uiNewTotal)
 
             spinnerDiscount.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -135,7 +144,7 @@ class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
                         checkoutTotal.textSize = 16f
                         checkoutDiscountRow.visibility = View.VISIBLE
                         checkoutNewTotalRow.visibility = View.VISIBLE
-                        checkoutVoucher.text = getString(R.string.price_format, ((total - discount) * 0.15))
+                        checkoutVoucher.text = getString(R.string.price_format, (uiNewTotal * 0.15))
                     } else {
                         checkoutTotalText.setTypeface(null, Typeface.BOLD)
                         checkoutTotalText.textSize = 18f
@@ -158,7 +167,7 @@ class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
                     } else {
                         checkoutVoucherRow.visibility = View.VISIBLE
                         if (spinnerDiscount.selectedItem.toString() == "Yes") {
-                            checkoutVoucher.text = getString(R.string.price_format, ((total - discount) * 0.15))
+                            checkoutVoucher.text = getString(R.string.price_format, (uiNewTotal * 0.15))
                         }
                         else {
                             checkoutVoucher.text = getString(R.string.price_format, (total * 0.15))
