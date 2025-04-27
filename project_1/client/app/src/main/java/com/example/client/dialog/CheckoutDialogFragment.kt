@@ -19,7 +19,6 @@ import com.example.client.MainActivity2
 import com.example.client.MainActivity3
 import com.example.client.MainActivity4
 import com.example.client.R
-import com.example.client.data.DiscountDB
 import com.example.client.logic.actionChallengeVouchers
 import com.example.client.logic.actionGetVouchers
 import com.example.client.logic.listProducts
@@ -29,7 +28,6 @@ import com.example.client.utils.Crypto
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
-import org.w3c.dom.Text
 import java.nio.ByteBuffer
 import java.security.Signature
 import java.util.UUID
@@ -74,58 +72,8 @@ class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
 
         checkoutTotal.text = getString(R.string.price_format, total)
 
-        val discountDB = DiscountDB(requireContext())
-        val discount = discountDB.getDiscount()
-        checkoutDiscount.text = getString(R.string.discount_format, discount)
-
-        checkoutNewTotal.text = getString(R.string.price_format, (total - discount))
-
         val uuid = userDB.getColumnValue("Uuid")
         activity = requireActivity() as MainActivity2
-
-        spinnerDiscount.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selected = parent.getItemAtPosition(position).toString()
-                if (selected == "Yes") {
-                    checkoutTotalText.setTypeface(null, Typeface.NORMAL)
-                    checkoutTotalText.textSize = 16f
-                    checkoutTotal.setTypeface(null, Typeface.NORMAL)
-                    checkoutTotal.textSize = 16f
-                    checkoutDiscountRow.visibility = View.VISIBLE
-                    checkoutNewTotalRow.visibility = View.VISIBLE
-                    checkoutVoucher.text = getString(R.string.price_format, ((total - discount) * 0.15))
-                } else {
-                    checkoutTotalText.setTypeface(null, Typeface.BOLD)
-                    checkoutTotalText.textSize = 18f
-                    checkoutTotal.setTypeface(null, Typeface.BOLD)
-                    checkoutTotal.textSize = 18f
-                    checkoutDiscountRow.visibility = View.GONE
-                    checkoutNewTotalRow.visibility = View.GONE
-                    checkoutVoucher.text = getString(R.string.price_format, (total * 0.15))
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-
-        spinnerVoucher.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selected = parent.getItemAtPosition(position).toString()
-                if (selected == "None") {
-                    checkoutVoucherRow.visibility = View.GONE
-                } else {
-                    checkoutVoucherRow.visibility = View.VISIBLE
-                    if (spinnerDiscount.selectedItem.toString() == "Yes") {
-                        checkoutVoucher.text = getString(R.string.price_format, ((total - discount) * 0.15))
-                    }
-                    else {
-                        checkoutVoucher.text = getString(R.string.price_format, (total * 0.15))
-                    }
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
 
         lifecycleScope.launch {
 
@@ -156,9 +104,11 @@ class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
 
             // Get and display the vouchers
             var vouchers: JSONArray? = null
+            var discount: Double? = null
             try {
                 val result = JSONObject(actionGetVouchers(uuid.toString(), encrypted))
                 vouchers = result.getJSONArray("vouchers")
+                discount = result.getDouble("discount")
             } catch (_ : Exception) {
                 if (!isAdded) return@launch
                 dismiss()
@@ -170,6 +120,53 @@ class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
             for (i in 0 until vouchers.length()) {
                 val voucher = vouchers.getJSONObject(i)
                 optionsVoucher.add(voucher.getString("uuid"))
+            }
+
+            checkoutDiscount.text = getString(R.string.discount_format, discount)
+            checkoutNewTotal.text = getString(R.string.price_format, (total - discount))
+
+            spinnerDiscount.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    val selected = parent.getItemAtPosition(position).toString()
+                    if (selected == "Yes") {
+                        checkoutTotalText.setTypeface(null, Typeface.NORMAL)
+                        checkoutTotalText.textSize = 16f
+                        checkoutTotal.setTypeface(null, Typeface.NORMAL)
+                        checkoutTotal.textSize = 16f
+                        checkoutDiscountRow.visibility = View.VISIBLE
+                        checkoutNewTotalRow.visibility = View.VISIBLE
+                        checkoutVoucher.text = getString(R.string.price_format, ((total - discount) * 0.15))
+                    } else {
+                        checkoutTotalText.setTypeface(null, Typeface.BOLD)
+                        checkoutTotalText.textSize = 18f
+                        checkoutTotal.setTypeface(null, Typeface.BOLD)
+                        checkoutTotal.textSize = 18f
+                        checkoutDiscountRow.visibility = View.GONE
+                        checkoutNewTotalRow.visibility = View.GONE
+                        checkoutVoucher.text = getString(R.string.price_format, (total * 0.15))
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
+            }
+
+            spinnerVoucher.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    val selected = parent.getItemAtPosition(position).toString()
+                    if (selected == "None") {
+                        checkoutVoucherRow.visibility = View.GONE
+                    } else {
+                        checkoutVoucherRow.visibility = View.VISIBLE
+                        if (spinnerDiscount.selectedItem.toString() == "Yes") {
+                            checkoutVoucher.text = getString(R.string.price_format, ((total - discount) * 0.15))
+                        }
+                        else {
+                            checkoutVoucher.text = getString(R.string.price_format, (total * 0.15))
+                        }
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
             }
 
             setUpSpinner(listOf("QR-Code", "NFC"), spinnerTypePay)
