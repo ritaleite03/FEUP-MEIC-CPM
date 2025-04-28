@@ -47,11 +47,7 @@ The third system involves the supermarket checkout terminals, which also run an 
 To begin using the system, follow the steps below in the specified order to ensure proper communication between components:
 
 1. **Start the Server:**  
-   Open a terminal window and navigate to the directory containing the `server.js` file. Once there, start the server by running the following command:
-
-    ```
-    node server.js
-    ```
+   Open a terminal window and navigate to the directory containing the `server.js` file. Once there, run `npm install` and then start the server by running the following command: `node server.js`
 
 2. **Launch the QR Code Generator Application:**  
    After the server is up and running, install or open the application responsible for generating QR codes for the products. This step must be performed after starting the server because the QR code generator needs to inform the server of its identification key (referred to as the "supermarket key").
@@ -102,15 +98,23 @@ Below is the list of implemented features, separated according to the applicatio
 -   Generates an RSA key pair.
 -   Sends the public key to the server.
 -   Receives products list from the server.
--   Creates QR codes for products, including their UUID, name and price.
+-   Creates QR codes for products, including their UUID, name, category, subcategory and price.
+-   Filter products by name.
+-   Filter products by category.
+-   Order products by price.
+-   Order products alphabetically.
 
 ### Features on the Terminal App
 
+-   Change between light and dark mode.
 -   Reads checkout messages via QR Code or NFC.
 -   Sends the checkout request to the server.
 -   Displays the server's response to the user.
 
 ### Features on the User App
+
+- Change between light and dark mode.
+
 
 -   **Authentication**
 
