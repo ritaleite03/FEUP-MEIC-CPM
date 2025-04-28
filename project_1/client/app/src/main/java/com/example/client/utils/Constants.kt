@@ -4,8 +4,9 @@ package com.example.client.utils
  * Contains server-related constants such as IP address, port, and route paths.
  */
 object Server {
+    //TODO: CHANGE IP
     /** IP address of the server. */
-    const val SERVER_IP = "192.168.1.118" // "192.168.68.125"
+    const val SERVER_IP = ""
     /** Server port. */
     const val SERVER_PORT = "8000"
     /** Path of the user registration route on the server. */

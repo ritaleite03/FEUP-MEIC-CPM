@@ -46,13 +46,16 @@ The third system involves the supermarket checkout terminals, which also run an 
 
 To begin using the system, follow the steps below in the specified order to ensure proper communication between components:
 
-1. **Start the Server:**  
+1. **Change SERVER_IP**
+   Open the `Constants.kt` file (under the `utils` folder) in the `server`, `terminal` and `generator` apps, then change the variable `SERVER_IP` to the IP address of the machine where the server is hosted.
+
+2. **Start the Server:**  
    Open a terminal window and navigate to the directory containing the `server.js` file. Once there, run `npm install` and then start the server by running the following command: `node server.js`
 
-2. **Launch the QR Code Generator Application:**  
+3. **Launch the QR Code Generator Application:**  
    After the server is up and running, install or open the application responsible for generating QR codes for the products. This step must be performed after starting the server because the QR code generator needs to inform the server of its identification key (referred to as the "supermarket key").
 
-3. **Launch the Customer Application:**  
+4. **Launch the Customer Application:**  
    Finally, install or open the customer-facing Android application. When a new user registers through the app, the server responds with two important pieces of information: the customer's UUID and the supermarket key.
 
 **Important Note:**  

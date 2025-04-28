@@ -4,8 +4,9 @@ package com.example.generator.utils
  * Contains server-related constants such as IP address, port, and route paths.
  */
 object Server {
+    //TODO: CHANGE IP
     /** IP address of the server. */
-    const val SERVER_IP = "192.168.1.118" // "10.227.159.143" // "192.168.68.125"
+    const val SERVER_IP = ""
     /** Server port. */
     const val SERVER_PORT = "8000"
     /** Path of the informative action route on the server. */
