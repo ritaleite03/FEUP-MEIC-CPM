@@ -157,7 +157,92 @@ Below is the list of implemented features, separated according to the applicatio
 
 ## Navigation
 
+The diagram below represents the navigation between the possible pages in the User application. It includes pages for authentication (login and registration), viewing, adding, and paying for items in the list, as well as pages for viewing recent transactions, vouchers, and discounts, and the user profile. Additionally, due to its importance, the dialog box for setting up the payment is also represented.
+
+![Navigation on the User App](images/navigation.jpg)
+
+We will now present the appearance of each of these pages and dialog boxes, including those accessible through the profile page. These dialog boxes were not represented in the diagram above in order to keep it simple and easy to understand. Their purpose is solely to allow the user to update their profile information.
+
+### Authentication
+
+<figure>
+<img src="images/page_login.jpg" alt="LoginPage" height="600"/>
+  <figcaption>Login Page</figcaption>
+</figure>
+
+<figure>
+<img src="images/page_register.jpg" alt="RegisterPage" height="600"/>
+  <figcaption>Register Page</figcaption>
+</figure>
+
+### Products, Vouchers, Discount and Transactions Management
+
+<figure>
+<img src="images/page_vouchers_discount.jpg" alt="VouchersDiscountPage" height="600"/>
+  <figcaption>Vouchers and Discount Page</figcaption>
+</figure>
+
+<figure>
+<img src="images/page_past_transactions.jpg" alt="PastTransactionsPage" height="600"/>
+  <figcaption>Past Transactions Page</figcaption>
+</figure>
+
+<figure>
+<img src="images/page_cart.jpg" alt="CartPage" height="600"/>
+  <figcaption>Cart Page</figcaption>
+</figure>
+
+### Payment
+
+<figure>
+<img src="images/dialog_checkout.jpg" alt="CheckoutDialog" height="600"/>
+  <figcaption>Checkout Dialog</figcaption>
+</figure>
+
+<figure>
+<img src="images/page_nfc.jpg" alt="NFCPage" height="600"/>
+  <figcaption>NFC Page</figcaption>
+</figure>
+
+<figure>
+<img src="images/page_qrcode.jpg" alt="QRCodePage" height="600"/>
+  <figcaption>QRCode Page</figcaption>
+</figure>
+
+### Profile
+
+<figure>
+<img src="images/page_profile.jpg" alt="ProfilePage" height="600"/>
+  <figcaption>Profile Page</figcaption>
+</figure>
+
+<figure>
+<img src="images/dialog_change_string.jpg" alt="Profile's Modification Page" height="600"/>
+  <figcaption>Profile's Modification Page (String)</figcaption>
+</figure>
+
+<figure>
+<img src="images/dialog_change_pass.jpg" alt="Profile's Modification Page" height="600"/>
+  <figcaption>Profile's Modification Page (Password)</figcaption>
+</figure>
+
+<figure>
+<img src="images/dialog_change_date.jpg" alt="Profile's Modification Page" height="600"/>
+  <figcaption>Profile's Modification Page (Date)</figcaption>
+</figure>
+
+<figure>
+<img src="images/dialog_change_type.jpg" alt="Profile's Modification Page" height="600"/>
+  <figcaption>Profile's Modification Page (Type)</figcaption>
+</figure>
+
 ## Security
+
+The Generator application is the first component to be initialized. Its primary task is to ensure the existence of an RSA key pair. If no such pair is found, it generates one with the following properties: a key size of `512` bits, using the `RSA` algorithm, with `SHA256WithRSA` as the signature algorithm, and `RSA/NONE/PKCS1Padding` as the encryption algorithm. This key pair is securely stored in the Android keystore under a designated alias. The public key from this pair is then sent to the server, where it is stored for future interactions with the client.
+
+If the user has already registered, authentication is performed locally by verifying the user's name, nickname, and password, which were previously saved in the local database. If the user has not yet created an account, they are required to fill in additional registration fields. Upon attempting registration, the application generates two new key pairs: one RSA and one EC (Elliptic Curve). Both key pairs are securely stored in the Android keystore under specific aliases.
+
+The RSA key pair generated during registration retains the same characteristics as the supermarket key: a key size of `512` bits, using `RSA` as the algorithm, `SHA256WithRSA` as the signature algorithm, and `RSA/NONE/PKCS1Padding` for encryption. The EC key pair is generated using the `EC` algorithm, specifically with the `secp256r1` curve, and uses `SHA256withECDSA` as the signature algorithm.
 
 ## Performed Tests
 
