@@ -34,13 +34,15 @@ By Group 5:
 
 ## Overview
 
-The goal of this project was to develop three integrated systems for a smart supermarket environment.
+The goal of this project was to develop four integrated systems for a smart supermarket environment.
 
 The first system is a remote service, implemented as an HTTP REST API, hosted on the supermarket's server. This service is organized into several groups of operations, including customer registration and validation, checkout processing, transaction consultation, and voucher retrieval.
 
 The second system is an Android application designed for customers. This app allows users to register in the system, view previous transactions, retrieve vouchers, and initiate a shopping session. During shopping, customers can add items to their virtual basket by scanning tags or QR codes on the products. When ready to check out, they can complete the purchase directly through the app, optionally applying a previously retrieved voucher for a discount.
 
-The third system involves the supermarket checkout terminals, which also run an Android application. These terminals receive the list of products, and optionally a voucher, sent from the customer’s mobile app. This information is communicated to the server, which processes the payment and returns the result of the transaction along with the total amount charged. If the transmitted product list matches the physical contents of the basket, the terminal authorizes the opening of the exit gates (note that this gate mechanism was not implemented in this proof of concept).
+The third system involves the supermarket checkout terminals, which also run an Android application. These terminals receive the list of products, and optionally a voucher, sent from the customer’s mobile app. This information is communicated to the server, which processes the payment and returns the result of the transaction along with the total amount charged.
+
+The fourth system is the Generator, which is also an Android application. It includes a list of products that the user can select to obtain their QR code.
 
 ## How To Use
 
