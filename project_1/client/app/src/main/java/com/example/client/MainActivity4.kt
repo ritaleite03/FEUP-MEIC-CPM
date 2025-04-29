@@ -22,8 +22,8 @@ import com.example.client.utils.NFC.NFC_ACTION_CARD_DONE
 class MainActivity4 : AppCompatActivity() {
     private val broadcastReceiver = object: BroadcastReceiver() {
         override fun onReceive(ctx: Context, intent: Intent) {
-            Toast.makeText(this@MainActivity4, "NFC link lost", Toast.LENGTH_LONG).show()
-            finish()
+            // Toast.makeText(this@MainActivity4, "NFC link lost", Toast.LENGTH_LONG).show()
+            // finish()
         }
     }
 
