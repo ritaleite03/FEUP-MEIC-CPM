@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.Switch
 import androidx.activity.SystemBarStyle
@@ -27,6 +28,7 @@ import com.example.generator.Grocery.Companion.parseGroceries
 import com.example.generator.utils.configuratorToolbarTitle
 import com.example.generator.utils.dpToPx
 import com.example.generator.utils.isDarkThemeOn
+import com.example.generator.utils.setInsetsMargin
 import com.example.generator.utils.setInsetsPadding
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -44,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar) }
     private val searchField by lazy { findViewById<SearchView>(R.id.searchField) }
+    private val linearLayout by lazy { findViewById<LinearLayout>(R.id.linearLayout)}
     private val categorySpinner by lazy { findViewById<Spinner>(R.id.categorySpinner) }
     private val sortSpinner by lazy { findViewById<Spinner>(R.id.sortSpinner) }
 
@@ -75,8 +78,10 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        setInsetsPadding(toolbar, top = dpToPx(-8f))
+        setInsetsPadding(toolbar, top = dpToPx(-8f), left = 0, right = 0)
         configuratorToolbarTitle(this, toolbar)
+        setInsetsMargin(searchField, left = 0)
+        setInsetsPadding(linearLayout, left = 0, right = 0)
 
         categorySpinner.adapter = ArrayAdapter(
             this,

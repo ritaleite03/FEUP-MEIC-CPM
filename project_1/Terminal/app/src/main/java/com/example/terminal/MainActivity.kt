@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
@@ -77,7 +78,8 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        setInsetsPadding(toolbar, top = dpToPx(-8f))
+        setInsetsPadding(toolbar, top = dpToPx(-8f), left = 0, right = 0)
+        setInsetsPadding(tvContent, left = 0, right = 0)
         setStatusBarIconColor(window, Lightness.LIGHT)
 
         configuratorToolbarTitle(this, toolbar)
@@ -87,6 +89,19 @@ class MainActivity : AppCompatActivity() {
             tvContent.setText(R.string.tv_waiting)
             loadFragment(NeutralFragment())
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("message", tvContent.text.toString())
+    }
+
+    override fun onRestoreInstanceState(
+        savedInstanceState: Bundle
+    ) {
+        super.onRestoreInstanceState(savedInstanceState)
+        savedInstanceState
+        tvContent.text = savedInstanceState.getString("message")
     }
 
 //    override fun onResume() {

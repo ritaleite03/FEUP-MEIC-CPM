@@ -19,6 +19,7 @@ import com.example.client.logic.listVouchers
 import com.example.client.logic.vouchersDB
 import com.example.client.dialog.ErrorDialogFragment
 import com.example.client.logic.userDB
+import com.example.client.utils.setInsetsMargin
 import kotlinx.coroutines.launch
 
 /**
@@ -26,7 +27,9 @@ import kotlinx.coroutines.launch
  */
 class VouchersFragment : Fragment() {
 
+    private lateinit var discountLabel: TextView
     private lateinit var discountText: TextView
+    private lateinit var vouchersLabel : TextView
     private lateinit var vouchersText : TextView
     private lateinit var vouchersListView: ListView
     private lateinit var empty: TextView
@@ -44,9 +47,16 @@ class VouchersFragment : Fragment() {
         (this.requireActivity() as MainActivity2).toolbar.title = "Discounts & Vouchers"
 
         // Initialize the views
+        discountLabel = view.findViewById<TextView>(R.id.textDiscount)
         discountText = view.findViewById<TextView>(R.id.valueDiscount)
+        vouchersLabel = view.findViewById<TextView>(R.id.textVouchers)
         vouchersText = view.findViewById<TextView>(R.id.valueVouchers)
         vouchersListView = view.findViewById<ListView>(R.id.lv_voucher)
+        setInsetsMargin(discountLabel, left = 0)
+        setInsetsMargin(discountText, right = 0)
+        setInsetsMargin(vouchersLabel, left = 0)
+        setInsetsMargin(vouchersText, right = 0)
+        setInsetsMargin(vouchersListView, left = 0, right = 0)
         empty = view.findViewById(R.id.empty2)
         buttonUpdate = view.findViewById<Button>(R.id.bottom_button_update)
 
@@ -77,8 +87,7 @@ class VouchersFragment : Fragment() {
         vouchersDB.getVouchers()
         vouchersListView.run {
             emptyView = empty
-            adapter = VoucherAdapter(requireContext(), listVouchers) {
-            }
+            adapter = VoucherAdapter(requireContext(), listVouchers)
         }
         registerForContextMenu(vouchersListView)
         updateTotalVouchers()

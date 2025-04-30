@@ -33,7 +33,7 @@ import java.security.Signature
 import java.util.UUID
 import javax.crypto.Cipher
 
-class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
+class CheckoutDialogFragment() : DialogFragment() {
 
     private lateinit var activity: MainActivity2
     private lateinit var spinnerTypePay: Spinner
@@ -48,6 +48,23 @@ class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
     private lateinit var checkoutNewTotalRow: LinearLayout
     private lateinit var checkoutNewTotal: TextView
     private lateinit var btnCheckout: Button
+
+    private var total: Double = 0.0
+
+    companion object {
+        fun newInstance(total: Double): CheckoutDialogFragment {
+            val fragment = CheckoutDialogFragment()
+            val args = Bundle()
+            args.putDouble("total", total)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        total = arguments?.getDouble("total")!!
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.dialog_fragment_checkout, container, false)
@@ -182,7 +199,22 @@ class CheckoutDialogFragment(private val total: Double) : DialogFragment() {
             setUpSpinner(listOf("No", "Yes"), spinnerDiscount)
             setUpSpinner(optionsVoucher, spinnerVoucher)
             setUpCheckout()
+
+            val pSpinnerTypePay = savedInstanceState?.getInt("spinnerTypePay") ?: 0
+            val pSpinnerDiscount = savedInstanceState?.getInt("spinnerDiscount") ?: 0
+            val pSpinnerVoucher = savedInstanceState?.getInt("spinnerVoucher") ?: 0
+
+            spinnerTypePay.setSelection(pSpinnerTypePay)
+            spinnerDiscount.setSelection(pSpinnerDiscount)
+            spinnerVoucher.setSelection(pSpinnerVoucher)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("spinnerDiscount", spinnerDiscount.selectedItemPosition)
+        outState.putInt("spinnerTypePay", spinnerTypePay.selectedItemPosition)
+        outState.putInt("spinnerTypePay", spinnerTypePay.selectedItemPosition)
     }
 
     /**

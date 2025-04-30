@@ -64,7 +64,7 @@ class MainActivity2 : AppCompatActivity() {
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main2)
         setSupportActionBar(toolbar)
-        setInsetsPadding(toolbar, top = dpToPx(-8f))
+        setInsetsPadding(toolbar, top = dpToPx(-8f), left = 0, right = 0)
 
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.foreground))
         (toolbar.navigationIcon)?.setTint(ContextCompat.getColor(this, R.color.foreground))

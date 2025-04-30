@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.SearchView
 import android.widget.Spinner
@@ -23,6 +24,8 @@ import com.example.client.logic.listProducts
 import com.example.client.logic.productsDB
 import com.example.client.logic.productsDecodeMessage
 import com.example.client.logic.userDB
+import com.example.client.utils.setInsetsMargin
+import com.example.client.utils.setInsetsPadding
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import java.nio.charset.StandardCharsets
@@ -36,11 +39,13 @@ class CartFragment : Fragment() {
 
     private lateinit var productListView: ListView
     private lateinit var empty: TextView
+    private lateinit var totalLabel: TextView
     private lateinit var totalTextView: TextView
 
     private lateinit var searchView: SearchView
     private lateinit var spinnerOrder: Spinner
     private lateinit var spinnerCategory: Spinner
+    private lateinit var textCategory: TextView
     private lateinit var btQR: Button
     private lateinit var btEnd: Button
 
@@ -58,11 +63,20 @@ class CartFragment : Fragment() {
         productListView = view.findViewById<ListView>(R.id.lv_items)
         empty = view.findViewById(R.id.empty)
         totalTextView = view.findViewById(R.id.tv_total_value)
+        totalLabel = view.findViewById(R.id.tv_label)
+        setInsetsMargin(productListView, left = 0, right = 0)
+        setInsetsMargin(totalTextView, left = 0, right = 0)
+        setInsetsMargin(totalLabel, left = 0)
 
         // Configuration of buttons
         searchView = view.findViewById<SearchView>(R.id.searchView)
         spinnerOrder = view.findViewById<Spinner>(R.id.order_spinner)
         spinnerCategory = view.findViewById<Spinner>(R.id.category_spinner)
+        textCategory = view.findViewById<TextView>(R.id.text_category)
+        setInsetsMargin(searchView, left = 0, right = 0)
+        setInsetsMargin(spinnerOrder, right = 0)
+        setInsetsMargin(spinnerCategory, left = 0)
+        setInsetsMargin(textCategory, left = 0)
         btQR = view.findViewById<Button>(R.id.bottom_button_qr)
         btEnd = view.findViewById<Button>(R.id.bottom_button_end)
 
@@ -78,7 +92,7 @@ class CartFragment : Fragment() {
             adapter = ProductAdapter(requireContext(), listProducts) { updateTotal() }
         }
         updateTotal()
-        registerForContextMenu(productListView)
+        //registerForContextMenu(productListView)
     }
 
     private fun configuratorBottomButtons() {
@@ -86,7 +100,8 @@ class CartFragment : Fragment() {
             scanQRCode()
         }
         btEnd.setOnClickListener {
-            val checkoutDialog = CheckoutDialogFragment(listProducts.sumOf{ it.price.toDouble() })
+            var totalValue = listProducts.sumOf{ it.price.toDouble() }
+            val checkoutDialog = CheckoutDialogFragment.newInstance(totalValue)
             checkoutDialog.show(parentFragmentManager, "checkout_dialog")
         }
     }

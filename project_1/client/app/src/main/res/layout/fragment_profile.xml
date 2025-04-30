@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTintMode="add"
     android:foregroundGravity="center"
+    android:fillViewport="true"
     tools:context=".fragments.ProfileFragment">
 
     <LinearLayout
@@ -194,7 +195,7 @@
                 android:layout_marginVertical="10sp"
                 android:layout_weight="1"
                 android:text="@string/changeTypeParameter"
-                android:textAlignment="textEnd"
+                android:textAlignment="center"
                 android:textSize="16sp" />
 
             <TextView
@@ -232,7 +233,7 @@
                 android:layout_marginVertical="10sp"
                 android:layout_weight="1"
                 android:text="@string/register_cart_number"
-                android:textAlignment="textEnd"
+                android:textAlignment="center"
                 android:textSize="16sp" />
 
             <TextView
@@ -270,7 +271,7 @@
                 android:layout_marginVertical="10sp"
                 android:layout_weight="1"
                 android:text="@string/register_cart_date"
-                android:textAlignment="textEnd"
+                android:textAlignment="center"
                 android:textSize="16sp" />
 
             <TextView
@@ -296,4 +297,4 @@
 
     </LinearLayout>
 
-</FrameLayout>
+</androidx.core.widget.NestedScrollView>

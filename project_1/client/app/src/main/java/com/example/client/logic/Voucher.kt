@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.core.view.doOnAttach
 import com.example.client.MainActivity2
 import com.example.client.R
 import com.example.client.data.DiscountDB
 import com.example.client.data.VouchersDB
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
+import com.example.client.utils.setInsetsPadding
 import org.json.JSONArray
 import org.json.JSONObject
 import java.nio.ByteBuffer
@@ -37,17 +39,14 @@ val listVouchers = arrayListOf<Voucher>()
  * Adapter to bind [Voucher] objects to an [android.widget.ListView].
  * @param ctx context of the Fragment where the Adapter will be used.
  * @param listVouchers list of the vouchers that is going to be displayed.
- * @param function
  */
 class VoucherAdapter(
     private val ctx: Context,
-    private val listVouchers: ArrayList<Voucher>,
-    function: () -> Unit,
+    private val listVouchers: ArrayList<Voucher>
 ): ArrayAdapter<Voucher>(ctx, R.layout.list_voucher, listVouchers) {
 
     override fun getView(pos: Int, convertView: View?, parent: ViewGroup): View {
         val row = convertView ?: (ctx as Activity).layoutInflater.inflate(R.layout.list_voucher, parent, false)
-
         with(listVouchers[pos]) {
             row.findViewById<TextView>(R.id.tv_name).text = id.toString()
             row.findViewById<TextView>(R.id.tv_value).text = ctx.getString(R.string.product_value, value)

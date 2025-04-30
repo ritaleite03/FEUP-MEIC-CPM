@@ -152,6 +152,7 @@ async function actionPayment(ctx) {
         }
 
         // calculating accumulated discount
+        if (priceTotal === 0) voucher = null;
         let accumulated = 0;
         if (voucher !== null) {
             const verifyVoucher = await db.verifyVoucher(user, voucher);

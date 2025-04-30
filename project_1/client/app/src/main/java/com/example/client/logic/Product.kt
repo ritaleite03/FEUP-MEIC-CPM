@@ -8,11 +8,13 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.view.doOnAttach
 import com.example.client.R
 import com.example.client.data.ProductsDB
 import com.example.client.utils.Crypto.CRYPTO_RSA_ENC_ALGO
 import com.example.client.utils.Crypto.CRYPTO_RSA_KEY_SIZE
 import com.example.client.utils.Crypto.CRYPTO_RSA_SIGN_ALGO
+import com.example.client.utils.setInsetsPadding
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.security.Signature
@@ -128,7 +130,6 @@ class ProductAdapter(
 
     override fun getView(pos: Int, convertView: View?, parent: ViewGroup): View {
         val row = convertView ?: (ctx as Activity).layoutInflater.inflate(R.layout.list_item, parent, false)
-
         // fill with the products' data
         with(listProducts[pos]) {
             row.findViewById<TextView>(R.id.tv_name).text = if (name == subCategory) name else "$subCategory ($name)"

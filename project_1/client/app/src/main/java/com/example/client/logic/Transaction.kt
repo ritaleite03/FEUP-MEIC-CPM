@@ -12,6 +12,7 @@ import com.example.client.R
 import com.example.client.data.TransactionDB
 import com.example.client.dialog.ErrorDialogFragment
 import com.example.client.utils.Crypto
+import com.example.client.utils.setInsetsPadding
 import org.json.JSONArray
 import org.json.JSONObject
 import java.nio.ByteBuffer
@@ -31,12 +32,10 @@ val listTransactions = arrayListOf<Transaction>()
 class TransactionAdapter(
     private val ctx: Context,
     private val listTransactions: ArrayList<Transaction>,
-    function: () -> Unit
 ): ArrayAdapter<Transaction>(ctx, R.layout.list_transaction, listTransactions) {
 
     override fun getView(pos: Int, convertView: View?, parent: ViewGroup): View {
         val row = convertView ?: (ctx as Activity).layoutInflater.inflate(R.layout.list_transaction, parent, false)
-
         with(listTransactions[pos]) {
             row.findViewById<TextView>(R.id.tv_date).text = date
             row.findViewById<TextView>(R.id.tv_price).text = ctx.getString(R.string.product_price, price)

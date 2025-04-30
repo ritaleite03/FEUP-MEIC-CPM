@@ -17,6 +17,7 @@ import com.example.client.logic.TransactionAdapter
 import com.example.client.logic.listTransactions
 import com.example.client.logic.transactionDB
 import com.example.client.logic.userDB
+import com.example.client.utils.setInsetsMargin
 import kotlinx.coroutines.launch
 
 class TransactionsFragment: Fragment() {
@@ -34,6 +35,7 @@ class TransactionsFragment: Fragment() {
         buttonUpdate = view.findViewById(R.id.bottom_button_update)
 
         transactionsListView = view.findViewById(R.id.lv_transaction)
+        setInsetsMargin(transactionsListView, left = 0, right = 0)
         empty = view.findViewById(R.id.empty2)
 
         val activity = requireActivity() as MainActivity2
@@ -60,7 +62,7 @@ class TransactionsFragment: Fragment() {
         transactionDB.getTransactions()
         transactionsListView.run {
             emptyView = empty
-            adapter = TransactionAdapter(requireContext(), listTransactions) {}
+            adapter = TransactionAdapter(requireContext(), listTransactions)
         }
         registerForContextMenu(transactionsListView)
     }
