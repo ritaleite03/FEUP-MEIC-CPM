@@ -6,7 +6,7 @@ package com.example.generator.utils
 object Server {
     //TODO: CHANGE IP
     /** IP address of the server. */
-    const val SERVER_IP = "192.168.1.68"
+    const val SERVER_IP = ""
     /** Server port. */
     const val SERVER_PORT = "8000"
     /** Path of the informative action route on the server. */
