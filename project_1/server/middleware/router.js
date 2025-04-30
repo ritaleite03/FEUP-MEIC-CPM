@@ -152,9 +152,10 @@ async function actionPayment(ctx) {
         }
 
         // calculating accumulated discount
-        if (priceTotal === 0) voucher = null;
+        let newVoucher = voucher;
+        if (priceTotal === 0) newVoucher = null;
         let accumulated = 0;
-        if (voucher !== null) {
+        if (newVoucher !== null) {
             const verifyVoucher = await db.verifyVoucher(user, voucher);
             if (verifyVoucher === false) throw new Error("Invalid voucher.");
             accumulated = priceTotal * 0.15;
@@ -163,7 +164,7 @@ async function actionPayment(ctx) {
         // perform payment
         const result = await db.actionPayment(
             user,
-            voucher,
+            newVoucher,
             usedDiscount,
             priceTotal,
             accumulated
