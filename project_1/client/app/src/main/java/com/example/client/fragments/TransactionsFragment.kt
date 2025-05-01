@@ -33,6 +33,7 @@ class TransactionsFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         transactionDB = TransactionDB(requireActivity().applicationContext)
         buttonUpdate = view.findViewById(R.id.bottom_button_update)
+        setInsetsMargin(buttonUpdate, bottom = 0)
 
         transactionsListView = view.findViewById(R.id.lv_transaction)
         setInsetsMargin(transactionsListView, left = 0, right = 0)

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
@@ -59,6 +60,7 @@ class VouchersFragment : Fragment() {
         setInsetsMargin(vouchersListView, left = 0, right = 0)
         empty = view.findViewById(R.id.empty2)
         buttonUpdate = view.findViewById<Button>(R.id.bottom_button_update)
+        setInsetsMargin(buttonUpdate, bottom = 0)
 
         // Initialize the database
         vouchersDB = VouchersDB(requireActivity().applicationContext)

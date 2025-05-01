@@ -98,7 +98,7 @@
             android:elevation="4dp"
             android:orientation="horizontal"
             android:padding="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView">
+            app:layout_constraintBottom_toTopOf="@+id/bottom_buttons">
 
             <TextView
                 android:id="@+id/tv_label"
@@ -120,38 +120,35 @@
                 android:textSize="20sp" />
         </LinearLayout>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView"
+
+        <LinearLayout
+            android:id="@+id/bottom_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/bottom_button_qr"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_weight="1"
+                android:text="@string/bottom_button_qr"
+                android:textSize="14sp" />
 
-                <Button
-                    android:id="@+id/bottom_button_qr"
-                    style="?attr/buttonBarButtonStyle"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="@string/bottom_button_qr"
-                    android:textSize="14sp" />
+            <Button
+                android:id="@+id/bottom_button_end"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/bottom_button_end"
+                android:textSize="14sp" />
+        </LinearLayout>
 
-                <Button
-                    android:id="@+id/bottom_button_end"
-                    style="?attr/buttonBarButtonStyle"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="@string/bottom_button_end"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-        </com.google.android.material.bottomnavigation.BottomNavigationView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

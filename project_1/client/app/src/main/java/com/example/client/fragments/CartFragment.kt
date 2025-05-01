@@ -14,9 +14,9 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.example.client.MainActivity2
 import com.example.client.R
-import com.example.client.data.DiscountDB
 import com.example.client.data.ProductsDB
 import com.example.client.dialog.CheckoutDialogFragment
+import com.example.client.dialog.ErrorDialogFragment
 import com.example.client.logic.CategoryProduct
 import com.example.client.logic.OrderProduct
 import com.example.client.logic.ProductAdapter
@@ -48,6 +48,7 @@ class CartFragment : Fragment() {
     private lateinit var textCategory: TextView
     private lateinit var btQR: Button
     private lateinit var btEnd: Button
+    private lateinit var bottomBt : LinearLayout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_cart, container, false)
@@ -79,6 +80,8 @@ class CartFragment : Fragment() {
         setInsetsMargin(textCategory, left = 0)
         btQR = view.findViewById<Button>(R.id.bottom_button_qr)
         btEnd = view.findViewById<Button>(R.id.bottom_button_end)
+        bottomBt = view.findViewById<LinearLayout>(R.id.bottom_buttons)
+        setInsetsPadding(bottomBt, bottom = 0)
 
         configuratorProductsListView()
         configuratorBottomButtons()
@@ -197,6 +200,8 @@ class CartFragment : Fragment() {
             if (product != null) {
                 (productListView.adapter as ProductAdapter).productsUpdateList(product)
                 updateTotal()
+            } else {
+                ErrorDialogFragment.newInstance("Invalid QRcode or Key error. Try again!").show(parentFragmentManager, "error_popup")
             }
         }
     }

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
@@ -29,12 +30,14 @@ class MainActivity3 : AppCompatActivity() {
     // UI elements
     private val qrCodeImageview by lazy { findViewById<ImageView>(R.id.img_qr_code) }
     private val tvError by lazy { findViewById<TextView>(R.id.tv_error) }
+    private val llButtons by lazy {findViewById<LinearLayout>(R.id.ll_bottom_buttons3)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main3)
         setInsetsPadding(tvError, bottom=0)
+        setInsetsPadding(llButtons, bottom = 0)
 
         var btnBack = findViewById<Button>(R.id.btn_go_back)
         btnBack.setOnClickListener { finish() }

@@ -67,13 +67,13 @@ fun productsDecodeMessage(message: ByteArray, key: String) : Product? {
     val signature = message.copyOfRange(numberBytes, numberBytes + numberBytes)
 
     try {
-        val key = base64ToPublicKey(key)
+        val pKey = base64ToPublicKey(key)
         clearTextTag = Cipher.getInstance(CRYPTO_RSA_ENC_ALGO).run {
-            init(Cipher.DECRYPT_MODE, key)
+            init(Cipher.DECRYPT_MODE, pKey)
             doFinal(encryptedTag)
         }
         val signatureVerifier = Signature.getInstance(CRYPTO_RSA_SIGN_ALGO).run {
-            initVerify(key)
+            initVerify(pKey)
             update(encryptedTag)
             verify(signature)
         }

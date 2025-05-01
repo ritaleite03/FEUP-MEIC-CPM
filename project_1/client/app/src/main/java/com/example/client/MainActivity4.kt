@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
@@ -15,6 +16,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.client.logic.productsDB
 import com.example.client.utils.Card
 import com.example.client.utils.NFC.NFC_ACTION_CARD_DONE
+import com.example.client.utils.setInsetsPadding
 
 /**
  * This activity handles the NFC communication.
@@ -31,6 +33,9 @@ class MainActivity4 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT))
         setContentView(R.layout.activity_main4)
+
+        var bottomButtons = findViewById<LinearLayout>(R.id.bottom_buttons2)
+        setInsetsPadding(bottomButtons, bottom = 0)
 
         var btnBack = findViewById<Button>(R.id.btn_go_back)
         btnBack.setOnClickListener { finish() }

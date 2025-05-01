@@ -15,7 +15,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView3"
+            app:layout_constraintBottom_toTopOf="@+id/ll_bottom_buttons3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -36,36 +36,34 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView3"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/ll_bottom_buttons3"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+            <Button
+                android:id="@+id/btn_go_back"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/go_back" />
 
-                <Button
-                    android:id="@+id/btn_go_back"
-                    style="?attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/go_back" />
+            <Button
+                android:id="@+id/btn_conclude"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/conclude" />
+        </LinearLayout>
 
-                <Button
-                    android:id="@+id/btn_conclude"
-                    style="?attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/conclude" />
-            </LinearLayout>
 
-        </com.google.android.material.bottomnavigation.BottomNavigationView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
