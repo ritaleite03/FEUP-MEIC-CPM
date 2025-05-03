@@ -1,0 +1,137 @@
+import 'package:app/database.dart';
+import 'package:app/objects.dart';
+import 'package:flutter/material.dart';
+
+Icon favoritesIcon(City city) {
+  return city.isFavorite == 1
+      ? const Icon(Icons.favorite, color: Colors.red)
+      : const Icon(Icons.favorite_border_outlined);
+}
+
+class _FavoritesPageSearchBar extends StatelessWidget {
+  final List<City> cities;
+  final void Function(City) onToggleFavorite;
+
+  const _FavoritesPageSearchBar({
+    required this.cities,
+    required this.onToggleFavorite,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SearchAnchor(
+      builder: (BuildContext context, SearchController controller) {
+        return SearchBar(
+          controller: controller,
+          padding: const WidgetStatePropertyAll<EdgeInsets>(
+            EdgeInsets.symmetric(horizontal: 16.0),
+          ),
+          onTap: controller.openView,
+          onChanged: (_) => controller.openView(),
+          leading: const Icon(Icons.search),
+        );
+      },
+      suggestionsBuilder: (BuildContext context, SearchController controller) {
+        final query = controller.text.toLowerCase();
+        final filteredCities =
+            cities
+                .where((city) => city.name.toLowerCase().contains(query))
+                .toList();
+
+        return filteredCities.map((city) {
+          return ListTile(
+            title: Text(city.name),
+            trailing: IconButton(
+              onPressed: () {
+                onToggleFavorite(city);
+                controller.closeView(city.name);
+              },
+              icon: favoritesIcon(city),
+            ),
+          );
+        }).toList();
+      },
+    );
+  }
+}
+
+class FavoritesPage extends StatefulWidget {
+  const FavoritesPage({super.key});
+
+  @override
+  State<FavoritesPage> createState() => _FavoritesPageState();
+}
+
+class _FavoritesPageState extends State<FavoritesPage> {
+  List<City> cities = [];
+  List<City> citiesFav = [];
+
+  void onToggleFavorite(City city) {
+    setState(() {
+      city.isFavorite = city.isFavorite == 1 ? 0 : 1;
+      citiesFav = cities.where((c) => c.isFavorite == 1).toList();
+      updateCity(city);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadCities();
+  }
+
+  Future<void> loadCities() async {
+    final loadedCities = await getCities();
+    setState(() {
+      cities = loadedCities;
+      citiesFav = loadedCities.where((city) => city.isFavorite == 1).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      appBar: AppBar(
+        foregroundColor: Theme.of(context).colorScheme.primaryContainer,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 0),
+        child: Column(
+          children: [
+            _FavoritesPageSearchBar(
+              cities: cities,
+              onToggleFavorite: onToggleFavorite,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView.builder(
+                  itemCount: citiesFav.length,
+                  itemBuilder: (context, index) {
+                    final item = citiesFav[index];
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 4.0, 0, 0),
+                      child: Card(
+                        child: ListTile(
+                          title: Text(item.name),
+                          trailing: IconButton(
+                            onPressed: () {
+                              onToggleFavorite(item);
+                            },
+                            icon: favoritesIcon(item),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
