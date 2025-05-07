@@ -1,6 +1,7 @@
 import 'package:app/database.dart';
 import 'package:app/objects.dart';
 import 'package:app/pages/weather.dart';
+import 'package:app/pages/widgets/utils.dart';
 import 'package:flutter/material.dart';
 
 Icon favoritesIcon(City city) {
@@ -94,10 +95,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      appBar: AppBar(
-        foregroundColor: Theme.of(context).colorScheme.primaryContainer,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
+      appBar: AppBarWidget(),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
         child: Column(
