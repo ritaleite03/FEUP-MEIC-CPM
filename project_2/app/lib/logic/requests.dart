@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 String _ip = "192.168.68.136";
 String _port = "8000";
 
-Future<void> getWeatherNow(String city) async {
+Future<Map<String, dynamic>> getWeatherNow(String city) async {
   final String serverUrl = 'http://$_ip:$_port/weather/city/all';
 
   try {
@@ -17,11 +17,11 @@ Future<void> getWeatherNow(String city) async {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-    } else {
-      // error
+      final decoded = jsonDecode(response.body);
+      return decoded;
     }
   } catch (e) {
-    // error
+    throw Exception('Failed to load weather data');
   }
+  throw Exception('Failed to load weather data');
 }

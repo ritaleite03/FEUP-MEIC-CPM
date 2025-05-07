@@ -32,11 +32,11 @@ async function getCityWeather(ctx) {
     try {
         const response = await fetch(url);
         const data = await response.json();
-        console.log("Complete response from API Visual Crossing:");
-        console.log(data);
+        // console.log("Complete response from API Visual Crossing:");
+        // console.log(data);
 
-        const tomorrow = data.days[8];
-        const today = data.days[7];
+        const tomorrow = parseWeatherDay(data.days[8]);
+        const today = parseWeatherDay(data.days[7]);
         const week = [
             parseWeatherDay(data.days[0]),
             parseWeatherDay(data.days[1]),
@@ -50,11 +50,215 @@ async function getCityWeather(ctx) {
         ctx.body = { tomorrow: tomorrow, today: today, week: week };
     } catch (error) {
         console.error("Error:", error);
-        ctx.status = 400;
+        ctx.status = 200; // 400;
+
         ctx.body = {
-            error: "Failed in getting city weather!",
-            details: error.message,
+            tomorrow: {
+                temperature: {
+                    realNow: "12",
+                    realMax: "16",
+                    realMin: "10",
+                    feelMax: "22",
+                    feelMin: "12",
+                },
+                precipitation: {
+                    dimen: "1",
+                    proba: "20",
+                },
+                wind: {
+                    spd: "2",
+                    dir: parseWindDirection(180),
+                },
+                info: {
+                    icon: "rain",
+                    cond: "rain",
+                    desc: "rain",
+                },
+            },
+            today: {
+                temperature: {
+                    realNow: 12,
+                    realMax: 16,
+                    realMin: 10,
+                    feelMax: 22,
+                    feelMin: 12,
+                },
+                precipitation: {
+                    dimen: 1,
+                    proba: 20,
+                },
+                wind: {
+                    spd: 2,
+                    dir: parseWindDirection(180),
+                },
+                info: {
+                    icon: "rain",
+                    cond: "rain",
+                    desc: "rain",
+                },
+            },
+            week: [
+                {
+                    temperature: {
+                        realNow: 12,
+                        realMax: 16,
+                        realMin: 10,
+                        feelMax: 22,
+                        feelMin: 12,
+                    },
+                    precipitation: {
+                        dimen: 1,
+                        proba: 20,
+                    },
+                    wind: {
+                        spd: 2,
+                        dir: parseWindDirection(180),
+                    },
+                    info: {
+                        icon: "rain",
+                        cond: "rain",
+                        desc: "rain",
+                    },
+                },
+                {
+                    temperature: {
+                        realNow: 12,
+                        realMax: 16,
+                        realMin: 10,
+                        feelMax: 22,
+                        feelMin: 12,
+                    },
+                    precipitation: {
+                        dimen: 1,
+                        proba: 20,
+                    },
+                    wind: {
+                        spd: 2,
+                        dir: parseWindDirection(180),
+                    },
+                    info: {
+                        icon: "rain",
+                        cond: "rain",
+                        desc: "rain",
+                    },
+                },
+                {
+                    temperature: {
+                        realNow: 12,
+                        realMax: 16,
+                        realMin: 10,
+                        feelMax: 22,
+                        feelMin: 12,
+                    },
+                    precipitation: {
+                        dimen: 1,
+                        proba: 20,
+                    },
+                    wind: {
+                        spd: 2,
+                        dir: parseWindDirection(180),
+                    },
+                    info: {
+                        icon: "rain",
+                        cond: "rain",
+                        desc: "rain",
+                    },
+                },
+                {
+                    temperature: {
+                        realNow: 12,
+                        realMax: 16,
+                        realMin: 10,
+                        feelMax: 22,
+                        feelMin: 12,
+                    },
+                    precipitation: {
+                        dimen: 1,
+                        proba: 20,
+                    },
+                    wind: {
+                        spd: 2,
+                        dir: parseWindDirection(180),
+                    },
+                    info: {
+                        icon: "rain",
+                        cond: "rain",
+                        desc: "rain",
+                    },
+                },
+                {
+                    temperature: {
+                        realNow: 12,
+                        realMax: 16,
+                        realMin: 10,
+                        feelMax: 22,
+                        feelMin: 12,
+                    },
+                    precipitation: {
+                        dimen: 1,
+                        proba: 20,
+                    },
+                    wind: {
+                        spd: 2,
+                        dir: parseWindDirection(180),
+                    },
+                    info: {
+                        icon: "rain",
+                        cond: "rain",
+                        desc: "rain",
+                    },
+                },
+                {
+                    temperature: {
+                        realNow: 12,
+                        realMax: 16,
+                        realMin: 10,
+                        feelMax: 22,
+                        feelMin: 12,
+                    },
+                    precipitation: {
+                        dimen: 1,
+                        proba: 20,
+                    },
+                    wind: {
+                        spd: 2,
+                        dir: parseWindDirection(180),
+                    },
+                    info: {
+                        icon: "rain",
+                        cond: "rain",
+                        desc: "rain",
+                    },
+                },
+                {
+                    temperature: {
+                        realNow: 12,
+                        realMax: 16,
+                        realMin: 10,
+                        feelMax: 22,
+                        feelMin: 12,
+                    },
+                    precipitation: {
+                        dimen: 1,
+                        proba: 20,
+                    },
+                    wind: {
+                        spd: 2,
+                        dir: parseWindDirection(180),
+                    },
+                    info: {
+                        icon: "rain",
+                        cond: "rain",
+                        desc: "rain",
+                    },
+                },
+            ],
         };
+
+        // ctx.body = {
+        //     error: "Failed in getting city weather!",
+        //     details: error.message,
+        // };
     }
 }
 

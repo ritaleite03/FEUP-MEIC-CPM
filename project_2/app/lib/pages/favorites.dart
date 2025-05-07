@@ -1,5 +1,6 @@
 import 'package:app/database.dart';
 import 'package:app/objects.dart';
+import 'package:app/pages/weather.dart';
 import 'package:flutter/material.dart';
 
 Icon favoritesIcon(City city) {
@@ -23,6 +24,7 @@ class _FavoritesPageSearchBar extends StatelessWidget {
       builder: (BuildContext context, SearchController controller) {
         return SearchBar(
           controller: controller,
+          hintText: 'Search for new locations...',
           padding: const WidgetStatePropertyAll<EdgeInsets>(
             EdgeInsets.symmetric(horizontal: 16.0),
           ),
@@ -97,7 +99,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 0),
+        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
         child: Column(
           children: [
             _FavoritesPageSearchBar(
@@ -122,6 +124,16 @@ class _FavoritesPageState extends State<FavoritesPage> {
                             },
                             icon: favoritesIcon(item),
                           ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        WeatherPage(cityName: item.name),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     );
