@@ -1,16 +1,17 @@
 class City {
   String name;
+  String path;
   int isFavorite;
 
-  City({required this.name, this.isFavorite = 0});
+  City({required this.name, required this.path, this.isFavorite = 0});
 
   Map<String, Object?> toMap() {
-    return {'name': name, 'isFavorite': isFavorite};
+    return {'name': name, 'path': path, 'isFavorite': isFavorite};
   }
 
   @override
   String toString() {
-    return 'City{name: $name, isFavorite: $isFavorite}';
+    return 'City{name: $name, path: $path, isFavorite: $isFavorite}';
   }
 }
 

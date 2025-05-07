@@ -114,24 +114,64 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     return Padding(
                       padding: const EdgeInsets.fromLTRB(0, 4.0, 0, 0),
                       child: Card(
-                        child: ListTile(
-                          title: Text(item.name),
-                          trailing: IconButton(
-                            onPressed: () {
-                              onToggleFavorite(item);
-                            },
-                            icon: favoritesIcon(item),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        WeatherPage(cityName: item.name),
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              item.path,
+                              height: 120,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                                vertical: 4.0,
                               ),
-                            );
-                          },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          onToggleFavorite(item);
+                                        },
+                                        icon: favoritesIcon(item),
+                                      ),
+                                      Text(item.name),
+                                    ],
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.arrow_forward_ios,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => WeatherPage(
+                                                cityName: item.name,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor: WidgetStateProperty.all(
+                                        Colors.amber,
+                                      ),
+                                      shape: WidgetStateProperty.all(
+                                        const CircleBorder(),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );

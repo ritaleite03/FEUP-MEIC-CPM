@@ -66,6 +66,26 @@ flutter:
     assets:
         - assets/images/weather.png
         - assets/images/icon.png
+        - assets/city/aveiro.jpg
+        - assets/city/beja.jpg
+        - assets/city/braga.jpg
+        - assets/city/braganca.jpg
+        - assets/city/castelo_branco.jpg
+        - assets/city/coimbra.jpg
+        - assets/city/evora.jpg
+        - assets/city/faro.jpg
+        - assets/city/guarda.jpg
+        - assets/city/leiria.jpg
+        - assets/city/lisbon.jpg
+        - assets/city/portalegre.jpg
+        - assets/city/porto.jpg
+        - assets/city/santarem.jpg
+        - assets/city/setubal.jpg
+        - assets/city/viana_do_castelo.jpg
+        - assets/city/vila_real.jpg
+        - assets/city/viseu.jpg
+        - assets/city/funchal.jpg
+        - assets/city/ponta_delgada.jpg
     # To add assets to your application, add an assets section, like this:
     # assets:
     #   - images/a_dot_burr.jpeg

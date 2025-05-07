@@ -10,30 +10,33 @@ Future<void> initDatabase() async {
     join(dbPath, 'weather.db'),
     onCreate: (db, version) async {
       await db.execute(
-        'CREATE TABLE city(name TEXT PRIMARY KEY, isFavorite INTEGER)',
+        'CREATE TABLE city(name TEXT PRIMARY KEY, path TEXT, isFavorite INTEGER)',
       );
 
       final List<City> initialCities = [
-        City(name: 'Aveiro'),
-        City(name: 'Beja'),
-        City(name: 'Braga'),
-        City(name: 'Braganca'),
-        City(name: 'Castelo Branco'),
-        City(name: 'Coimbra'),
-        City(name: 'Évora'),
-        City(name: 'Faro'),
-        City(name: 'Guarda'),
-        City(name: 'Leiria'),
-        City(name: 'Lisbon'),
-        City(name: 'Portalegre'),
-        City(name: 'Porto'),
-        City(name: 'Santarem'),
-        City(name: 'Setubal'),
-        City(name: 'Viana do Castelo'),
-        City(name: 'Vila Real'),
-        City(name: 'Viseu'),
-        City(name: 'Funchal'),
-        City(name: 'Ponta Delgada'),
+        City(name: 'Aveiro', path: 'assets/city/aveiro.jpg'),
+        City(name: 'Beja', path: 'assets/city/beja.jpg'),
+        City(name: 'Braga', path: 'assets/city/braga.jpg'),
+        City(name: 'Braganca', path: 'assets/city/braganca.jpg'),
+        City(name: 'Castelo Branco', path: 'assets/city/castelo_branco.jpg'),
+        City(name: 'Coimbra', path: 'assets/city/coimbra.jpg'),
+        City(name: 'Evora', path: 'assets/city/evora.jpg'),
+        City(name: 'Faro', path: 'assets/city/faro.jpg'),
+        City(name: 'Guarda', path: 'assets/city/guarda.jpg'),
+        City(name: 'Leiria', path: 'assets/city/leiria.jpg'),
+        City(name: 'Lisbon', path: 'assets/city/lisbon.jpg'),
+        City(name: 'Portalegre', path: 'assets/city/portalegre.jpg'),
+        City(name: 'Porto', path: 'assets/city/porto.jpg'),
+        City(name: 'Santarem', path: 'assets/city/santarem.jpg'),
+        City(name: 'Setubal', path: 'assets/city/setubal.jpg'),
+        City(
+          name: 'Viana do Castelo',
+          path: 'assets/city/viana_do_castelo.jpg',
+        ),
+        City(name: 'Vila Real', path: 'assets/city/vila_real.jpg'),
+        City(name: 'Viseu', path: 'assets/city/viseu.jpg'),
+        City(name: 'Funchal', path: 'assets/city/funchal.jpg'),
+        City(name: 'Ponta Delgada', path: 'assets/city/ponta_delgada.jpg'),
       ];
 
       for (var city in initialCities) {
@@ -73,8 +76,12 @@ Future<List<City>> getCities() async {
   final db = await database;
   final List<Map<String, Object?>> cities = await db.query('city');
   return [
-    for (final {'name': name as String, 'isFavorite': isFavorite as int}
+    for (final {
+          'name': name as String,
+          'path': path as String,
+          'isFavorite': isFavorite as int,
+        }
         in cities)
-      City(name: name, isFavorite: isFavorite),
+      City(name: name, path: path, isFavorite: isFavorite),
   ];
 }
