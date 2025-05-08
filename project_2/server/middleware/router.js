@@ -55,8 +55,8 @@ async function getCityWeather(ctx) {
         ctx.body = {
             tomorrow: {
                 temperature: {
-                    realNow: "12",
-                    realMax: "16",
+                    realNow: "13",
+                    realMax: "17",
                     realMin: "10",
                     feelMax: "22",
                     feelMin: "12",
@@ -72,7 +72,7 @@ async function getCityWeather(ctx) {
                 info: {
                     icon: "rain",
                     cond: "rain",
-                    desc: "rain",
+                    desc: "rain, rain, rain, rain, rain, rain, rain, rain, rain, rain, rain",
                 },
             },
             today: {
@@ -161,7 +161,7 @@ async function getCityWeather(ctx) {
                     info: {
                         icon: "rain",
                         cond: "rain",
-                        desc: "rain",
+                        desc: "rain, rain, rain, rain, rain, rain, rain, rain, rain, rain, rain",
                     },
                 },
                 {

@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:app/logic/requests.dart';
 import 'package:app/pages/widgets/utils.dart';
-import 'package:app/pages/widgets/weather/buttons_widget.dart';
-import 'package:app/pages/widgets/weather/day_widget.dart';
+import 'package:app/pages/widgets/weather/day_details.dart';
+import 'package:app/pages/widgets/weather/day_header.dart';
+import 'package:app/pages/widgets/weather/day_main.dart';
 import 'package:app/pages/widgets/weather/week_widget.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/components.dart';
@@ -20,6 +21,7 @@ class WeatherPage extends StatefulWidget {
 class _WeatherPageState extends State<WeatherPage> {
   late Future<Map<String, dynamic>> data;
   late Future<SpriteSheet> spriteSheetFuture;
+  String selected = "today";
 
   @override
   void initState() {
@@ -54,7 +56,7 @@ class _WeatherPageState extends State<WeatherPage> {
             );
           } else if (snapshot.hasData) {
             final today = snapshot.data!["today"];
-            // final tomorrow = snapshot.data!["tomorrow"];
+            final tomorrow = snapshot.data!["tomorrow"];
             final week = snapshot.data!["week"];
             return FutureBuilder<SpriteSheet>(
               future: spriteSheetFuture,
@@ -71,12 +73,29 @@ class _WeatherPageState extends State<WeatherPage> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          DayWidget(
-                            data: today,
-                            icon: today["info"]["icon"],
+                          DayHeader(
+                            selected: selected,
+                            onToggle: () {
+                              setState(() {
+                                selected =
+                                    selected == "today" ? "tomorrow" : "today";
+                              });
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          DayMain(
+                            data: selected == "today" ? today : tomorrow,
+                            icon:
+                                selected == "today"
+                                    ? today["info"]["icon"]
+                                    : tomorrow["info"]["icon"],
                             spriteSheet: spriteSnapshot.data!,
                           ),
-                          ButtonsWidget(data: today),
+                          SizedBox(height: 16),
+                          DayDetails(
+                            data: selected == "today" ? today : tomorrow,
+                          ),
+                          SizedBox(height: 16),
                           WeekWidget(today: today, week: week),
                         ],
                       ),

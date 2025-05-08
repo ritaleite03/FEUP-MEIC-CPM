@@ -1,9 +1,12 @@
+import 'package:app/pages/widgets/utils.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class WeekWidget extends StatelessWidget {
+  // ignore: prefer_typing_uninitialized_variables
   final today;
+  // ignore: prefer_typing_uninitialized_variables
   final week;
 
   WeekWidget({super.key, required this.today, required this.week});
@@ -29,32 +32,17 @@ class WeekWidget extends StatelessWidget {
   }
 
   double parseToDouble(dynamic value) {
-    if (value is int)
+    if (value is int) {
       return value.toDouble();
-    else if (value is double)
+    } else if (value is double) {
       return value;
+    }
     throw Exception('Valor não é nem int nem double: $value');
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            // ignore: deprecated_member_use
-            color: colorScheme.surfaceBright.withOpacity(0.12),
-            blurRadius: 24,
-            spreadRadius: 6,
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(16.0),
+    return ContainerWidget(
       child: Column(
         children: [
           SizedBox(
