@@ -3,13 +3,19 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class WeekWidget extends StatelessWidget {
+class WeekPage extends StatelessWidget {
+  final String? cityName;
   // ignore: prefer_typing_uninitialized_variables
   final today;
   // ignore: prefer_typing_uninitialized_variables
   final week;
 
-  WeekWidget({super.key, required this.today, required this.week});
+  WeekPage({
+    super.key,
+    required this.cityName,
+    required this.today,
+    required this.week,
+  });
 
   final List<String> weekDays = [
     "Mon",
@@ -42,14 +48,21 @@ class WeekWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ContainerWidget(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 200,
-            child: LineChart(_buildChartDataTemperature(context)),
-          ),
-        ],
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      appBar: AppBarWidget(title: cityName ?? ''),
+      body: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            ContainerWidget(
+              child: SizedBox(
+                height: 200,
+                child: LineChart(_buildChartDataTemperature(context)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

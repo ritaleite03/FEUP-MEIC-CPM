@@ -1,34 +1,18 @@
-import 'dart:math';
-
 import 'package:app/pages/widgets/utils.dart';
 import 'package:flutter/material.dart';
 
-double _directionToAngle(String dir) {
-  switch (dir.toUpperCase()) {
-    case 'N':
-      return 0;
-    case 'NE':
-      return pi / 4;
-    case 'E':
-      return pi / 2;
-    case 'SE':
-      return 3 * pi / 4;
-    case 'S':
-      return pi;
-    case 'SW':
-      return 5 * pi / 4;
-    case 'W':
-      return 3 * pi / 2;
-    case 'NW':
-      return 7 * pi / 4;
-    default:
-      return 0;
-  }
-}
-
 class DayDetails extends StatefulWidget {
   final Map<String, dynamic> data;
-  const DayDetails({super.key, required this.data});
+  final List<String> labels;
+  final List<IconData> icons;
+  final List<Widget> widgets;
+  const DayDetails({
+    super.key,
+    required this.data,
+    required this.labels,
+    required this.icons,
+    required this.widgets,
+  });
 
   @override
   State<DayDetails> createState() => _DayDetailsState();
@@ -42,8 +26,7 @@ class _DayDetailsState extends State<DayDetails> {
     Widget buildWeatherButton({
       required IconData icon,
       required String label,
-      String? value,
-      Widget? valueWidget,
+      required Widget valueWidget,
     }) {
       return Expanded(
         child: ContainerWidget(
@@ -61,57 +44,32 @@ class _DayDetailsState extends State<DayDetails> {
                 ),
               ),
               const SizedBox(height: 2),
-              valueWidget ??
-                  Text(
-                    value ?? '',
-                    style: TextStyle(fontSize: 10, color: colorScheme.primary),
-                  ),
+              valueWidget,
             ],
           ),
         ),
       );
     }
 
-    final data = widget.data;
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         buildWeatherButton(
-          icon: Icons.thermostat,
-          label: "Temperature",
-          value:
-              "${data["temperature"]["realMax"]} F / ${data["temperature"]["realMin"]} F",
+          icon: widget.icons[0],
+          label: widget.labels[0],
+          valueWidget: widget.widgets[0],
         ),
         const SizedBox(width: 12),
         buildWeatherButton(
-          icon: Icons.water_drop,
-          label: "Precipitation",
-          value:
-              "${data["precipitation"]["dimen"]} - ${data["precipitation"]["proba"]}%",
+          icon: widget.icons[1],
+          label: widget.labels[1],
+          valueWidget: widget.widgets[1],
         ),
         const SizedBox(width: 12),
         buildWeatherButton(
-          icon: Icons.air,
-          label: "Wind",
-          valueWidget: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "${data["wind"]["spd"]} km/h",
-                style: TextStyle(fontSize: 10, color: colorScheme.primary),
-              ),
-              const SizedBox(width: 6),
-              Transform.rotate(
-                angle: _directionToAngle(data["wind"]["dir"]),
-                child: Icon(
-                  Icons.arrow_upward,
-                  size: 10,
-                  color: colorScheme.primary,
-                ),
-              ),
-            ],
-          ),
+          icon: widget.icons[2],
+          label: widget.labels[2],
+          valueWidget: widget.widgets[2],
         ),
       ],
     );
