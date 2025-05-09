@@ -2,6 +2,39 @@ const KoaRouter = require("koa-router");
 const router = new KoaRouter();
 const key = "SZQ66S6TCYALHMQWWXQ8QYVKG";
 
+const defaultDay = {
+    temperature: {
+        realNow: "13",
+        realMax: "17",
+        realMin: "10",
+        feelMax: "22",
+        feelMin: "12",
+    },
+    precipitation: {
+        dimen: "1",
+        proba: "20",
+    },
+    wind: {
+        spd: "2",
+        dir: parseWindDirection(180),
+    },
+    sun: {
+        rad: 140,
+        uvi: 3,
+    },
+    pressure: {
+        pres: 13,
+    },
+    humidity: {
+        hum: 14,
+    },
+    info: {
+        icon: "rain",
+        cond: "rain",
+        desc: "rain, rain, rain, rain, rain, rain, rain, rain, rain, rain, rain",
+    },
+};
+
 (async () => {
     try {
         router.post("/weather/city/all", getCityWeather);
@@ -32,8 +65,8 @@ async function getCityWeather(ctx) {
     try {
         const response = await fetch(url);
         const data = await response.json();
-        // console.log("Complete response from API Visual Crossing:");
-        // console.log(data);
+        console.log("Complete response from API Visual Crossing:");
+        console.log(data);
 
         const tomorrow = parseWeatherDay(data.days[8]);
         const today = parseWeatherDay(data.days[7]);
@@ -53,205 +86,16 @@ async function getCityWeather(ctx) {
         ctx.status = 200; // 400;
 
         ctx.body = {
-            tomorrow: {
-                temperature: {
-                    realNow: "13",
-                    realMax: "17",
-                    realMin: "10",
-                    feelMax: "22",
-                    feelMin: "12",
-                },
-                precipitation: {
-                    dimen: "1",
-                    proba: "20",
-                },
-                wind: {
-                    spd: "2",
-                    dir: parseWindDirection(180),
-                },
-                info: {
-                    icon: "rain",
-                    cond: "rain",
-                    desc: "rain, rain, rain, rain, rain, rain, rain, rain, rain, rain, rain",
-                },
-            },
-            today: {
-                temperature: {
-                    realNow: 12,
-                    realMax: 16,
-                    realMin: 10,
-                    feelMax: 22,
-                    feelMin: 12,
-                },
-                precipitation: {
-                    dimen: 1,
-                    proba: 20,
-                },
-                wind: {
-                    spd: 2,
-                    dir: parseWindDirection(180),
-                },
-                info: {
-                    icon: "rain",
-                    cond: "rain",
-                    desc: "rain",
-                },
-            },
+            tomorrow: defaultDay,
+            today: defaultDay,
             week: [
-                {
-                    temperature: {
-                        realNow: 12,
-                        realMax: 16,
-                        realMin: 10,
-                        feelMax: 22,
-                        feelMin: 12,
-                    },
-                    precipitation: {
-                        dimen: 1,
-                        proba: 20,
-                    },
-                    wind: {
-                        spd: 2,
-                        dir: parseWindDirection(180),
-                    },
-                    info: {
-                        icon: "rain",
-                        cond: "rain",
-                        desc: "rain",
-                    },
-                },
-                {
-                    temperature: {
-                        realNow: 12,
-                        realMax: 16,
-                        realMin: 10,
-                        feelMax: 22,
-                        feelMin: 12,
-                    },
-                    precipitation: {
-                        dimen: 1,
-                        proba: 20,
-                    },
-                    wind: {
-                        spd: 2,
-                        dir: parseWindDirection(180),
-                    },
-                    info: {
-                        icon: "rain",
-                        cond: "rain",
-                        desc: "rain",
-                    },
-                },
-                {
-                    temperature: {
-                        realNow: 12,
-                        realMax: 16,
-                        realMin: 10,
-                        feelMax: 22,
-                        feelMin: 12,
-                    },
-                    precipitation: {
-                        dimen: 1,
-                        proba: 20,
-                    },
-                    wind: {
-                        spd: 2,
-                        dir: parseWindDirection(180),
-                    },
-                    info: {
-                        icon: "rain",
-                        cond: "rain",
-                        desc: "rain, rain, rain, rain, rain, rain, rain, rain, rain, rain, rain",
-                    },
-                },
-                {
-                    temperature: {
-                        realNow: 12,
-                        realMax: 16,
-                        realMin: 10,
-                        feelMax: 22,
-                        feelMin: 12,
-                    },
-                    precipitation: {
-                        dimen: 1,
-                        proba: 20,
-                    },
-                    wind: {
-                        spd: 2,
-                        dir: parseWindDirection(180),
-                    },
-                    info: {
-                        icon: "rain",
-                        cond: "rain",
-                        desc: "rain",
-                    },
-                },
-                {
-                    temperature: {
-                        realNow: 12,
-                        realMax: 16,
-                        realMin: 10,
-                        feelMax: 22,
-                        feelMin: 12,
-                    },
-                    precipitation: {
-                        dimen: 1,
-                        proba: 20,
-                    },
-                    wind: {
-                        spd: 2,
-                        dir: parseWindDirection(180),
-                    },
-                    info: {
-                        icon: "rain",
-                        cond: "rain",
-                        desc: "rain",
-                    },
-                },
-                {
-                    temperature: {
-                        realNow: 12,
-                        realMax: 16,
-                        realMin: 10,
-                        feelMax: 22,
-                        feelMin: 12,
-                    },
-                    precipitation: {
-                        dimen: 1,
-                        proba: 20,
-                    },
-                    wind: {
-                        spd: 2,
-                        dir: parseWindDirection(180),
-                    },
-                    info: {
-                        icon: "rain",
-                        cond: "rain",
-                        desc: "rain",
-                    },
-                },
-                {
-                    temperature: {
-                        realNow: 12,
-                        realMax: 16,
-                        realMin: 10,
-                        feelMax: 22,
-                        feelMin: 12,
-                    },
-                    precipitation: {
-                        dimen: 1,
-                        proba: 20,
-                    },
-                    wind: {
-                        spd: 2,
-                        dir: parseWindDirection(180),
-                    },
-                    info: {
-                        icon: "rain",
-                        cond: "rain",
-                        desc: "rain",
-                    },
-                },
+                defaultDay, // 1
+                defaultDay, // 2
+                defaultDay, // 3
+                defaultDay, // 4
+                defaultDay, // 5
+                defaultDay, // 6
+                defaultDay, // 7
             ],
         };
 
@@ -288,6 +132,16 @@ function parseWeatherDay(day) {
         wind: {
             spd: day.windspeed,
             dir: parseWindDirection(day.winddir),
+        },
+        sun: {
+            rad: day.solarradiation,
+            uvi: day.uvindex,
+        },
+        pressure: {
+            pres: day.pressure,
+        },
+        humidity: {
+            hum: day.humidity,
         },
         info: {
             icon: day.icon,
