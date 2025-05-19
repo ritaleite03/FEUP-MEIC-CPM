@@ -1,12 +1,13 @@
 import 'package:app/pages/widgets/utils.dart';
 import 'package:flutter/material.dart';
 
-class DayDetails extends StatefulWidget {
+class WeatherDetails extends StatefulWidget {
   final Map<String, dynamic> data;
   final List<String> labels;
   final List<IconData> icons;
   final List<Widget> widgets;
-  const DayDetails({
+
+  const WeatherDetails({
     super.key,
     required this.data,
     required this.labels,
@@ -15,10 +16,10 @@ class DayDetails extends StatefulWidget {
   });
 
   @override
-  State<DayDetails> createState() => _DayDetailsState();
+  State<WeatherDetails> createState() => _WeatherDetailsState();
 }
 
-class _DayDetailsState extends State<DayDetails> {
+class _WeatherDetailsState extends State<WeatherDetails> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;

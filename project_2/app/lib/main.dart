@@ -1,10 +1,12 @@
 import 'package:app/database.dart';
 import 'package:app/pages/favorites.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // import 'logic/requests.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");  // Load the .env file
   WidgetsFlutterBinding.ensureInitialized();
   initDatabase();
   runApp(const MyApp());
@@ -18,7 +20,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.dark(
+          primary: Color(0xFF0C141F),
+          surface: Color(0xFF384560),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF2196F3), // consistent button color
+            foregroundColor: Colors.white, // text/icon color
+          ),
+        ),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );

@@ -69,7 +69,7 @@ class WeekPage extends StatelessWidget {
 
   LineChartData _buildChartDataTemperature(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
+    print(week);
     return LineChartData(
       minY: 0,
       maxY:

@@ -1,7 +1,9 @@
 import 'dart:convert';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
-String _ip = "192.168.68.136";
+String _ip = dotenv.env['H_API']!;
 String _port = "8000";
 
 Future<Map<String, dynamic>> getWeatherNow(String city) async {

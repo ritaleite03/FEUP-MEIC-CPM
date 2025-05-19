@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:math';
 
+import 'package:app/pages/widgets/weather/conditions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
@@ -8,33 +8,9 @@ import 'package:flutter/material.dart';
 
 import 'package:app/logic/requests.dart';
 import 'package:app/pages/widgets/utils.dart';
-import 'package:app/pages/widgets/weather/day_details.dart';
-import 'package:app/pages/widgets/weather/day_header.dart';
-import 'package:app/pages/widgets/weather/day_main.dart';
+import 'package:app/pages/widgets/weather/header.dart';
+import 'package:app/pages/widgets/weather/main_content.dart';
 import 'package:app/pages/week.dart';
-
-double _directionToAngle(String dir) {
-  switch (dir.toUpperCase()) {
-    case 'N':
-      return 0;
-    case 'NE':
-      return pi / 4;
-    case 'E':
-      return pi / 2;
-    case 'SE':
-      return 3 * pi / 4;
-    case 'S':
-      return pi;
-    case 'SW':
-      return 5 * pi / 4;
-    case 'W':
-      return 3 * pi / 2;
-    case 'NW':
-      return 7 * pi / 4;
-    default:
-      return 0;
-  }
-}
 
 class WeatherPage extends StatefulWidget {
   final String? cityName;
@@ -90,6 +66,7 @@ class _WeatherPageState extends State<WeatherPage> {
                   return _buildLoadingIndicator(colorScheme);
                 } else if (spriteSnapshot.hasData) {
                   return _buildWeatherContent(
+                    cityName: widget.cityName!,
                     colorScheme: colorScheme,
                     today: today,
                     tomorrow: tomorrow,
@@ -117,6 +94,7 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   Widget _buildWeatherContent({
+    required String cityName,
     required ColorScheme colorScheme,
     required Map<String, dynamic> today,
     required Map<String, dynamic> tomorrow,
@@ -127,104 +105,37 @@ class _WeatherPageState extends State<WeatherPage> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
-        child: Column(
-          children: [
-            DayHeader(
-              selected: selected,
-              onToggle: () {
-                setState(() {
-                  selected = selected == "today" ? "tomorrow" : "today";
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            DayMain(
-              data: selectedData,
-              icon: selectedData["info"]["icon"],
-              spriteSheet: spriteSheet,
-            ),
-            const SizedBox(height: 16),
-            DayDetails(
-              data: selectedData,
-              labels: ["Temperature", "Precipitation", "Wind"],
-              icons: [Icons.thermostat, Icons.water_drop, Icons.air],
-              widgets: [
-                Text(
-                  "${selectedData["temperature"]["realMax"]} F / ${selectedData["temperature"]["realMin"]} F",
-                  style: TextStyle(fontSize: 10, color: colorScheme.primary),
-                ),
-                Text(
-                  "${selectedData["precipitation"]["dimen"]} - ${selectedData["precipitation"]["proba"]}%",
-                  style: TextStyle(fontSize: 10, color: colorScheme.primary),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "${selectedData["wind"]["spd"]} km/h",
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: colorScheme.primary,
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              WeatherHeader(city: cityName, rainChance: selectedData["precipitation"]["proba"]),
+              SizedBox(height: 75),
+              WeatherMain(icon: selectedData["info"]["icon"], temperature: selectedData["temperature"]["realNow"], spriteSheet: spriteSheet),
+              SizedBox(height: 20),
+              WeatherConditions(data: selectedData),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity, // ocupa toda a largura possível
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => WeekPage(
+                              cityName: widget.cityName,
+                              today: today,
+                              week: week,
+                            ),
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    Transform.rotate(
-                      angle: _directionToAngle(selectedData["wind"]["dir"]),
-                      child: Icon(
-                        Icons.arrow_upward,
-                        size: 10,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                  ],
+                    );
+                  },
+                  child: const Text("See past week weather..."),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            DayDetails(
-              data: selectedData,
-              labels: ["Sun", "Pressure", "Humidity"],
-              icons: [Icons.sunny, Icons.compress, Icons.water],
-              widgets: [
-                Text(
-                  "${selectedData["sun"]["rad"]} - ${selectedData["sun"]["uvi"]} UIV",
-                  style: TextStyle(fontSize: 10, color: colorScheme.primary),
-                ),
-                Text(
-                  "${selectedData["pressure"]["pres"]}",
-                  style: TextStyle(fontSize: 10, color: colorScheme.primary),
-                ),
-                Text(
-                  "${selectedData["humidity"]["hum"]}%",
-                  style: TextStyle(fontSize: 10, color: colorScheme.primary),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity, // ocupa toda a largura possível
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => WeekPage(
-                            cityName: widget.cityName,
-                            today: today,
-                            week: week,
-                          ),
-                    ),
-                  );
-                },
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(Colors.amber),
-                  foregroundColor: WidgetStateProperty.all(colorScheme.primary),
-                ),
-                child: const Text("See past week weather..."),
               ),
-            ),
-          ],
+            ]
+          ),
         ),
       ),
     );
