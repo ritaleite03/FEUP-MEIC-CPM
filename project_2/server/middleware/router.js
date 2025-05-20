@@ -1,6 +1,7 @@
 const KoaRouter = require("koa-router");
 const router = new KoaRouter();
-const key = "SZQ66S6TCYALHMQWWXQ8QYVKG";
+// const key = "SZQ66S6TCYALHMQWWXQ8QYVKG";
+const key = "KAZXLW5DUH5XZB5KDTCYUU7KZ";
 
 const defaultDay = {
     temperature: {
@@ -38,10 +39,29 @@ const defaultDay = {
 (async () => {
     try {
         router.post("/weather/city/all", getCityWeather);
+        router.post("/weather/city/today_forecast", getTodayForecast)
     } catch (error) {}
 })();
 
 router.post("/weather/city/all", getCityWeather);
+
+async function getTodayForecast(ctx) {
+    console.log("Getting today's forecast");
+    const { city } = ctx.request.body;
+
+    const cityFormat = city + ",PT";
+
+    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityFormat}/today?unitGroup=metric&include=hours&key=${key}&contentType=json`
+
+    try {
+        const respose = await fetch(url);
+        const data = await respose.json();
+
+        console.log(data.days[7]);
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
 
 async function getCityWeather(ctx) {
     console.log("Getting city's weather now...");

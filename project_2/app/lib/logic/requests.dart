@@ -27,3 +27,25 @@ Future<Map<String, dynamic>> getWeatherNow(String city) async {
   }
   throw Exception('Failed to load weather data');
 }
+
+Future<Map<String, dynamic>> getTodayForecast(String city) async {
+  final String serverUrl = "http://$_ip:$_port/weather/city/today_forecast";
+
+  try {
+    final response = await http.post(
+      Uri.parse(serverUrl),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      },
+      body: {"city": city}
+    );
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      return decoded;
+    }
+  } catch (e) {
+    throw Exception('Failed to load weather data');
+  }
+  throw Exception('Failed to load weather data');
+}
