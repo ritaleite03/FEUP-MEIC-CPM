@@ -1,5 +1,6 @@
 import 'package:app/database.dart';
 import 'package:app/objects.dart';
+import 'package:app/pages/settings.dart';
 import 'package:app/pages/weather.dart';
 import 'package:app/pages/widgets/utils.dart';
 import 'package:flutter/material.dart';
@@ -178,6 +179,35 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   },
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashFactory: NoSplash.splashFactory,
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: const Color(0xFF1B2430),
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white70,
+          currentIndex: 0,
+          onTap: (int index) {
+            if (index == 1) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.star),
+              label: 'Favorites',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Settings',
             ),
           ],
         ),

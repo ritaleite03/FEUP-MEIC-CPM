@@ -1,6 +1,5 @@
 import 'package:app/database.dart';
 import 'package:app/pages/favorites.dart';
-import 'package:app/pages/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
