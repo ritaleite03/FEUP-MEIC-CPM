@@ -98,6 +98,7 @@ class _SettingsPageState extends State<SettingsPage> {
         backgroundColor: const Color(0xFF0C141F),
         title: const Text('Settings'),
         elevation: 0,
+        automaticallyImplyLeading: false
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
