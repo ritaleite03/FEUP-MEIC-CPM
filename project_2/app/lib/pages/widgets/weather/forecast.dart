@@ -7,12 +7,14 @@ class WeatherForecast extends StatefulWidget {
   final List<dynamic> hourlyForecast;
   final SpriteSheet spriteSheet;
   final bool isToday;
+  final int temperatureMetric;
 
   const WeatherForecast({
     super.key,
     required this.hourlyForecast,
     required this.spriteSheet,
-    required this.isToday
+    required this.isToday,
+    required this.temperatureMetric
   });
 
   @override
@@ -56,6 +58,7 @@ class _WeatherForecastState extends State<WeatherForecast> {
   @override
   Widget build(BuildContext context) {
     final String title = widget.isToday ? "Today's Forecast" : "Tomorrow's Forecast";
+    final temperatureSymbol = widget.temperatureMetric == 0 ? "º" : "F";
 
     return Card(
       color: const Color(0xFF1B2430),
@@ -103,7 +106,7 @@ class _WeatherForecastState extends State<WeatherForecast> {
                           child: SpriteWidget(sprite: sprite),
                         ),
                         Text(
-                          "$temp°C",
+                          "$temp $temperatureSymbol",
                           style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
