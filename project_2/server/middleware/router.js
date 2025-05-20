@@ -64,7 +64,7 @@ async function getCityWeather(ctx) {
     const datePastFormat = parseDate(datePast);
 
     // build url for request
-    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityFormat}/${datePastFormat}/${dateNextFormat}?key=${key}`;
+    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityFormat}/${datePastFormat}/${dateNextFormat}?key=${key}&unitGroup=metric`;
 
     // try {
     //     const response = await fetch(url);
