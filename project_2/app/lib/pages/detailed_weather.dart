@@ -8,12 +8,14 @@ class DetailedWeatherPage extends StatelessWidget {
   final String city;
   final Map<String, dynamic> data;
   final SpriteSheet spriteSheet;
+  final Map<String, int> metrics;
 
   const DetailedWeatherPage({
     super.key,
     required this.city,
     required this.data,
-    required this.spriteSheet
+    required this.spriteSheet,
+    required this.metrics
   });
 
   @override
@@ -33,10 +35,11 @@ class DetailedWeatherPage extends StatelessWidget {
           children: [
             WeatherHeader(city: city, rainChance: data["precipitation"]["proba"].toString()),
             SizedBox(height: 75),
-            WeatherMain(icon: data["info"]["icon"], temperature: data["temperature"]["realNow"].toString(), spriteSheet: spriteSheet),
+            WeatherMain(icon: data["info"]["icon"], temperature: data["temperature"]["realNow"].toString(), spriteSheet: spriteSheet, temperatureMetric: metrics["temperature"]!),
             const SizedBox(height: 32),
             AirConditionsDetails(
               data: data,
+              metrics: metrics
             ),
           ],
         ),

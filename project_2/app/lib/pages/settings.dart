@@ -14,7 +14,6 @@ class _SettingsPageState extends State<SettingsPage> {
   final List<bool> _tempSelection = [true, false];
   final List<bool> _windSelection = [true, false, false];
   final List<bool> _pressureSelection = [false, false, false, true];
-  final List<bool> _precipSelection = [true, false];
 
   void _saveSelection(String key, int index) async {
     final prefs = await SharedPreferences.getInstance();
@@ -49,7 +48,6 @@ class _SettingsPageState extends State<SettingsPage> {
     _loadSelection('temperature', _tempSelection);
     _loadSelection('wind', _windSelection);
     _loadSelection('pressure', _pressureSelection);
-    _loadSelection('precip', _precipSelection);
   }
 
   Future<String> _loadSavedCity() async {
@@ -177,19 +175,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         }
                       });
                       _saveSelection('pressure', index);
-                    },
-                  ),
-                  _buildSubSection(
-                    'Precipitation',
-                    ['Millimeters', 'Inches'],
-                    _precipSelection,
-                    (index) {
-                      setState(() {
-                        for (int i = 0; i < _precipSelection.length; i++) {
-                          _precipSelection[i] = i == index;
-                        }
-                      });
-                      _saveSelection('precip', index);
                     },
                   ),
                 ],

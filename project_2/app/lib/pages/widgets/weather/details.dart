@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 
 class AirConditionsDetails extends StatelessWidget {
   final Map<String, dynamic> data;
+  final Map<String, int> metrics;
 
   const AirConditionsDetails({
     super.key,
-    required this.data
+    required this.data,
+    required this.metrics
   });
 
   double _directionToAngle(String dir) {
@@ -41,6 +43,11 @@ class AirConditionsDetails extends StatelessWidget {
     );
 
     final textStyle = TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold);
+    final temperatureSymbol = metrics["temperature"] == 0 ? "º" : "F";
+    final windSymbol = metrics["wind"] == 0 ? "km/h" : (metrics["wind"] == 1 ? "m/s" : "Knots");
+    final pressureSymbol = metrics["pressure"] == 0 
+      ? "hPa" : (metrics["pressure"] == 1 ? "Inches" 
+        : (metrics["pressure"] == 2 ? "kPa" : "mm"));
 
     Widget buildBox(String label, String value, Icon icon, {String? windDirection}) {
       return Container(
@@ -98,12 +105,12 @@ class AirConditionsDetails extends StatelessWidget {
       crossAxisSpacing: 15,
       childAspectRatio: 1.8,
       children: [
-        buildBox("Min-Max Temp", "${data["temperature"]["realMin"].toString()}º - ${data["temperature"]["realMax"].toString()}º", const Icon(Icons.thermostat)),
-        buildBox("Min-Max Feel", "${data["temperature"]["feelMin"].toString()}º - ${data["temperature"]["feelMax"].toString()}º", const Icon(Icons.device_thermostat)),
+        buildBox("Min-Max Temp", "${data["temperature"]["realMin"].toString()} $temperatureSymbol - ${data["temperature"]["realMax"].toString()} $temperatureSymbol", const Icon(Icons.thermostat)),
+        buildBox("Min-Max Feel", "${data["temperature"]["feelMin"].toString()} $temperatureSymbol - ${data["temperature"]["feelMax"].toString()} $temperatureSymbol", const Icon(Icons.device_thermostat)),
         buildBox("UV Index", data["sun"]["uvi"].toString(), const Icon(Icons.wb_sunny)),
-        buildBox("Wind", "${data["wind"]["spd"].toString()} km/h", const Icon(Icons.air), windDirection: data["wind"]["dir"]?.toString()),
+        buildBox("Wind", "${data["wind"]["spd"].toString()} $windSymbol", const Icon(Icons.air), windDirection: data["wind"]["dir"]?.toString()),
         buildBox("Humidity", "${data["humidity"]["hum"].toString()}%", const Icon(Icons.water_drop)),
-        buildBox("Pressure", "${data["pressure"]["pres"].toString()}%", const Icon(Icons.speed)),
+        buildBox("Pressure", "${data["pressure"]["pres"].toString()} $pressureSymbol", const Icon(Icons.speed)),
       ],
     );
   }

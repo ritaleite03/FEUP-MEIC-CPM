@@ -7,18 +7,21 @@ class WeatherMain extends StatelessWidget {
   final String icon;
   final String temperature;
   final SpriteSheet spriteSheet;
+  final int temperatureMetric;
 
   const WeatherMain({
     super.key,
     required this.icon,
     required this.temperature,
-    required this.spriteSheet
+    required this.spriteSheet,
+    required this.temperatureMetric
   });
 
   @override
   Widget build(BuildContext context) {
     final pos = iconMap[icon] ?? {"row": 0, "column": 0};
     final sprite = spriteSheet.getSprite(pos["row"]!, pos["column"]!);
+    final temperatureSymbol = temperatureMetric == 0 ? "º" : "F";
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -31,7 +34,7 @@ class WeatherMain extends StatelessWidget {
           ),
         ),
         Text(
-          "$temperatureº",
+          "$temperature $temperatureSymbol",
           style: const TextStyle(
             color: Colors.white,
             fontSize: 60,

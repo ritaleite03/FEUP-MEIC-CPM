@@ -80,7 +80,7 @@ class _WeatherForecastState extends State<WeatherForecast> {
                 itemBuilder: (context, index) {
                   final hourData = widget.hourlyForecast[index];
                   final time = hourData["datetime"].substring(0, 5);
-                  final temp = hourData["temp"].round();
+                  final temp = hourData["temp"];
                   final iconIndex = hourData["icon"];
                   final pos = iconMap[iconIndex] ?? {"row": 0, "column": 0};
                   final sprite =

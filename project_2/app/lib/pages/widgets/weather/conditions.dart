@@ -7,11 +7,13 @@ class WeatherConditions extends StatelessWidget {
 
   final Map<String, dynamic> data;
   final SpriteSheet spriteSheet;
+  final Map<String, int> metrics;
 
   const WeatherConditions({
     super.key,
     required this.data,
-    required this.spriteSheet
+    required this.spriteSheet,
+    required this.metrics
   });
 
   double _directionToAngle(String dir) {
@@ -40,6 +42,10 @@ class WeatherConditions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    final temperatureSymbol = metrics["temperature"] == 0 ? "º" : "F";
+    final windSymbol = metrics["wind"] == 0 ? "km/h" : (metrics["wind"] == 1 ? "m/s" : "Knots");
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -68,12 +74,13 @@ class WeatherConditions extends StatelessWidget {
                         city: "Porto",
                         data: data,
                         spriteSheet: spriteSheet,
+                        metrics: metrics,
                       ),
                     ),
                   );
                 }, 
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -96,14 +103,14 @@ class WeatherConditions extends StatelessWidget {
               AirConditionItem(
                 icon: Icons.thermostat,
                 label: 'Real Feel',
-                value: "${data["temperature"]["realNow"]}º"
+                value: "${data["temperature"]["realNow"]} $temperatureSymbol"
               ),
               Padding(
-                padding: EdgeInsets.only(left: 40),
+                padding: EdgeInsets.only(left: 35),
                 child: AirConditionItem(
                   icon: Icons.air,
                   label: 'Wind',
-                  value: "${data["wind"]["spd"]} km/h",
+                  value: "${data["wind"]["spd"]} $windSymbol",
                   trailing: Transform.rotate(
                     angle: _directionToAngle(data["wind"]["dir"]),
                     child: const Icon(
@@ -120,7 +127,7 @@ class WeatherConditions extends StatelessWidget {
                 value: "${data["precipitation"]["proba"]}%",
               ),
               Padding(
-                padding: EdgeInsets.only(left: 40),
+                padding: EdgeInsets.only(left: 35),
                 child: AirConditionItem(
                   icon: Icons.wb_sunny,
                   label: 'UV Index',

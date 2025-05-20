@@ -4,7 +4,11 @@ class WeatherHeader extends StatelessWidget {
   final String city;
   final String rainChance;
 
-  const WeatherHeader({required this.city, required this.rainChance, super.key});
+  const WeatherHeader({
+    required this.city, 
+    required this.rainChance,
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
