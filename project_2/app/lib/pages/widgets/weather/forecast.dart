@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 class WeatherForecast extends StatefulWidget {
   final List<dynamic> hourlyForecast;
   final SpriteSheet spriteSheet;
+  final bool isToday;
 
   const WeatherForecast({
     super.key,
     required this.hourlyForecast,
     required this.spriteSheet,
+    required this.isToday
   });
 
   @override
@@ -24,24 +26,28 @@ class _WeatherForecastState extends State<WeatherForecast> {
   void initState() {
     super.initState();
     // Delay to allow layout to build before scrolling
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToCurrentHour());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToRelevantHour());
   }
 
-  void _scrollToCurrentHour() {
-    final now = DateTime.now();
-    final currentHour = now.hour;
-
-    final index = widget.hourlyForecast.indexWhere((hourData) {
-      final hour = int.parse(hourData["datetime"].substring(0, 2));
-      return hour >= currentHour;
-    });
+  void _scrollToRelevantHour() {
+    final index = widget.isToday 
+      ? widget.hourlyForecast.indexWhere((hourData) {
+          final hour = int.parse(hourData["datetime"].substring(0, 2));
+          final now = DateTime.now().hour;
+          return hour >= now;
+        })
+      : widget.hourlyForecast.indexWhere((hourData) {
+          final hour = int.parse(hourData["datetime"].substring(0, 2));
+          return hour == 8;
+        });
 
     if (index != -1) {
-      const itemWidth = 80.0 + 16.0;
+      const itemWidth = 96.0; // adjust to your card+separator width
+      final offset = index * itemWidth;
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.microtask(() {
         if (_scrollController.hasClients) {
-          _scrollController.jumpTo(index * itemWidth);
+          _scrollController.jumpTo(offset);
         }
       });
     }
@@ -49,6 +55,8 @@ class _WeatherForecastState extends State<WeatherForecast> {
 
   @override
   Widget build(BuildContext context) {
+    final String title = widget.isToday ? "Today's Forecast" : "Tomorrow's Forecast";
+
     return Card(
       color: const Color(0xFF1B2430),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -57,8 +65,8 @@ class _WeatherForecastState extends State<WeatherForecast> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Today's Forecast",
+            Text(
+              title,
               style: TextStyle(
                   color: Colors.grey, fontWeight: FontWeight.bold),
             ),

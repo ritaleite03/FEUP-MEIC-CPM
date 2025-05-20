@@ -29,7 +29,7 @@ Future<Map<String, dynamic>> getWeatherNow(String city) async {
 }
 
 Future<Map<String, dynamic>> getTodayForecast(String city) async {
-  final String serverUrl = "http://$_ip:$_port/weather/city/today_forecast";
+  final String serverUrl = "http://$_ip:$_port/weather/city/today_tomorrow_forecast";
 
   try {
     final response = await http.post(

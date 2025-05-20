@@ -27,7 +27,7 @@ class WeatherPage extends StatefulWidget {
 
 class _WeatherPageState extends State<WeatherPage> {
   late Future<Map<String, dynamic>> data;
-  late Future<Map<String, dynamic>> todayForecastData;
+  late Future<Map<String, dynamic>> todayTomorrowForecastData;
   late Future<SpriteSheet> spriteSheetFuture;
   String selected = "today";
 
@@ -35,7 +35,7 @@ class _WeatherPageState extends State<WeatherPage> {
   void initState() {
     super.initState();
     data = getWeatherNow(widget.cityName ?? 'Unknown');
-    todayForecastData = getTodayForecast(widget.cityName ?? "Unknown");
+    todayTomorrowForecastData = getTodayForecast(widget.cityName ?? "Unknown");
     spriteSheetFuture = loadSpriteSheet();
     _saveCurrentCity();
   }
@@ -78,7 +78,7 @@ class _WeatherPageState extends State<WeatherPage> {
                   return _buildLoadingIndicator(colorScheme);
                 } else if (spriteSnapshot.hasData) {
                   return FutureBuilder<Map<String, dynamic>>(
-                    future: todayForecastData,
+                    future: todayTomorrowForecastData,
                     builder: (context, forecastSnapshot) {
                       if (forecastSnapshot.connectionState == ConnectionState.waiting) {
                         return _buildLoadingIndicator(colorScheme);
@@ -91,7 +91,8 @@ class _WeatherPageState extends State<WeatherPage> {
                           week: week,
                           selectedData: selectedData,
                           spriteSheet: spriteSnapshot.data!,
-                          todayForecastData: forecastSnapshot.data!["day"],
+                          todayForecastData: forecastSnapshot.data!["today"],
+                          tomorrowForecastData: forecastSnapshot.data!["tomorrow"]
                         );
                       } else {
                         return const Center(child: Text("No forecast data available"));
@@ -164,7 +165,8 @@ class _WeatherPageState extends State<WeatherPage> {
     required List<dynamic> week,
     required Map<String, dynamic> selectedData,
     required SpriteSheet spriteSheet,
-    required Map<String, dynamic> todayForecastData
+    required List<dynamic> todayForecastData,
+    required List<dynamic> tomorrowForecastData
   }) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -177,10 +179,12 @@ class _WeatherPageState extends State<WeatherPage> {
               SizedBox(height: 75),
               WeatherMain(icon: selectedData["info"]["icon"], temperature: selectedData["temperature"]["realNow"].toString(), spriteSheet: spriteSheet),
               SizedBox(height: 20),
-              WeatherForecast(hourlyForecast: todayForecastData["day"], spriteSheet: spriteSheet),
+              WeatherForecast(hourlyForecast: todayForecastData, spriteSheet: spriteSheet, isToday: true),
+              SizedBox(height: 20),
+              WeatherForecast(hourlyForecast: tomorrowForecastData, spriteSheet: spriteSheet, isToday: false),
               SizedBox(height: 20),
               WeatherConditions(data: today, spriteSheet: spriteSheet),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               SizedBox(
                 width: double.infinity, // ocupa toda a largura possível
                 child: ElevatedButton(

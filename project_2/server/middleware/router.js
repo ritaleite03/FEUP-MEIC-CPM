@@ -9,32 +9,37 @@ const key = "Q5XXURLMXAKLA3EFKEQ9SAVS8";
 (async () => {
     try {
         router.post("/weather/city/all", getCityWeather);
-        router.post("/weather/city/today_forecast", getTodayForecast)
+        router.post("/weather/city/today_tomorrow_forecast", getTodayAndTomorrowForecast)
     } catch (error) {}
 })();
 
 router.post("/weather/city/all", getCityWeather);
 
-async function getTodayForecast(ctx) {
+async function getTodayAndTomorrowForecast(ctx) {
     console.log("Getting today's forecast");
     
     const { city } = ctx.request.body;
     const cityFormat = city.trim() + ",PT";
 
-    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityFormat}/today?key=${key}&unitGroup=metric&include=hours`;
+    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityFormat}/today/tomorrow?key=${key}&unitGroup=metric&include=hours`;
 
     try {
         const respose = await fetch(url);
         const data = await respose.json();
-        const day = data.days[0].hours.map(hour => ({
+        console.log(data);
+        const today = data.days[0].hours.map(hour => ({
                 "datetime": hour.datetime, 
                 "temp": hour.temp,
                 "icon": hour.icon
         }));
-        const formattedDay = {"day": day};
-        console.log("day aqui", formattedDay);
+        const tomorrow = data.days[1].hours.map(hour => ({
+                "datetime": hour.datetime, 
+                "temp": hour.temp,
+                "icon": hour.icon
+        }));
+        console.log("day aqui", today);
         ctx.status = 200;
-        ctx.body = { day: formattedDay };
+        ctx.body = { today: today, tomorrow: tomorrow };
     } catch (error) {
         ctx.status = 200;
         ctx.body = { day: defaultTodayForecast };
