@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app/pages/favorites.dart';
 import 'package:app/pages/settings.dart';
 import 'package:app/pages/widgets/weather/conditions.dart';
+import 'package:app/pages/widgets/weather/forecast.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
@@ -76,14 +77,26 @@ class _WeatherPageState extends State<WeatherPage> {
                 if (spriteSnapshot.connectionState == ConnectionState.waiting) {
                   return _buildLoadingIndicator(colorScheme);
                 } else if (spriteSnapshot.hasData) {
-                  return _buildWeatherContent(
-                    cityName: widget.cityName!,
-                    colorScheme: colorScheme,
-                    today: today,
-                    tomorrow: tomorrow,
-                    week: week,
-                    selectedData: selectedData,
-                    spriteSheet: spriteSnapshot.data!,
+                  return FutureBuilder<Map<String, dynamic>>(
+                    future: todayForecastData,
+                    builder: (context, forecastSnapshot) {
+                      if (forecastSnapshot.connectionState == ConnectionState.waiting) {
+                        return _buildLoadingIndicator(colorScheme);
+                      } else if (forecastSnapshot.hasData) {
+                        return _buildWeatherContent(
+                          cityName: widget.cityName!,
+                          colorScheme: colorScheme,
+                          today: today,
+                          tomorrow: tomorrow,
+                          week: week,
+                          selectedData: selectedData,
+                          spriteSheet: spriteSnapshot.data!,
+                          todayForecastData: forecastSnapshot.data!["day"],
+                        );
+                      } else {
+                        return const Center(child: Text("No forecast data available"));
+                      }
+                    },
                   );
                 } else {
                   return const Center(child: Text("Error loading icons"));
@@ -132,7 +145,7 @@ class _WeatherPageState extends State<WeatherPage> {
               label: 'Settings',
             ),
           ],
-        )
+        ),
       ),
     );
   }
@@ -151,6 +164,7 @@ class _WeatherPageState extends State<WeatherPage> {
     required List<dynamic> week,
     required Map<String, dynamic> selectedData,
     required SpriteSheet spriteSheet,
+    required Map<String, dynamic> todayForecastData
   }) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -163,8 +177,10 @@ class _WeatherPageState extends State<WeatherPage> {
               SizedBox(height: 75),
               WeatherMain(icon: selectedData["info"]["icon"], temperature: selectedData["temperature"]["realNow"].toString(), spriteSheet: spriteSheet),
               SizedBox(height: 20),
+              WeatherForecast(hourlyForecast: todayForecastData["day"], spriteSheet: spriteSheet),
+              SizedBox(height: 20),
               WeatherConditions(data: today, spriteSheet: spriteSheet),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity, // ocupa toda a largura possível
                 child: ElevatedButton(

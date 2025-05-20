@@ -141,7 +141,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSubSection(
-                    'TEMPERATURE',
+                    'Temperature',
                     ['Celsius', 'Fahrenheit'],
                     _tempSelection,
                     (index) {
@@ -154,7 +154,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     },
                   ),
                   _buildSubSection(
-                    'WIND SPEED',
+                    'Wind Speed',
                     ['km/h', 'm/s', 'Knots'],
                     _windSelection,
                     (index) {
@@ -167,7 +167,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     },
                   ),
                   _buildSubSection(
-                    'PRESSURE',
+                    'Pressure',
                     ['hPa', 'Inches', 'kPa', 'mm'],
                     _pressureSelection,
                     (index) {
@@ -180,7 +180,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     },
                   ),
                   _buildSubSection(
-                    'PRECIPITATION',
+                    'Precipitation',
                     ['Millimeters', 'Inches'],
                     _precipSelection,
                     (index) {

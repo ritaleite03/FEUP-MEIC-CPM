@@ -42,8 +42,10 @@ class WeekPage extends StatelessWidget {
       return value.toDouble();
     } else if (value is double) {
       return value;
+    } else if (value is String) {
+      return double.parse(value);
     }
-    throw Exception('Valor não é nem int nem double: $value');
+    throw Exception('Valor não é nem int nem double: $value - ${value.runtimeType}');
   }
 
   @override
@@ -69,7 +71,6 @@ class WeekPage extends StatelessWidget {
 
   LineChartData _buildChartDataTemperature(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    print(week);
     return LineChartData(
       minY: 0,
       maxY:

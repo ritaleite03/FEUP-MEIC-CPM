@@ -1,40 +1,10 @@
 const KoaRouter = require("koa-router");
+const { defaultDay, defaultTodayForecast } = require("./default_responses");
 const router = new KoaRouter();
 // const key = "SZQ66S6TCYALHMQWWXQ8QYVKG";
-const key = "KAZXLW5DUH5XZB5KDTCYUU7KZ";
-
-const defaultDay = {
-    temperature: {
-        realNow: "13",
-        realMax: "17",
-        realMin: "10",
-        feelMax: "22",
-        feelMin: "12",
-    },
-    precipitation: {
-        dimen: "1",
-        proba: "20",
-    },
-    wind: {
-        spd: "2",
-        dir: parseWindDirection(180),
-    },
-    sun: {
-        rad: 140,
-        uvi: 3,
-    },
-    pressure: {
-        pres: 13,
-    },
-    humidity: {
-        hum: 14,
-    },
-    info: {
-        icon: "rain",
-        cond: "rain",
-        desc: "rain, rain, rain, rain, rain, rain, rain, rain, rain, rain, rain",
-    },
-};
+// const key = "KAZXLW5DUH5XZB5KDTCYUU7KZ";
+// const key = "U2CH8GJDYSNXT9A3ZWU27VPKB";
+const key = "Q5XXURLMXAKLA3EFKEQ9SAVS8";
 
 (async () => {
     try {
@@ -47,18 +17,27 @@ router.post("/weather/city/all", getCityWeather);
 
 async function getTodayForecast(ctx) {
     console.log("Getting today's forecast");
+    
     const { city } = ctx.request.body;
+    const cityFormat = city.trim() + ",PT";
 
-    const cityFormat = city + ",PT";
-
-    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityFormat}/today?unitGroup=metric&include=hours&key=${key}&contentType=json`
+    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityFormat}/today?key=${key}&unitGroup=metric&include=hours`;
 
     try {
         const respose = await fetch(url);
         const data = await respose.json();
-
-        console.log(data.days[7]);
+        const day = data.days[0].hours.map(hour => ({
+                "datetime": hour.datetime, 
+                "temp": hour.temp,
+                "icon": hour.icon
+        }));
+        const formattedDay = {"day": day};
+        console.log("day aqui", formattedDay);
+        ctx.status = 200;
+        ctx.body = { day: formattedDay };
     } catch (error) {
+        ctx.status = 200;
+        ctx.body = { day: defaultTodayForecast };
         console.error("Error:", error);
     }
 }
@@ -82,27 +61,27 @@ async function getCityWeather(ctx) {
     // build url for request
     const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityFormat}/${datePastFormat}/${dateNextFormat}?key=${key}`;
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log("Complete response from API Visual Crossing:");
-        console.log(data);
+    // try {
+    //     const response = await fetch(url);
+    //     const data = await response.json();
+    //     console.log("Complete response from API Visual Crossing:");
+    //     // console.log(data);
 
-        const tomorrow = parseWeatherDay(data.days[8]);
-        const today = parseWeatherDay(data.days[7]);
-        const week = [
-            parseWeatherDay(data.days[0]),
-            parseWeatherDay(data.days[1]),
-            parseWeatherDay(data.days[2]),
-            parseWeatherDay(data.days[3]),
-            parseWeatherDay(data.days[4]),
-            parseWeatherDay(data.days[5]),
-            parseWeatherDay(data.days[6]),
-        ];
-        ctx.status = 200;
-        ctx.body = { tomorrow: tomorrow, today: today, week: week };
-    } catch (error) {
-        console.error("Error:", error);
+    //     const tomorrow = parseWeatherDay(data.days[8]);
+    //     const today = parseWeatherDay(data.days[7]);
+    //     const week = [
+    //         parseWeatherDay(data.days[0]),
+    //         parseWeatherDay(data.days[1]),
+    //         parseWeatherDay(data.days[2]),
+    //         parseWeatherDay(data.days[3]),
+    //         parseWeatherDay(data.days[4]),
+    //         parseWeatherDay(data.days[5]),
+    //         parseWeatherDay(data.days[6]),
+    //     ];
+    //     ctx.status = 200;
+    //     ctx.body = { tomorrow: tomorrow, today: today, week: week };
+    // } catch (error) {
+    //     console.error("Error:", error);
         ctx.status = 200; // 400;
 
         ctx.body = {
@@ -123,7 +102,7 @@ async function getCityWeather(ctx) {
         //     error: "Failed in getting city weather!",
         //     details: error.message,
         // };
-    }
+    // }
 }
 
 function parseDate(date) {
