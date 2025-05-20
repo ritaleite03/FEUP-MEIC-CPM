@@ -105,7 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Padding(
-              padding: EdgeInsets.only(left: 8.0), // tweak this value to your taste
+              padding: EdgeInsets.only(left: 8.0),
               child: Text(
                 'Units',
                 style: TextStyle(

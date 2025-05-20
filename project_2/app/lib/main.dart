@@ -3,10 +3,8 @@ import 'package:app/pages/favorites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-// import 'logic/requests.dart';
-
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");  // Load the .env file
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   initDatabase();
   runApp(const MyApp());
@@ -26,8 +24,8 @@ class MyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF2196F3), // consistent button color
-            foregroundColor: Colors.white, // text/icon color
+            backgroundColor: const Color(0xFF2196F3),
+            foregroundColor: Colors.white,
           ),
         ),
       ),

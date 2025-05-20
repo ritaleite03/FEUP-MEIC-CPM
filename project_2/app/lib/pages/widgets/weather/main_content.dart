@@ -30,7 +30,6 @@ class WeatherMain extends StatelessWidget {
             child: SpriteWidget(sprite: sprite),
           ),
         ),
-        // SpriteWidget(sprite: sprite),
         Text(
           "$temperatureº",
           style: const TextStyle(
