@@ -1,5 +1,6 @@
 import 'package:app/database.dart';
 import 'package:app/pages/favorites.dart';
+import 'package:app/pages/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -65,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'ForeCasts',
               style: TextStyle(
-                color: Colors.amber,
+                color: Color(0xFF2196F3),
                 fontWeight: FontWeight.normal,
                 fontSize: 30,
               ),
@@ -81,9 +82,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
               style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(Colors.amber),
+                backgroundColor: WidgetStateProperty.all(const Color(0xFF2196F3)),
                 foregroundColor: WidgetStateProperty.all(
-                  Theme.of(context).colorScheme.primary,
+                  Colors.white
                 ),
               ),
               child: Text("Get Start"),

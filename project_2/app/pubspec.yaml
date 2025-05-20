@@ -43,6 +43,8 @@ dependencies:
             url: https://github.com/imaNNeoFighT/fl_chart.git
             ref: main
     flutter_dotenv: ^5.1.0
+    shared_preferences: ^2.2.2
+
 
 dev_dependencies:
     flutter_test:

@@ -109,7 +109,7 @@ class _WeatherPageState extends State<WeatherPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              WeatherHeader(city: cityName, rainChance: selectedData["precipitation"]["proba"]),
+              WeatherHeader(city: cityName, rainChance: selectedData["precipitation"]["proba"].toString()),
               SizedBox(height: 75),
               WeatherMain(icon: selectedData["info"]["icon"], temperature: selectedData["temperature"]["realNow"], spriteSheet: spriteSheet),
               SizedBox(height: 20),

@@ -146,7 +146,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                     icon: Icon(
                                       Icons.arrow_forward_ios,
                                       color:
-                                          Theme.of(context).colorScheme.primary,
+                                          Theme.of(context).colorScheme.surface,
                                     ),
                                     onPressed: () {
                                       Navigator.push(
@@ -161,7 +161,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                     },
                                     style: ButtonStyle(
                                       backgroundColor: WidgetStateProperty.all(
-                                        Colors.amber,
+                                        const Color(0xFF2196F3),
                                       ),
                                       shape: WidgetStateProperty.all(
                                         const CircleBorder(),
