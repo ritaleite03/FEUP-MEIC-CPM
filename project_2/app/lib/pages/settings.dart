@@ -1,4 +1,5 @@
 import 'package:app/pages/favorites.dart';
+import 'package:app/pages/weather.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,13 +25,23 @@ class _SettingsPageState extends State<SettingsPage> {
   void _loadSelection(String key, List<bool> selection) async {
     final prefs = await SharedPreferences.getInstance();
     int index = prefs.getInt(key) ?? 0;
-    print(key);
-    print(index);
     setState(() {
       for (int i = 0; i < selection.length; i++) {
         selection[i] = i == index;
       }
     });
+  }
+
+  void navigateToWeatherPage(BuildContext context) async {
+    String city = await _loadSavedCity();
+    if (!mounted) return;
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WeatherPage(cityName: city),
+      ),
+    );
   }
 
   @override
@@ -41,6 +52,11 @@ class _SettingsPageState extends State<SettingsPage> {
     _loadSelection('pressure', _pressureSelection);
     _loadSelection('precip', _precipSelection);
     _loadSelection('distance', _distanceSelection);
+  }
+
+  Future<String> _loadSavedCity() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('current_city') ?? "Lisbon";
   }
 
   Widget _buildSubSection(String title, List<String> labels, List<bool> selections, Function(int) onPressed) {
@@ -206,7 +222,7 @@ class _SettingsPageState extends State<SettingsPage> {
           backgroundColor: const Color(0xFF1B2430),
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.white70,
-          currentIndex: 1,
+          currentIndex: 2,
           onTap: (int index) {
             if (index == 0) {
               Navigator.pushReplacement(
@@ -214,11 +230,18 @@ class _SettingsPageState extends State<SettingsPage> {
                 MaterialPageRoute(builder: (context) => const FavoritesPage()),
               );
             }
+            else if (index == 1) {
+              navigateToWeatherPage(context);
+            }
           },
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.star),
               label: 'Favorites',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wb_sunny),
+              label: 'Weather',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings),

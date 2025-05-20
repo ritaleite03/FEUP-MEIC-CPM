@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:app/pages/favorites.dart';
+import 'package:app/pages/settings.dart';
 import 'package:app/pages/widgets/weather/conditions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
@@ -11,6 +13,7 @@ import 'package:app/pages/widgets/utils.dart';
 import 'package:app/pages/widgets/weather/header.dart';
 import 'package:app/pages/widgets/weather/main_content.dart';
 import 'package:app/pages/week.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WeatherPage extends StatefulWidget {
   final String? cityName;
@@ -31,6 +34,12 @@ class _WeatherPageState extends State<WeatherPage> {
     super.initState();
     data = getWeatherNow(widget.cityName ?? 'Unknown');
     spriteSheetFuture = loadSpriteSheet();
+    _saveCurrentCity();
+  }
+
+  void _saveCurrentCity() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('current_city', widget.cityName ?? "");
   }
 
   Future<SpriteSheet> loadSpriteSheet() async {
@@ -83,6 +92,45 @@ class _WeatherPageState extends State<WeatherPage> {
             return const Center(child: Text("No weather data available"));
           }
         },
+      ),
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: const Color(0xFF1B2430),
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white70,
+          currentIndex: 1,
+          onTap: (int index) {
+            if (index == 0) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const FavoritesPage()),
+              );
+            } else if (index == 2) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.star),
+              label: 'Favorites',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wb_sunny),
+              label: 'Weather',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
+          ],
+        )
       ),
     );
   }

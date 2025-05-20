@@ -4,6 +4,7 @@ import 'package:app/pages/settings.dart';
 import 'package:app/pages/weather.dart';
 import 'package:app/pages/widgets/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Icon favoritesIcon(City city) {
   return city.isFavorite == 1
@@ -84,6 +85,24 @@ class _FavoritesPageState extends State<FavoritesPage> {
     loadCities();
   }
 
+
+  void navigateToWeatherPage(BuildContext context) async {
+    String city = await _loadSavedCity();
+    if (!mounted) return;
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WeatherPage(cityName: city),
+      ),
+    );
+  }
+
+  Future<String> _loadSavedCity() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('current_city') ?? "Lisbon";
+  }
+
   Future<void> loadCities() async {
     final loadedCities = await getCities();
     setState(() {
@@ -117,6 +136,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       child: Card(
                         child: Column(
                           children: [
+                            SizedBox(height: 20),
                             Image.asset(
                               item.path,
                               height: 120,
@@ -194,6 +214,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
           currentIndex: 0,
           onTap: (int index) {
             if (index == 1) {
+              navigateToWeatherPage(context);
+            } else if (index == 2) {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const SettingsPage()),
@@ -204,6 +226,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
             BottomNavigationBarItem(
               icon: Icon(Icons.star),
               label: 'Favorites',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.wb_sunny),
+              label: 'Weather',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings),
