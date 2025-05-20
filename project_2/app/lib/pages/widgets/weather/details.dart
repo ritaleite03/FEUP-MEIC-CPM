@@ -1,77 +1,109 @@
-import 'package:app/pages/widgets/utils.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-class WeatherDetails extends StatefulWidget {
+class AirConditionsDetails extends StatelessWidget {
   final Map<String, dynamic> data;
-  final List<String> labels;
-  final List<IconData> icons;
-  final List<Widget> widgets;
 
-  const WeatherDetails({
+  const AirConditionsDetails({
     super.key,
-    required this.data,
-    required this.labels,
-    required this.icons,
-    required this.widgets,
+    required this.data
   });
 
-  @override
-  State<WeatherDetails> createState() => _WeatherDetailsState();
-}
+  double _directionToAngle(String dir) {
+    switch (dir.toUpperCase()) {
+      case 'N':
+        return 0;
+      case 'NE':
+        return pi / 4;
+      case 'E':
+        return pi / 2;
+      case 'SE':
+        return 3 * pi / 4;
+      case 'S':
+        return pi;
+      case 'SW':
+        return 5 * pi / 4;
+      case 'W':
+        return 3 * pi / 2;
+      case 'NW':
+        return 7 * pi / 4;
+      default:
+        return 0;
+    }
+  }
 
-class _WeatherDetailsState extends State<WeatherDetails> {
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final boxDecoration = BoxDecoration(
+      color: const Color(0xFF1B2430),
+      borderRadius: BorderRadius.circular(12),
+    );
 
-    Widget buildWeatherButton({
-      required IconData icon,
-      required String label,
-      required Widget valueWidget,
-    }) {
-      return Expanded(
-        child: ContainerWidget(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 28, color: colorScheme.primary),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                  color: colorScheme.primary,
+    final textStyle = TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold);
+
+    Widget buildBox(String label, String value, Icon icon, {String? windDirection}) {
+      return Container(
+        decoration: boxDecoration,
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                icon,
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    label,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
+              ],
+            ),
+            const Spacer(),
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    value,
+                    style: textStyle,
+                  ),
+                  if (windDirection != null) ...[
+                    const SizedBox(width: 6),
+                    Transform.rotate(
+                      angle: _directionToAngle(windDirection),
+                      child: const Icon(Icons.arrow_upward, size: 16),
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(height: 2),
-              valueWidget,
-            ],
-          ),
+            ),
+            const Spacer(),
+          ],
         ),
       );
     }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      mainAxisSpacing: 15,
+      crossAxisSpacing: 15,
+      childAspectRatio: 1.8,
       children: [
-        buildWeatherButton(
-          icon: widget.icons[0],
-          label: widget.labels[0],
-          valueWidget: widget.widgets[0],
-        ),
-        const SizedBox(width: 12),
-        buildWeatherButton(
-          icon: widget.icons[1],
-          label: widget.labels[1],
-          valueWidget: widget.widgets[1],
-        ),
-        const SizedBox(width: 12),
-        buildWeatherButton(
-          icon: widget.icons[2],
-          label: widget.labels[2],
-          valueWidget: widget.widgets[2],
-        ),
+        buildBox("Min-Max Temp", "${data["temperature"]["realMin"].toString()}º - ${data["temperature"]["realMax"].toString()}º", const Icon(Icons.thermostat)),
+        buildBox("Min-Max Feel", "${data["temperature"]["feelMin"].toString()}º - ${data["temperature"]["feelMax"].toString()}º", const Icon(Icons.device_thermostat)),
+        buildBox("UV Index", data["sun"]["uvi"].toString(), const Icon(Icons.wb_sunny)),
+        buildBox("Wind", "${data["wind"]["spd"].toString()} km/h", const Icon(Icons.air), windDirection: data["wind"]["dir"]?.toString()),
+        buildBox("Humidity", "${data["humidity"]["hum"].toString()}%", const Icon(Icons.water_drop)),
+        buildBox("Pressure", "${data["pressure"]["pres"].toString()}%", const Icon(Icons.speed)),
       ],
     );
   }

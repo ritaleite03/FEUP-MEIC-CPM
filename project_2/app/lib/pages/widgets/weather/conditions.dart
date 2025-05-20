@@ -1,13 +1,17 @@
+import 'package:app/pages/detailed_weather.dart';
+import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 class WeatherConditions extends StatelessWidget {
 
   final Map<String, dynamic> data;
+  final SpriteSheet spriteSheet;
 
   const WeatherConditions({
     super.key,
-    required this.data
+    required this.data,
+    required this.spriteSheet
   });
 
   double _directionToAngle(String dir) {
@@ -35,10 +39,11 @@ class WeatherConditions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF262C41),
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16)
       ),
       child: Column(
@@ -55,9 +60,20 @@ class WeatherConditions extends StatelessWidget {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {}, 
+                onPressed: () {
+                   Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailedWeatherPage(
+                        city: "Porto",
+                        data: data,
+                        spriteSheet: spriteSheet,
+                      ),
+                    ),
+                  );
+                }, 
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -83,7 +99,7 @@ class WeatherConditions extends StatelessWidget {
                 value: "${data["temperature"]["realNow"]}º"
               ),
               Padding(
-                padding: EdgeInsets.only(left: 55),
+                padding: EdgeInsets.only(left: 40),
                 child: AirConditionItem(
                   icon: Icons.air,
                   label: 'Wind',
@@ -104,7 +120,7 @@ class WeatherConditions extends StatelessWidget {
                 value: "${data["precipitation"]["proba"]}%",
               ),
               Padding(
-                padding: EdgeInsets.only(left: 55),
+                padding: EdgeInsets.only(left: 40),
                 child: AirConditionItem(
                   icon: Icons.wb_sunny,
                   label: 'UV Index',
@@ -157,7 +173,7 @@ class AirConditionItem extends StatelessWidget {
                     ),
                   ),
                   if (trailing != null) ...[
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 2.5),
                     trailing!,
                   ],
                 ],

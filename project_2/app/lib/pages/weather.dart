@@ -26,6 +26,7 @@ class WeatherPage extends StatefulWidget {
 
 class _WeatherPageState extends State<WeatherPage> {
   late Future<Map<String, dynamic>> data;
+  late Future<Map<String, dynamic>> todayForecastData;
   late Future<SpriteSheet> spriteSheetFuture;
   String selected = "today";
 
@@ -33,6 +34,7 @@ class _WeatherPageState extends State<WeatherPage> {
   void initState() {
     super.initState();
     data = getWeatherNow(widget.cityName ?? 'Unknown');
+    todayForecastData = getTodayForecast(widget.cityName ?? "Unknown");
     spriteSheetFuture = loadSpriteSheet();
     _saveCurrentCity();
   }
@@ -159,9 +161,9 @@ class _WeatherPageState extends State<WeatherPage> {
             children: [
               WeatherHeader(city: cityName, rainChance: selectedData["precipitation"]["proba"].toString()),
               SizedBox(height: 75),
-              WeatherMain(icon: selectedData["info"]["icon"], temperature: selectedData["temperature"]["realNow"], spriteSheet: spriteSheet),
+              WeatherMain(icon: selectedData["info"]["icon"], temperature: selectedData["temperature"]["realNow"].toString(), spriteSheet: spriteSheet),
               SizedBox(height: 20),
-              WeatherConditions(data: selectedData),
+              WeatherConditions(data: today, spriteSheet: spriteSheet),
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity, // ocupa toda a largura possível

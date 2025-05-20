@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.dark(
-          primary: Color(0xFF0C141F),
-          surface: Color(0xFF384560),
+          primary: Color(0xFF0D1117),
+          surface: Color(0xFF1B2430),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
