@@ -15,7 +15,6 @@ class _SettingsPageState extends State<SettingsPage> {
   final List<bool> _windSelection = [true, false, false];
   final List<bool> _pressureSelection = [false, false, false, true];
   final List<bool> _precipSelection = [true, false];
-  final List<bool> _distanceSelection = [true, false];
 
   void _saveSelection(String key, int index) async {
     final prefs = await SharedPreferences.getInstance();
@@ -51,7 +50,6 @@ class _SettingsPageState extends State<SettingsPage> {
     _loadSelection('wind', _windSelection);
     _loadSelection('pressure', _pressureSelection);
     _loadSelection('precip', _precipSelection);
-    _loadSelection('distance', _distanceSelection);
   }
 
   Future<String> _loadSavedCity() async {
@@ -192,19 +190,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         }
                       });
                       _saveSelection('precip', index);
-                    },
-                  ),
-                  _buildSubSection(
-                    'DISTANCE',
-                    ['Kilometers', 'Miles'],
-                    _distanceSelection,
-                    (index) {
-                      setState(() {
-                        for (int i = 0; i < _distanceSelection.length; i++) {
-                          _distanceSelection[i] = i == index;
-                        }
-                      });
-                      _saveSelection('distance', index);
                     },
                   ),
                 ],
