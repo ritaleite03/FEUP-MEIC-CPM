@@ -54,6 +54,8 @@ To test the application, simply follow these steps:
 
 ## 3. Architecture
 
+![Architecture](images/arq.jpg)
+
 ## 4. Interface
 
 **Initial Page**
