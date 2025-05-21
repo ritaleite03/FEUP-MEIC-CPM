@@ -22,35 +22,77 @@ In this project, we created two systems: a server and a client application. The 
 
 To test the application, simply follow these steps:
 
-- In the server folder, run the following commands in the terminal:
-  ```bash
-  npm install
-  node server.js
-  ```
-- Then, in the app folder, run:
-  ```bash
-  flutter run
-  ```
+-   In the server folder, run the following commands in the terminal:
+    ```bash
+    npm install
+    node server.js
+    ```
+-   Then, in the app folder, run:
+    ```bash
+    flutter run
+    ```
 
 ## 2. Features
 
 **City and Favorites Management**
-- Search for any district capital in Portugal;
-- Mark cities as favorites;
-- View the list of favorite cities;
-- Persistently store the favorites list locally.
+
+-   Search for any district capital in Portugal;
+-   Mark cities as favorites;
+-   View the list of favorite cities;
+-   Persistently store the favorites list locally.
 
 **Weather Forecast**
-- View the weather for the current day;
-- View the weather forecast for the next day.
+
+-   View the weather for the current day;
+-   View the weather forecast for the next day.
 
 **Weekly Weather Overview (Charts)**
-- Temperature chart: average, maximum, and minimum temperatures over the week;
-- Wind speed chart: wind speed trends throughout the week;
-- Rain probability chart: likelihood of precipitation over the week.
+
+-   Temperature chart: average, maximum, and minimum temperatures over the week;
+-   Wind speed chart: wind speed trends throughout the week;
+-   Rain probability chart: likelihood of precipitation over the week.
 
 ## 3. Architecture
 
 ## 4. Interface
+
+**Initial Page**
+
+<p>
+  <img src="images/main.jpg" alt="Initial Page" width="150"/>
+</p>
+
+**Favorites Page**
+
+<p>
+  <img src="images/favorites_1.jpg" alt="Favorites Page 1" width="150"/>
+  <img src="images/favorites_2.jpg" alt="Favorites Page 2" width="150"/>
+</p>
+
+**Day Weather Page**
+
+<p>
+  <img src="images/day_1.jpg" alt="Day Weather Page 1" width="150"/>
+  <img src="images/day_2.jpg" alt="Day Weather Page 2" width="150"/>
+</p>
+
+**Details Weather Page**
+
+<p>
+  <img src="images/details_1.jpg" alt="Details Weather Page 1" width="150"/>
+</p>
+
+**Week Weather Page**
+
+<p>
+  <img src="images/week_1.jpg" alt="Week Weather Page 1" width="150"/>
+  <img src="images/week_2.jpg" alt="Week Weather Page 2" width="150"/>
+</p>
+
+**Settings Page**
+
+<p>
+  <img src="images/settings_1.jpg" alt="Settings Page" width="150"/>
+</p>
 
 ## 5. Testing
