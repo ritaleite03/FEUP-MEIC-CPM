@@ -115,6 +115,9 @@ class _WeatherPageState extends State<WeatherPage> {
         if (temperatureMetric == 1) {
           entry['temp'] = celsiusToFahrenheit(temp);
         }
+        else {
+          entry['temp'] = temp.round();
+        }
       }
     }
   }

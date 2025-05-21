@@ -2,31 +2,30 @@ import 'package:app/pages/widgets/utils.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
-class WeekPage extends StatelessWidget {
+class WeekPage extends StatefulWidget {
   final String? cityName;
-  // ignore: prefer_typing_uninitialized_variables
-  final today;
-  // ignore: prefer_typing_uninitialized_variables
-  final week;
+  final dynamic today;
+  final dynamic week;
 
-  WeekPage({
+  const WeekPage({
     super.key,
     required this.cityName,
     required this.today,
-    required this.week,
+    required this.week
   });
 
-  final List<String> weekDays = [
-    "Mon",
-    "Tue",
-    "Wed",
-    "Thu",
-    "Fri",
-    "Sat",
-    "Sun",
-  ];
+  @override
+  State<WeekPage> createState() => _WeekPageState();
+}
+
+class _WeekPageState extends State<WeekPage> {
+  final List<String> weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   late final List<String> weekday = _generateWeekdays();
+
+  Color maxTempColor = Colors.blue;
+  Color minTempColor = Colors.greenAccent;
 
   List<String> _generateWeekdays() {
     final today = DateFormat('EEE', 'en_US').format(DateTime.now());
@@ -45,22 +44,145 @@ class WeekPage extends StatelessWidget {
     } else if (value is String) {
       return double.parse(value);
     }
-    throw Exception('Valor não é nem int nem double: $value - ${value.runtimeType}');
+    throw Exception('Not a numeric value: $value - ${value.runtimeType}');
+  }
+
+  Widget _buildLegendItem({
+    required Color color,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(fontSize: 13, color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  void _showColorPickerDialog(Color currentColor, ValueChanged<Color> onColorSelected, String title) {
+    Color selectedColor = currentColor;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          title: Text('Select color for $title'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: selectedColor,
+              onColorChanged: (color) {
+                selectedColor = color;
+              },
+              enableAlpha: false,
+              showLabel: true,
+              pickerAreaHeightPercent: 0.7,
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                setState(() {
+                  onColorSelected(selectedColor);
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final week = widget.week;
+    final today = widget.today;
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      appBar: AppBarWidget(title: cityName ?? ''),
+      appBar: AppBarWidget(title: widget.cityName ?? ''),
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ContainerWidget(
-              child: SizedBox(
-                height: 200,
-                child: LineChart(_buildChartDataTemperature(context)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 12.0, top: 6.0),
+                      child: Center(
+                        child: Text(
+                          "Temperature of the last 7 days",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 200,
+                      child: LineChart(_buildChartDataTemperature(context, week, today)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                children: [
+                  _buildLegendItem(
+                    color: maxTempColor,
+                    label: "Max Temperature",
+                    onTap: () => _showColorPickerDialog(maxTempColor, (newColor) => maxTempColor = newColor, "Max Temperature"),
+                  ),
+                  const SizedBox(width: 16),
+                  _buildLegendItem(
+                    color: minTempColor,
+                    label: "Min Temperature",
+                    onTap: () => _showColorPickerDialog(minTempColor, (newColor) => minTempColor = newColor, "Min Temperature"),
+                  ),
+                ],
               ),
             ),
           ],
@@ -69,54 +191,88 @@ class WeekPage extends StatelessWidget {
     );
   }
 
-  LineChartData _buildChartDataTemperature(BuildContext context) {
+  LineChartData _buildChartDataTemperature(BuildContext context, dynamic week, dynamic today) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    final allMaxValues = [
+      for (var i = 0; i < 7; i++) parseToDouble(week[i]['temperature']['realMax']),
+      parseToDouble(today['temperature']['realMax'])
+    ];
+
+    final allMinValues = [
+      for (var i = 0; i < 7; i++) parseToDouble(week[i]['temperature']['realMin']),
+      parseToDouble(today['temperature']['realMin'])
+    ];
+
+    // calculate minY and maxY with padding
+    final maxYValue = allMaxValues.reduce((a, b) => a > b ? a : b) + 5;
+    final minYValue = allMinValues.reduce((a, b) => a < b ? a : b) - 5;
+
+    final roundedMaxY = (maxYValue / 5).ceil() * 5 + 5;
+    final roundedMinY = (minYValue / 5).floor() * 5 - 5;
+
     return LineChartData(
-      minY: 0,
-      maxY:
-          [
-            parseToDouble(week[0]['temperature']['realMax']),
-            parseToDouble(week[1]['temperature']['realMax']),
-            parseToDouble(week[2]['temperature']['realMax']),
-            parseToDouble(week[3]['temperature']['realMax']),
-            parseToDouble(week[4]['temperature']['realMax']),
-            parseToDouble(week[5]['temperature']['realMax']),
-            parseToDouble(week[6]['temperature']['realMax']),
-            parseToDouble(today['temperature']['realMax']),
-          ].reduce((a, b) => a > b ? a : b) +
-          10,
+      minX: 0,
+      maxX: 7,
+      minY: roundedMinY.toDouble(),
+      maxY: roundedMaxY.toDouble(),
       gridData: FlGridData(
-        getDrawingHorizontalLine:
-            (value) => FlLine(
-              // ignore: deprecated_member_use
-              color: colorScheme.surfaceBright.withOpacity(0.1),
-              strokeWidth: 1,
-            ),
+        show: true,
+        drawVerticalLine: true,
+        drawHorizontalLine: false,
       ),
       titlesData: FlTitlesData(
-        topTitles: AxisTitles(),
-        rightTitles: AxisTitles(),
-        leftTitles: AxisTitles(),
+        topTitles: AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        rightTitles: AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
+            reservedSize: 28,
             getTitlesWidget: (val, meta) => _buildBottom(val, context),
           ),
         ),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 50, // leave enough space for numbers
+            interval: 5,
+            getTitlesWidget: (value, meta) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 30, left: 0),
+                child: Text(
+                  value.toInt().toString(),
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 11,
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              );
+            },
+          ),
+        ),
       ),
-      borderData: FlBorderData(show: false),
-      lineBarsData: _buildLineBars(context),
+      borderData: FlBorderData(
+        show: true,
+        border: Border.all(color: colorScheme.surfaceBright.withOpacity(0.2)),
+      ),
+      lineBarsData: _buildLineBars(context, week, today),
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
           tooltipPadding: const EdgeInsets.all(10),
-          getTooltipItems:
-              (touchedSpots) =>
-                  touchedSpots.map((LineBarSpot touchedSpot) {
-                    return LineTooltipItem(
-                      '${touchedSpot.y.toStringAsFixed(1)} F',
-                      TextStyle(color: colorScheme.surfaceBright),
-                    );
-                  }).toList(),
+          getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
+            return LineTooltipItem(
+              '${spot.y.toStringAsFixed(1)}°',
+              TextStyle(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
@@ -131,34 +287,21 @@ class WeekPage extends StatelessWidget {
     );
   }
 
-  List<LineChartBarData> _buildLineBars(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+  List<LineChartBarData> _buildLineBars(BuildContext context, dynamic week, dynamic today) {
     return [
       LineChartBarData(
-        color: colorScheme.primary,
+        color: maxTempColor,
         dotData: FlDotData(),
         spots: [
-          FlSpot(0, parseToDouble(week[0]['temperature']['realMax'])),
-          FlSpot(1, parseToDouble(week[1]['temperature']['realMax'])),
-          FlSpot(2, parseToDouble(week[2]['temperature']['realMax'])),
-          FlSpot(3, parseToDouble(week[3]['temperature']['realMax'])),
-          FlSpot(4, parseToDouble(week[4]['temperature']['realMax'])),
-          FlSpot(5, parseToDouble(week[5]['temperature']['realMax'])),
-          FlSpot(6, parseToDouble(week[6]['temperature']['realMax'])),
+          for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i]['temperature']['realMax'])),
           FlSpot(7, parseToDouble(today['temperature']['realMax'])),
         ],
       ),
       LineChartBarData(
-        color: colorScheme.secondary,
+        color: minTempColor,
         dotData: FlDotData(),
         spots: [
-          FlSpot(0, parseToDouble(week[0]['temperature']['realMin'])),
-          FlSpot(1, parseToDouble(week[1]['temperature']['realMin'])),
-          FlSpot(2, parseToDouble(week[2]['temperature']['realMin'])),
-          FlSpot(3, parseToDouble(week[3]['temperature']['realMin'])),
-          FlSpot(4, parseToDouble(week[4]['temperature']['realMin'])),
-          FlSpot(5, parseToDouble(week[5]['temperature']['realMin'])),
-          FlSpot(6, parseToDouble(week[6]['temperature']['realMin'])),
+          for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i]['temperature']['realMin'])),
           FlSpot(7, parseToDouble(today['temperature']['realMin'])),
         ],
       ),
