@@ -155,6 +155,9 @@ class _WeatherPageState extends State<WeatherPage> {
             final selectedData = selected == "today" ? today : tomorrow;
 
             _updateMetrics(today, ['temperature', 'wind', 'pressure']);
+            for (final day in week) {
+              _updateMetrics(day, ['temperature', 'wind', 'pressure']);
+            }
 
             return FutureBuilder<SpriteSheet>(
               future: spriteSheetFuture,
@@ -288,6 +291,7 @@ class _WeatherPageState extends State<WeatherPage> {
                               cityName: widget.cityName,
                               today: today,
                               week: week,
+                              metrics: metrics
                             ),
                       ),
                     );

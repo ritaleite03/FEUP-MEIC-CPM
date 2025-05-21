@@ -8,12 +8,14 @@ class WeekPage extends StatefulWidget {
   final String? cityName;
   final dynamic today;
   final dynamic week;
+  final Map<String, int> metrics;
 
   const WeekPage({
     super.key,
     required this.cityName,
     required this.today,
-    required this.week
+    required this.week,
+    required this.metrics
   });
 
   @override
@@ -126,51 +128,77 @@ class _WeekPageState extends State<WeekPage> {
     );
   }
 
+  Widget buildChartSection({
+    required BuildContext context,
+    required String title,
+    required LineChartData chartData,
+    List<Widget>? legends,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ContainerWidget(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0, top: 6.0),
+                  child: Center(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 200,
+                  child: LineChart(chartData),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (legends != null) ...[
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: legends,
+            ),
+          ),
+        ],
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final week = widget.week;
     final today = widget.today;
+    final temperatureSymbol = widget.metrics["temperature"] == 0 ? "º" : "F";
+    final windSymbol = widget.metrics["wind"] == 0 ? "km/h" : (widget.metrics["wind"] == 1 ? "m/s" : "Knots");
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBarWidget(title: widget.cityName ?? ''),
-      body: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ContainerWidget(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 12.0, top: 6.0),
-                      child: Center(
-                        child: Text(
-                          "Temperature of the last 7 days",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 200,
-                      child: LineChart(_buildChartDataTemperature(context, week, today)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Row(
-                children: [
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildChartSection(
+                context: context,
+                title: "Temperature of the last 7 days ($temperatureSymbol)",
+                chartData: _buildChartDataTemperature(context, week, today, "temperature"),
+                legends: [
                   _buildLegendItem(
                     color: maxTempColor,
                     label: "Max Temperature",
@@ -184,24 +212,63 @@ class _WeekPageState extends State<WeekPage> {
                   ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              buildChartSection(
+                context: context,
+                title: "Wind Velocity of the last 7 days ($windSymbol)",
+                chartData: _buildChartDataTemperature(context, week, today, "wind"),
+                legends: [
+                  _buildLegendItem(
+                    color: maxTempColor,
+                    label: "Wind velocity",
+                    onTap: () => _showColorPickerDialog(maxTempColor, (newColor) => maxTempColor = newColor, "Wind velocity"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              buildChartSection(
+                context: context,
+                title: "Probability of rain of the last 7 days (%)",
+                chartData: _buildChartDataTemperature(context, week, today, "precipitation"),
+                legends: [
+                  _buildLegendItem(
+                    color: maxTempColor,
+                    label: "Probability of rain",
+                    onTap: () => _showColorPickerDialog(maxTempColor, (newColor) => maxTempColor = newColor, "Probability of rain"),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  LineChartData _buildChartDataTemperature(BuildContext context, dynamic week, dynamic today) {
+  LineChartData _buildChartDataTemperature(BuildContext context, dynamic week, dynamic today, String metricToDisplay) {
     final colorScheme = Theme.of(context).colorScheme;
+    String maxMetric;
+    String minMetric;
+
+    if (metricToDisplay == "temperature") {
+      maxMetric = "realMax";
+      minMetric = "realMin";
+    }
+    else if (metricToDisplay == "precipitation") {
+      maxMetric = minMetric = "proba";
+    }
+    else {
+      maxMetric = minMetric = "spd";
+    }
 
     final allMaxValues = [
-      for (var i = 0; i < 7; i++) parseToDouble(week[i]['temperature']['realMax']),
-      parseToDouble(today['temperature']['realMax'])
+      for (var i = 0; i < 7; i++) parseToDouble(week[i][metricToDisplay][maxMetric]),
+      parseToDouble(today[metricToDisplay][maxMetric])
     ];
 
     final allMinValues = [
-      for (var i = 0; i < 7; i++) parseToDouble(week[i]['temperature']['realMin']),
-      parseToDouble(today['temperature']['realMin'])
+      for (var i = 0; i < 7; i++) parseToDouble(week[i][metricToDisplay][minMetric]),
+      parseToDouble(today[metricToDisplay][minMetric])
     ];
 
     // calculate minY and maxY with padding
@@ -209,7 +276,7 @@ class _WeekPageState extends State<WeekPage> {
     final minYValue = allMinValues.reduce((a, b) => a < b ? a : b) - 5;
 
     final roundedMaxY = (maxYValue / 5).ceil() * 5 + 5;
-    final roundedMinY = (minYValue / 5).floor() * 5 - 5;
+    final roundedMinY =  minYValue < 0 ? 0 : (minYValue / 5).floor() * 5 - 5;
 
     return LineChartData(
       minX: 0,
@@ -219,7 +286,7 @@ class _WeekPageState extends State<WeekPage> {
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
-        drawHorizontalLine: false,
+        drawHorizontalLine: true,
       ),
       titlesData: FlTitlesData(
         topTitles: AxisTitles(
@@ -260,7 +327,7 @@ class _WeekPageState extends State<WeekPage> {
         show: true,
         border: Border.all(color: colorScheme.surfaceBright.withOpacity(0.2)),
       ),
-      lineBarsData: _buildLineBars(context, week, today),
+      lineBarsData: _buildLineBars(context, week, today, metricToDisplay, maxMetric, minMetric),
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
           tooltipPadding: const EdgeInsets.all(10),
@@ -287,24 +354,39 @@ class _WeekPageState extends State<WeekPage> {
     );
   }
 
-  List<LineChartBarData> _buildLineBars(BuildContext context, dynamic week, dynamic today) {
-    return [
-      LineChartBarData(
-        color: maxTempColor,
-        dotData: FlDotData(),
-        spots: [
-          for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i]['temperature']['realMax'])),
-          FlSpot(7, parseToDouble(today['temperature']['realMax'])),
-        ],
-      ),
-      LineChartBarData(
-        color: minTempColor,
-        dotData: FlDotData(),
-        spots: [
-          for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i]['temperature']['realMin'])),
-          FlSpot(7, parseToDouble(today['temperature']['realMin'])),
-        ],
-      ),
-    ];
+  List<LineChartBarData> _buildLineBars(BuildContext context, dynamic week, dynamic today, String metricToDisplay, String maxMetric, String minMetric) {
+
+    if (maxMetric != minMetric) {
+      return [
+        LineChartBarData(
+          color: maxTempColor,
+          dotData: FlDotData(),
+          spots: [
+            for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i][metricToDisplay][maxMetric])),
+            FlSpot(7, parseToDouble(today[metricToDisplay][maxMetric])),
+          ],
+        ),
+        LineChartBarData(
+          color: minTempColor,
+          dotData: FlDotData(),
+          spots: [
+            for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i][metricToDisplay][minMetric])),
+            FlSpot(7, parseToDouble(today[metricToDisplay][minMetric])),
+          ],
+        ),
+      ];
+    }
+    else {
+      return [
+        LineChartBarData(
+          color: maxTempColor,
+          dotData: FlDotData(),
+          spots: [
+            for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i][metricToDisplay][maxMetric])),
+            FlSpot(7, parseToDouble(today[metricToDisplay][maxMetric])),
+          ],
+        ),
+      ];
+    }
   }
 }
