@@ -25,8 +25,9 @@ class _WeekPageState extends State<WeekPage> {
   final List<String> weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   late final List<String> weekday = _generateWeekdays();
 
-  Color maxTempColor = Colors.blue;
-  Color minTempColor = Colors.greenAccent;
+  Color blue = Colors.blue;
+  Color yellow = Colors.yellow;
+  Color red = Colors.red;
 
   List<String> _generateWeekdays() {
     final today = DateFormat('EEE', 'en_US').format(DateTime.now());
@@ -124,9 +125,11 @@ class _WeekPageState extends State<WeekPage> {
           const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
+            child: Wrap(
+              spacing: 0,
+              runSpacing: 0,
               children: legends,
-            ),
+            )
           ),
         ],
         const SizedBox(height: 16),
@@ -156,12 +159,16 @@ class _WeekPageState extends State<WeekPage> {
                 chartData: _buildChartDataTemperature(context, week, today, "temperature"),
                 legends: [
                   _buildLegendItem(
-                    color: maxTempColor,
+                    color: red,
                     label: "Max Temperature"
+                  ),
+                  _buildLegendItem(
+                    color: yellow,
+                    label: "Temperature"
                   ),
                   const SizedBox(width: 16),
                   _buildLegendItem(
-                    color: minTempColor,
+                    color: blue,
                     label: "Min Temperature"
                   ),
                 ],
@@ -173,7 +180,7 @@ class _WeekPageState extends State<WeekPage> {
                 chartData: _buildChartDataTemperature(context, week, today, "wind"),
                 legends: [
                   _buildLegendItem(
-                    color: maxTempColor,
+                    color: blue,
                     label: "Wind velocity"
                   ),
                 ],
@@ -185,7 +192,7 @@ class _WeekPageState extends State<WeekPage> {
                 chartData: _buildChartDataTemperature(context, week, today, "precipitation"),
                 legends: [
                   _buildLegendItem(
-                    color: maxTempColor,
+                    color: blue,
                     label: "Probability of rain"
                   ),
                 ],
@@ -322,7 +329,15 @@ class _WeekPageState extends State<WeekPage> {
     if (maxMetric != minMetric) {
       return [
         LineChartBarData(
-          color: maxTempColor,
+          color: Colors.yellow,
+          dotData: FlDotData(),
+          spots: [
+            for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i][metricToDisplay]['realNow'])),
+            FlSpot(7, parseToDouble(today[metricToDisplay]['realNow'])),
+          ],
+        ),
+        LineChartBarData(
+          color: Colors.red,
           dotData: FlDotData(),
           spots: [
             for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i][metricToDisplay][maxMetric])),
@@ -330,7 +345,7 @@ class _WeekPageState extends State<WeekPage> {
           ],
         ),
         LineChartBarData(
-          color: minTempColor,
+          color: blue,
           dotData: FlDotData(),
           spots: [
             for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i][metricToDisplay][minMetric])),
@@ -342,7 +357,7 @@ class _WeekPageState extends State<WeekPage> {
     else {
       return [
         LineChartBarData(
-          color: maxTempColor,
+          color: blue,
           dotData: FlDotData(),
           spots: [
             for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i][metricToDisplay][maxMetric])),
