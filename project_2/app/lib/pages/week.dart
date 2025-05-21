@@ -90,6 +90,7 @@ class _WeekPageState extends State<WeekPage> {
     required String title,
     required LineChartData chartData,
     List<Widget>? legends,
+    double height = 200,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +115,7 @@ class _WeekPageState extends State<WeekPage> {
                   ),
                 ),
                 SizedBox(
-                  height: 200,
+                  height: height,
                   child: LineChart(chartData),
                 ),
               ],
@@ -196,6 +197,7 @@ class _WeekPageState extends State<WeekPage> {
                     label: "Probability of rain"
                   ),
                 ],
+                height: 250
               ),
             ],
           ),
@@ -208,6 +210,7 @@ class _WeekPageState extends State<WeekPage> {
     final colorScheme = Theme.of(context).colorScheme;
     String maxMetric;
     String minMetric;
+    double interval = 5;
 
     if (metricToDisplay == "temperature") {
       maxMetric = "realMax";
@@ -215,6 +218,7 @@ class _WeekPageState extends State<WeekPage> {
     }
     else if (metricToDisplay == "precipitation") {
       maxMetric = minMetric = "proba";
+      interval = 10;
     }
     else {
       maxMetric = minMetric = "spd";
@@ -235,13 +239,19 @@ class _WeekPageState extends State<WeekPage> {
     final minYValue = allMinValues.reduce((a, b) => a < b ? a : b) - 5;
 
     final roundedMaxY = (maxYValue / 5).ceil() * 5 + 5;
-    final roundedMinY =  minYValue < 0 ? 0 : (minYValue / 5).floor() * 5 - 5;
+    final roundedMinY = (minYValue / 5).floor() * 5 - 5;
+  
+    double finalMaxY = roundedMaxY.toDouble();
+    if (metricToDisplay == "precipitation") {
+      finalMaxY = 100.0;
+    }
+    final finalMinY = roundedMinY < 0 ? 0 : roundedMinY;
 
     return LineChartData(
       minX: 0,
       maxX: 7,
-      minY: roundedMinY.toDouble(),
-      maxY: roundedMaxY.toDouble(),
+      minY: finalMinY.toDouble(),
+      maxY: finalMaxY.toDouble(),
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
@@ -264,8 +274,8 @@ class _WeekPageState extends State<WeekPage> {
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            reservedSize: 50, // leave enough space for numbers
-            interval: 5,
+            reservedSize: 55, // leave enough space for numbers
+            interval: interval,
             getTitlesWidget: (value, meta) {
               return Padding(
                 padding: const EdgeInsets.only(right: 30, left: 0),
@@ -360,8 +370,8 @@ class _WeekPageState extends State<WeekPage> {
           color: blue,
           dotData: FlDotData(),
           spots: [
-            for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i][metricToDisplay][maxMetric])),
-            FlSpot(7, parseToDouble(today[metricToDisplay][maxMetric])),
+            for (var i = 0; i < 7; i++) FlSpot(i.toDouble(), parseToDouble(week[i][metricToDisplay][minMetric])),
+            FlSpot(7, parseToDouble(today[metricToDisplay][minMetric])),
           ],
         ),
       ];

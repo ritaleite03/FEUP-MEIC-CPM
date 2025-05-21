@@ -80,7 +80,7 @@ class WeatherConditions extends StatelessWidget {
                   );
                 }, 
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -106,7 +106,7 @@ class WeatherConditions extends StatelessWidget {
                 value: "${data["temperature"]["realNow"]} $temperatureSymbol"
               ),
               Padding(
-                padding: EdgeInsets.only(left: 35),
+                padding: EdgeInsets.only(left: 25),
                 child: AirConditionItem(
                   icon: Icons.air,
                   label: 'Wind',
@@ -127,7 +127,7 @@ class WeatherConditions extends StatelessWidget {
                 value: "${data["precipitation"]["proba"]}%",
               ),
               Padding(
-                padding: EdgeInsets.only(left: 35),
+                padding: EdgeInsets.only(left: 30),
                 child: AirConditionItem(
                   icon: Icons.wb_sunny,
                   label: 'UV Index',

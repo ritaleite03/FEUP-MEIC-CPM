@@ -70,7 +70,12 @@ class _WeatherPageState extends State<WeatherPage> {
               return MapEntry(k, celsiusToFahrenheit(v));
             }
             else {
-              return MapEntry(k, v);
+              if (v is String) {
+                return MapEntry(k, double.parse(v).round());
+              }
+              else {
+                return MapEntry(k, v.round());
+              }
             }
           } 
           else if (key == "wind" && k != "dir") {
