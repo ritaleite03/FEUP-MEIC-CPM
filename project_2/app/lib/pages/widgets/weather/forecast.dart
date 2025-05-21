@@ -27,7 +27,7 @@ class _WeatherForecastState extends State<WeatherForecast> {
   @override
   void initState() {
     super.initState();
-    // Delay to allow layout to build before scrolling
+    // delay to allow layout to build before scrolling
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToRelevantHour());
   }
 

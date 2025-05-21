@@ -1,10 +1,10 @@
 const KoaRouter = require("koa-router");
-const { defaultDay, defaultTodayForecast } = require("./default_responses");
+const { defaultDay, defaultTodayForecast, defaultTomorrowForecast } = require("./default_responses");
 const router = new KoaRouter();
-// const key = "SZQ66S6TCYALHMQWWXQ8QYVKG";
+const key = "SZQ66S6TCYALHMQWWXQ8QYVKG";
 // const key = "KAZXLW5DUH5XZB5KDTCYUU7KZ";
 // const key = "U2CH8GJDYSNXT9A3ZWU27VPKB";
-const key = "Q5XXURLMXAKLA3EFKEQ9SAVS8";
+// const key = "Q5XXURLMXAKLA3EFKEQ9SAVS8";
 
 (async () => {
     try {
@@ -37,12 +37,12 @@ async function getTodayAndTomorrowForecast(ctx) {
                 "temp": hour.temp,
                 "icon": hour.icon
         }));
-        console.log("day aqui", today);
+
         ctx.status = 200;
         ctx.body = { today: today, tomorrow: tomorrow };
     } catch (error) {
         ctx.status = 200;
-        ctx.body = { day: defaultTodayForecast };
+        ctx.body = { today: defaultTodayForecast, tomorrow: defaultTomorrowForecast };
         console.error("Error:", error);
     }
 }
@@ -66,27 +66,27 @@ async function getCityWeather(ctx) {
     // build url for request
     const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${cityFormat}/${datePastFormat}/${dateNextFormat}?key=${key}&unitGroup=metric`;
 
-    // try {
-    //     const response = await fetch(url);
-    //     const data = await response.json();
-    //     console.log("Complete response from API Visual Crossing:");
-    //     // console.log(data);
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log("Complete response from API Visual Crossing:");
+        // console.log(data);
 
-    //     const tomorrow = parseWeatherDay(data.days[8]);
-    //     const today = parseWeatherDay(data.days[7]);
-    //     const week = [
-    //         parseWeatherDay(data.days[0]),
-    //         parseWeatherDay(data.days[1]),
-    //         parseWeatherDay(data.days[2]),
-    //         parseWeatherDay(data.days[3]),
-    //         parseWeatherDay(data.days[4]),
-    //         parseWeatherDay(data.days[5]),
-    //         parseWeatherDay(data.days[6]),
-    //     ];
-    //     ctx.status = 200;
-    //     ctx.body = { tomorrow: tomorrow, today: today, week: week };
-    // } catch (error) {
-    //     console.error("Error:", error);
+        const tomorrow = parseWeatherDay(data.days[8]);
+        const today = parseWeatherDay(data.days[7]);
+        const week = [
+            parseWeatherDay(data.days[0]),
+            parseWeatherDay(data.days[1]),
+            parseWeatherDay(data.days[2]),
+            parseWeatherDay(data.days[3]),
+            parseWeatherDay(data.days[4]),
+            parseWeatherDay(data.days[5]),
+            parseWeatherDay(data.days[6]),
+        ];
+        ctx.status = 200;
+        ctx.body = { tomorrow: tomorrow, today: today, week: week };
+    } catch (error) {
+        console.error("Error:", error);
         ctx.status = 200; // 400;
 
         ctx.body = {
@@ -107,7 +107,7 @@ async function getCityWeather(ctx) {
         //     error: "Failed in getting city weather!",
         //     details: error.message,
         // };
-    // }
+    }
 }
 
 function parseDate(date) {

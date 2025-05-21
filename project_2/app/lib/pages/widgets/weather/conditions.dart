@@ -4,16 +4,17 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class WeatherConditions extends StatelessWidget {
-
+  final String? cityName;
   final Map<String, dynamic> data;
   final SpriteSheet spriteSheet;
   final Map<String, int> metrics;
 
   const WeatherConditions({
     super.key,
+    required this.cityName,
     required this.data,
     required this.spriteSheet,
-    required this.metrics
+    required this.metrics,
   });
 
   double _directionToAngle(String dir) {
@@ -44,13 +45,16 @@ class WeatherConditions extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     final temperatureSymbol = metrics["temperature"] == 0 ? "º" : "F";
-    final windSymbol = metrics["wind"] == 0 ? "km/h" : (metrics["wind"] == 1 ? "m/s" : "Knots");
+    final windSymbol =
+        metrics["wind"] == 0
+            ? "km/h"
+            : (metrics["wind"] == 1 ? "m/s" : "Knots");
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16)
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,33 +66,35 @@ class WeatherConditions extends StatelessWidget {
                 "Air Conditions",
                 style: TextStyle(
                   color: Colors.grey,
-                  fontWeight: FontWeight.bold
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               ElevatedButton(
                 onPressed: () {
-                   Navigator.push(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DetailedWeatherPage(
-                        city: "Porto",
-                        data: data,
-                        spriteSheet: spriteSheet,
-                        metrics: metrics,
-                      ),
+                      builder:
+                          (context) => DetailedWeatherPage(
+                            city: cityName ?? '',
+                            data: data,
+                            spriteSheet: spriteSheet,
+                            metrics: metrics,
+                          ),
                     ),
                   );
-                }, 
+                },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 8,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: const Text(
-                  "See more",
-                )
-              )
+                child: const Text("See more"),
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -103,10 +109,10 @@ class WeatherConditions extends StatelessWidget {
               AirConditionItem(
                 icon: Icons.thermostat,
                 label: 'Real Feel',
-                value: "${data["temperature"]["realNow"]} $temperatureSymbol"
+                value: "${data["temperature"]["realNow"]} $temperatureSymbol",
               ),
               Padding(
-                padding: EdgeInsets.only(left: 35),
+                padding: EdgeInsets.only(left: 25),
                 child: AirConditionItem(
                   icon: Icons.air,
                   label: 'Wind',
@@ -116,7 +122,7 @@ class WeatherConditions extends StatelessWidget {
                     child: const Icon(
                       Icons.arrow_upward,
                       color: Colors.white,
-                      size: 20
+                      size: 20,
                     ),
                   ),
                 ),
@@ -127,7 +133,7 @@ class WeatherConditions extends StatelessWidget {
                 value: "${data["precipitation"]["proba"]}%",
               ),
               Padding(
-                padding: EdgeInsets.only(left: 35),
+                padding: EdgeInsets.only(left: 30),
                 child: AirConditionItem(
                   icon: Icons.wb_sunny,
                   label: 'UV Index',
@@ -135,9 +141,9 @@ class WeatherConditions extends StatelessWidget {
                 ),
               ),
             ],
-          )
+          ),
         ],
-      )
+      ),
     );
   }
 }
@@ -153,7 +159,7 @@ class AirConditionItem extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
-    this.trailing
+    this.trailing,
   });
 
   @override
@@ -171,7 +177,7 @@ class AirConditionItem extends StatelessWidget {
                 style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
               Row(
-                 children: [
+                children: [
                   Text(
                     value,
                     style: const TextStyle(
@@ -184,7 +190,7 @@ class AirConditionItem extends StatelessWidget {
                     trailing!,
                   ],
                 ],
-              )
+              ),
             ],
           ),
         ),

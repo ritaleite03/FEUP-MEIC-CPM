@@ -60,7 +60,6 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   void _updateMetrics(Map<String, dynamic> object, List<String> targetKeys) {
-
     for (final key in targetKeys) {
       if (object.containsKey(key)) {
         final nestedMap = object[key] as Map<String, dynamic>;
@@ -68,37 +67,32 @@ class _WeatherPageState extends State<WeatherPage> {
           if (key == "temperature") {
             if (temperatureMetric == 1) {
               return MapEntry(k, celsiusToFahrenheit(v));
+            } else {
+              if (v is String) {
+                return MapEntry(k, double.parse(v).round());
+              } else {
+                return MapEntry(k, v.round());
+              }
             }
-            else {
-              return MapEntry(k, v);
-            }
-          } 
-          else if (key == "wind" && k != "dir") {
+          } else if (key == "wind" && k != "dir") {
             if (windMetric == 1) {
               return MapEntry(k, kmhToMps(v));
-            }
-            else if (windMetric == 2) {
+            } else if (windMetric == 2) {
               return MapEntry(k, kmhToKnots(v));
-            }
-            else {
+            } else {
               return MapEntry(k, v);
             }
-          }
-          else if (key == "pressure") {
+          } else if (key == "pressure") {
             if (pressureMetric == 1) {
               return MapEntry(k, pressureToInches(v));
-            }
-            else if (pressureMetric == 2) {
+            } else if (pressureMetric == 2) {
               return MapEntry(k, pressureToKPA(v));
-            }
-            else if (pressureMetric == 3) {
+            } else if (pressureMetric == 3) {
               return MapEntry(k, pressureToMM(v));
-            }
-            else {
+            } else {
               return MapEntry(k, v);
             }
-          }
-          else {
+          } else {
             return MapEntry(k, v);
           }
         });
@@ -114,6 +108,8 @@ class _WeatherPageState extends State<WeatherPage> {
         final temp = entry['temp'];
         if (temperatureMetric == 1) {
           entry['temp'] = celsiusToFahrenheit(temp);
+        } else {
+          entry['temp'] = temp.round();
         }
       }
     }
@@ -134,7 +130,7 @@ class _WeatherPageState extends State<WeatherPage> {
     final metrics = {
       "temperature": temperatureMetric,
       "wind": windMetric,
-      "pressure": pressureMetric
+      "pressure": pressureMetric,
     };
 
     return Scaffold(
@@ -152,6 +148,9 @@ class _WeatherPageState extends State<WeatherPage> {
             final selectedData = selected == "today" ? today : tomorrow;
 
             _updateMetrics(today, ['temperature', 'wind', 'pressure']);
+            for (final day in week) {
+              _updateMetrics(day, ['temperature', 'wind', 'pressure']);
+            }
 
             return FutureBuilder<SpriteSheet>(
               future: spriteSheetFuture,
@@ -162,10 +161,10 @@ class _WeatherPageState extends State<WeatherPage> {
                   return FutureBuilder<Map<String, dynamic>>(
                     future: todayTomorrowForecastData,
                     builder: (context, forecastSnapshot) {
-                      if (forecastSnapshot.connectionState == ConnectionState.waiting) {
+                      if (forecastSnapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return _buildLoadingIndicator(colorScheme);
                       } else if (forecastSnapshot.hasData) {
-
                         _updateHourlyTemps(forecastSnapshot.data!["today"]);
                         _updateHourlyTemps(forecastSnapshot.data!["tomorrow"]);
 
@@ -178,11 +177,14 @@ class _WeatherPageState extends State<WeatherPage> {
                           selectedData: selectedData,
                           spriteSheet: spriteSnapshot.data!,
                           todayForecastData: forecastSnapshot.data!["today"],
-                          tomorrowForecastData: forecastSnapshot.data!["tomorrow"],
-                          metrics: metrics
+                          tomorrowForecastData:
+                              forecastSnapshot.data!["tomorrow"],
+                          metrics: metrics,
                         );
                       } else {
-                        return const Center(child: Text("No forecast data available"));
+                        return const Center(
+                          child: Text("No forecast data available"),
+                        );
                       }
                     },
                   );
@@ -220,10 +222,7 @@ class _WeatherPageState extends State<WeatherPage> {
             }
           },
           items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.star),
-              label: 'Favorites',
-            ),
+            BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Favorites'),
             BottomNavigationBarItem(
               icon: Icon(Icons.wb_sunny),
               label: 'Weather',
@@ -254,7 +253,7 @@ class _WeatherPageState extends State<WeatherPage> {
     required SpriteSheet spriteSheet,
     required List<dynamic> todayForecastData,
     required List<dynamic> tomorrowForecastData,
-    required Map<String, int> metrics
+    required Map<String, int> metrics,
   }) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -263,15 +262,38 @@ class _WeatherPageState extends State<WeatherPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              WeatherHeader(city: cityName, rainChance: selectedData["precipitation"]["proba"].toString()),
+              WeatherHeader(
+                city: cityName,
+                rainChance: selectedData["precipitation"]["proba"].toString(),
+              ),
               SizedBox(height: 75),
-              WeatherMain(icon: selectedData["info"]["icon"], temperature: selectedData["temperature"]["realNow"].toString(), spriteSheet: spriteSheet, temperatureMetric: temperatureMetric),
+              WeatherMain(
+                icon: selectedData["info"]["icon"],
+                temperature: selectedData["temperature"]["realNow"].toString(),
+                spriteSheet: spriteSheet,
+                temperatureMetric: temperatureMetric,
+              ),
               SizedBox(height: 20),
-              WeatherForecast(hourlyForecast: todayForecastData, spriteSheet: spriteSheet, isToday: true, temperatureMetric: temperatureMetric),
+              WeatherForecast(
+                hourlyForecast: todayForecastData,
+                spriteSheet: spriteSheet,
+                isToday: true,
+                temperatureMetric: temperatureMetric,
+              ),
               SizedBox(height: 20),
-              WeatherForecast(hourlyForecast: tomorrowForecastData, spriteSheet: spriteSheet, isToday: false, temperatureMetric: temperatureMetric),
+              WeatherForecast(
+                hourlyForecast: tomorrowForecastData,
+                spriteSheet: spriteSheet,
+                isToday: false,
+                temperatureMetric: temperatureMetric,
+              ),
               SizedBox(height: 20),
-              WeatherConditions(data: today, spriteSheet: spriteSheet, metrics: metrics),
+              WeatherConditions(
+                cityName: widget.cityName,
+                data: today,
+                spriteSheet: spriteSheet,
+                metrics: metrics,
+              ),
               SizedBox(height: 20),
               SizedBox(
                 width: double.infinity, // ocupa toda a largura possível
@@ -285,6 +307,7 @@ class _WeatherPageState extends State<WeatherPage> {
                               cityName: widget.cityName,
                               today: today,
                               week: week,
+                              metrics: metrics,
                             ),
                       ),
                     );
@@ -292,7 +315,7 @@ class _WeatherPageState extends State<WeatherPage> {
                   child: const Text("See past week weather..."),
                 ),
               ),
-            ]
+            ],
           ),
         ),
       ),
