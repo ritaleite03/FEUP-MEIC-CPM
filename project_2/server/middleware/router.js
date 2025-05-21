@@ -1,8 +1,8 @@
 const KoaRouter = require("koa-router");
 const { defaultDay, defaultTodayForecast, defaultTomorrowForecast } = require("./default_responses");
 const router = new KoaRouter();
-// const key = "SZQ66S6TCYALHMQWWXQ8QYVKG";
-const key = "KAZXLW5DUH5XZB5KDTCYUU7KZ";
+const key = "SZQ66S6TCYALHMQWWXQ8QYVKG";
+// const key = "KAZXLW5DUH5XZB5KDTCYUU7KZ";
 // const key = "U2CH8GJDYSNXT9A3ZWU27VPKB";
 // const key = "Q5XXURLMXAKLA3EFKEQ9SAVS8";
 

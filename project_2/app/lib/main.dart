@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Colors.white
                 ),
               ),
-              child: Text("Get Start"),
+              child: Text("Get Started"),
             ),
           ],
         ),

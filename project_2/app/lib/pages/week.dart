@@ -140,6 +140,7 @@ class _WeekPageState extends State<WeekPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final week = widget.week;
     final today = widget.today;
     final temperatureSymbol = widget.metrics["temperature"] == 0 ? "º" : "F";
@@ -147,7 +148,11 @@ class _WeekPageState extends State<WeekPage> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      appBar: AppBarWidget(title: widget.cityName ?? ''),
+      appBar: AppBar(
+        title: Text("${widget.cityName}'s last week weather"),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: Colors.white,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(8),
