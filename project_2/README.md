@@ -18,7 +18,36 @@ By Group 5:
 
 ## 1. Overview
 
+In this project, we created two systems: a server and a client application. The application is a weather app that allows users to view the weather forecast for any district capital in Portugal. Users can also add cities to a list of favorites for quicker access. The server is responsible for handling requests from the application by using an external API where the weather data is available.
+
+To test the application, simply follow these steps:
+
+- In the server folder, run the following commands in the terminal:
+  ```bash
+  npm install
+  node server.js
+  ```
+- Then, in the app folder, run:
+  ```bash
+  flutter run
+  ```
+
 ## 2. Features
+
+**City and Favorites Management**
+- Search for any district capital in Portugal;
+- Mark cities as favorites;
+- View the list of favorite cities;
+- Persistently store the favorites list locally.
+
+**Weather Forecast**
+- View the weather for the current day;
+- View the weather forecast for the next day.
+
+**Weekly Weather Overview (Charts)**
+- Temperature chart: average, maximum, and minimum temperatures over the week;
+- Wind speed chart: wind speed trends throughout the week;
+- Rain probability chart: likelihood of precipitation over the week.
 
 ## 3. Architecture
 
