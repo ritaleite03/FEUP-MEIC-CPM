@@ -2,7 +2,6 @@ import 'package:app/pages/widgets/utils.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class WeekPage extends StatefulWidget {
   final String? cityName;
@@ -52,12 +51,10 @@ class _WeekPageState extends State<WeekPage> {
   Widget _buildLegendItem({
     required Color color,
     required String label,
-    required VoidCallback onTap,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       child: InkWell(
-        onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -84,47 +81,6 @@ class _WeekPageState extends State<WeekPage> {
           ),
         ),
       ),
-    );
-  }
-
-
-  void _showColorPickerDialog(Color currentColor, ValueChanged<Color> onColorSelected, String title) {
-    Color selectedColor = currentColor;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          title: Text('Select color for $title'),
-          content: SingleChildScrollView(
-            child: ColorPicker(
-              pickerColor: selectedColor,
-              onColorChanged: (color) {
-                selectedColor = color;
-              },
-              enableAlpha: false,
-              showLabel: true,
-              pickerAreaHeightPercent: 0.7,
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                setState(() {
-                  onColorSelected(selectedColor);
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -201,14 +157,12 @@ class _WeekPageState extends State<WeekPage> {
                 legends: [
                   _buildLegendItem(
                     color: maxTempColor,
-                    label: "Max Temperature",
-                    onTap: () => _showColorPickerDialog(maxTempColor, (newColor) => maxTempColor = newColor, "Max Temperature"),
+                    label: "Max Temperature"
                   ),
                   const SizedBox(width: 16),
                   _buildLegendItem(
                     color: minTempColor,
-                    label: "Min Temperature",
-                    onTap: () => _showColorPickerDialog(minTempColor, (newColor) => minTempColor = newColor, "Min Temperature"),
+                    label: "Min Temperature"
                   ),
                 ],
               ),
@@ -220,8 +174,7 @@ class _WeekPageState extends State<WeekPage> {
                 legends: [
                   _buildLegendItem(
                     color: maxTempColor,
-                    label: "Wind velocity",
-                    onTap: () => _showColorPickerDialog(maxTempColor, (newColor) => maxTempColor = newColor, "Wind velocity"),
+                    label: "Wind velocity"
                   ),
                 ],
               ),
@@ -233,8 +186,7 @@ class _WeekPageState extends State<WeekPage> {
                 legends: [
                   _buildLegendItem(
                     color: maxTempColor,
-                    label: "Probability of rain",
-                    onTap: () => _showColorPickerDialog(maxTempColor, (newColor) => maxTempColor = newColor, "Probability of rain"),
+                    label: "Probability of rain"
                   ),
                 ],
               ),
@@ -332,8 +284,19 @@ class _WeekPageState extends State<WeekPage> {
         touchTooltipData: LineTouchTooltipData(
           tooltipPadding: const EdgeInsets.all(10),
           getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
+            String display;
+
+            if (metricToDisplay == "temperature") {
+              display = widget.metrics["temperature"] == 0 ? "º" : "F";
+            } else if (metricToDisplay == "wind") {
+              display = widget.metrics["wind"] == 0 ? "km/h" : (widget.metrics["wind"] == 1 ? "m/s" : "Knots");
+            }
+            else {
+              display = "%";
+            }
+
             return LineTooltipItem(
-              '${spot.y.toStringAsFixed(1)}°',
+              '${spot.y.toStringAsFixed(1)} $display',
               TextStyle(
                 color: colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
