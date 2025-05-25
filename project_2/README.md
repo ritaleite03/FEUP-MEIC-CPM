@@ -44,6 +44,7 @@ To test the application, simply follow these steps:
 **Weather Forecast**
 
 -   View the weather for the current day;
+-   Possible to see weather conditions for the current day;
 -   View the weather forecast for the next day.
 
 **Weekly Weather Overview (Charts)**
@@ -51,6 +52,10 @@ To test the application, simply follow these steps:
 -   Temperature chart: average, maximum, and minimum temperatures over the week;
 -   Wind speed chart: wind speed trends throughout the week;
 -   Rain probability chart: likelihood of precipitation over the week.
+
+**Settings**
+-   Possible to change the units in which the weather conditions are displayed;
+-   These changes are stored locally in the device.
 
 ## 3. Architecture
 
