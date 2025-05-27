@@ -35,7 +35,12 @@ class DetailedWeatherPage extends StatelessWidget {
           children: [
             WeatherHeader(city: city, rainChance: data["precipitation"]["proba"].toString()),
             SizedBox(height: 75),
-            WeatherMain(icon: data["info"]["icon"], temperature: data["temperature"]["realNow"].toString(), spriteSheet: spriteSheet, temperatureMetric: metrics["temperature"]!),
+            WeatherMain(icon: data["info"]["icon"],
+                temperature: data["temperature"]["realNow"].toString(),
+                temperatureMax: data["temperature"]["realMax"].toString(),
+                temperatureMin: data["temperature"]["realMin"].toString(),
+                spriteSheet: spriteSheet,
+                temperatureMetric: metrics["temperature"]!),
             const SizedBox(height: 32),
             AirConditionsDetails(
               data: data,

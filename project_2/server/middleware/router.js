@@ -1,10 +1,13 @@
 const KoaRouter = require("koa-router");
 const { defaultDay, defaultTodayForecast, defaultTomorrowForecast } = require("./default_responses");
 const router = new KoaRouter();
-const key = "SZQ66S6TCYALHMQWWXQ8QYVKG";
+//const key = "SZQ66S6TCYALHMQWWXQ8QYVKG";
 // const key = "KAZXLW5DUH5XZB5KDTCYUU7KZ";
 // const key = "U2CH8GJDYSNXT9A3ZWU27VPKB";
 // const key = "Q5XXURLMXAKLA3EFKEQ9SAVS8";
+
+//const key = "VVZ4ADV637J8MCK4TNGQL5H3H";
+const key = "8ZBRQ5HZCGSEGZJFWDPQDPJ4G";
 
 (async () => {
     try {
@@ -42,6 +45,7 @@ async function getTodayAndTomorrowForecast(ctx) {
         ctx.body = { today: today, tomorrow: tomorrow };
     } catch (error) {
         ctx.status = 200;
+        console.error("Failed to get today's and tomorrow's forecast for city:", city);
         ctx.body = { today: defaultTodayForecast, tomorrow: defaultTomorrowForecast };
         console.error("Error:", error);
     }
@@ -87,7 +91,8 @@ async function getCityWeather(ctx) {
         ctx.body = { tomorrow: tomorrow, today: today, week: week };
     } catch (error) {
         console.error("Error:", error);
-        ctx.status = 200; // 400;
+        console.error("API: Failed to get city weather!");
+        ctx.status = 200;
 
         ctx.body = {
             tomorrow: defaultDay,

@@ -45,6 +45,13 @@ class _WeatherPageState extends State<WeatherPage> {
     _loadMetrics();
   }
 
+  Future<void> _handleRefresh() async {
+    setState(() {
+      data = getWeatherNow(widget.cityName ?? 'Unknown');
+      todayTomorrowForecastData = getTodayForecast(widget.cityName ?? "Unknown");
+    });
+  }
+
   void _saveCurrentCity() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('current_city', widget.cityName ?? "");
@@ -168,18 +175,21 @@ class _WeatherPageState extends State<WeatherPage> {
                         _updateHourlyTemps(forecastSnapshot.data!["today"]);
                         _updateHourlyTemps(forecastSnapshot.data!["tomorrow"]);
 
-                        return _buildWeatherContent(
-                          cityName: widget.cityName!,
-                          colorScheme: colorScheme,
-                          today: today,
-                          tomorrow: tomorrow,
-                          week: week,
-                          selectedData: selectedData,
-                          spriteSheet: spriteSnapshot.data!,
-                          todayForecastData: forecastSnapshot.data!["today"],
-                          tomorrowForecastData:
+                        return RefreshIndicator(
+                            onRefresh: _handleRefresh,
+                            child:_buildWeatherContent(
+                              cityName: widget.cityName!,
+                              colorScheme: colorScheme,
+                              today: today,
+                              tomorrow: tomorrow,
+                              week: week,
+                              selectedData: selectedData,
+                              spriteSheet: spriteSnapshot.data!,
+                              todayForecastData: forecastSnapshot.data!["today"],
+                              tomorrowForecastData:
                               forecastSnapshot.data!["tomorrow"],
-                          metrics: metrics,
+                              metrics: metrics,
+                            )
                         );
                       } else {
                         return const Center(
@@ -270,6 +280,8 @@ class _WeatherPageState extends State<WeatherPage> {
               WeatherMain(
                 icon: selectedData["info"]["icon"],
                 temperature: selectedData["temperature"]["realNow"].toString(),
+                temperatureMax: selectedData["temperature"]["realMax"].toString(),
+                temperatureMin: selectedData["temperature"]["realMin"].toString(),
                 spriteSheet: spriteSheet,
                 temperatureMetric: temperatureMetric,
               ),
@@ -296,7 +308,7 @@ class _WeatherPageState extends State<WeatherPage> {
               ),
               SizedBox(height: 20),
               SizedBox(
-                width: double.infinity, // ocupa toda a largura possível
+                width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(

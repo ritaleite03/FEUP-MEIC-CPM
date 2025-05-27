@@ -85,4 +85,4 @@ const defaultTomorrowForecast = [
     { datetime: "23:00:00", temp: 16.4, icon: "partly-cloudy-night" },
 ];
 
-module.exports = { defaultTodayForecast, defaultTomorrowForecast };
+module.exports = { defaultDay, defaultTodayForecast, defaultTomorrowForecast };

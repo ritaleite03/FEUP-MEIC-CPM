@@ -105,8 +105,8 @@ class AirConditionsDetails extends StatelessWidget {
       crossAxisSpacing: 15,
       childAspectRatio: 1.8,
       children: [
-        buildBox("Min-Max Temp", "${data["temperature"]["realMin"].toString()} $temperatureSymbol - ${data["temperature"]["realMax"].toString()} $temperatureSymbol", const Icon(Icons.thermostat)),
-        buildBox("Min-Max Feel", "${data["temperature"]["feelMin"].toString()} $temperatureSymbol - ${data["temperature"]["feelMax"].toString()} $temperatureSymbol", const Icon(Icons.device_thermostat)),
+        buildBox("Max/Min Temp", "${data["temperature"]["realMax"].toString()}$temperatureSymbol / ${data["temperature"]["realMin"].toString()}$temperatureSymbol", const Icon(Icons.thermostat)),
+        buildBox("Max/Min Feel", "${data["temperature"]["realMax"].toString()}$temperatureSymbol / ${data["temperature"]["realMin"].toString()}$temperatureSymbol", const Icon(Icons.device_thermostat)),
         buildBox("UV Index", data["sun"]["uvi"].toString(), const Icon(Icons.wb_sunny)),
         buildBox("Wind", "${data["wind"]["spd"].toString()} $windSymbol", const Icon(Icons.air), windDirection: data["wind"]["dir"]?.toString()),
         buildBox("Humidity", "${data["humidity"]["hum"].toString()}%", const Icon(Icons.water_drop)),
