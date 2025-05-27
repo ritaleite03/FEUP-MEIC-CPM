@@ -32,6 +32,9 @@ To test the application, simply follow these steps:
     flutter run
     ```
 
+It is important to note that before running the application, you need to define a `.env`, which must be inserted inside the `app/` folder.
+You must define a variable `IP`, which will correspond to the IP of the machine where you will run the backend.
+
 ## 2. Features
 
 **City and Favorites Management**
