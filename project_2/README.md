@@ -15,6 +15,7 @@ By Group 5:
 3. [Architecture](#3-architecture)
 4. [Interface](#4-interface)
 5. [Testing](#5-testing)
+5. [Bibliography](#6-bibliography)
 
 ## 1. Overview
 
@@ -106,3 +107,11 @@ You must define a variable `IP`, which will correspond to the IP of the machine 
 </p>
 
 ## 5. Testing
+
+## 6. Bibliography
+
+To develop this project we used the following resources:
+
+- Mockup followed to design the interface, https://app.uizard.io/templates/LWx3MdogOJspY56ZdBV8/overview
+- Pluggin sqflite, https://pub.dev/packages/sqflite;
+- Pluggin fl_chart, https://pub.dev/packages/fl_chart
