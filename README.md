@@ -6,8 +6,6 @@
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
 [![REST API](https://img.shields.io/badge/REST_API-FF6F61?style=flat)](https://restfulapi.net/)
 
----
-
 ## Contributors
 
 | Name           | GitHub Username                                          |
@@ -15,8 +13,6 @@
 | Henrique Silva | [@hfuturo](https://github.com/hfuturo)                   |
 | Rita Leite     | [@ritaleite03](https://github.com/ritaleite03)           |
 | Tiago Azevedo  | [@TiagoAzevedo1903](https://github.com/TiagoAzevedo1903) |
-
----
 
 ## Repository Overview
 
@@ -32,8 +28,6 @@ This repository contains **two independent projects** developed for the **Mobile
    Client-server weather application using Flutter, showing forecasts for Portuguese district capitals and allowing favorite cities management.  
    [→ View Project 2 README](project_2/README.md)
 
----
-
 ## Grades / Evaluation
 
 | Project   | Report | Work  | Final |
@@ -43,8 +37,6 @@ This repository contains **two independent projects** developed for the **Mobile
 
 > Scores are out of 20.
 
----
-
 ## Repository Structure
 
 ```
@@ -53,8 +45,6 @@ FEUP-MEIC-CPM/
 ├── project_2/    # Weather Forecast Application (Flutter)
 └── README.md     # This file
 ````
-
----
 
 ## Technologies Overview
 
@@ -66,8 +56,6 @@ FEUP-MEIC-CPM/
 |           | User App      | Kotlin, Android SDK, Local Database, QR/NFC handling    |
 | Project 2 | Server        | Node.js, REST API, JSON                                 |
 |           | Client App    | Dart, Flutter SDK, sqflite, fl_chart, SharedPreferences |
-
----
 
 ## Quick Start
 
